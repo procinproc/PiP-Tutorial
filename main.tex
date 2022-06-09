@@ -1,0 +1,82 @@
+\documentclass[a4paper,11pt,makeidx]{report} % Font size
+
+\usepackage{makeidx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\hypersetup{colorlinks=true}
+%%% AH Macros
+\long\def\comment#1{}
+\def\pipkw{\tt\bf\color{blue}}%
+\def\pipterm#1{\index{#1}{\pipkw #1}}%
+\def\PIPID{\pipterm{PIPID}}%
+\def\NULL{\tt NULL}%
+
+\lstloadlanguages{C,csh}
+
+\lstset{basicstyle=\small\tt, numberbychapter=true, showstringspaces=false,
+  emph={pip\_get\_pipid, pip\_get\_ntasks,
+    pip\_init, pip\_fin,
+    pip\_spawn, pip\_wait, pip\_wait\_any,
+    pip\_task\_spawn, pip\_spawn\_program\_t,
+    pip\_spawn\_from\_func, pip\_spawn\_from_main, 
+    pip\_named\_export, pip\_named\_import, pip\_exit, 
+    pip\_barrier\_init, pip\_barrier\_wait, pip\_barrier\_fin,
+    pip\_barrier\_t, pip\_gettime,
+    PIP\_PIPID\_ROOT, PIP\_PIPID\_ANY, PIP\_PIPID\_MYSELF, 
+    PIP\_CPUCORE\_ASIS, PIP\_MODE\_PTHREAD, PIP\_MODE\_PROCESS,
+    pip-exec, pipcc, pipfc, pip-mode, printpipmode}, 
+  emphstyle={\pipkw}, texcl=true, escapeinside={<(}{)>}}
+
+
+\lstdefinestyle{program}{numbers=none, numberstyle=\tiny, numbersep=5pt, frame=tb, language=C}
+\lstdefinestyle{example}{numbers=none, numberstyle=\tiny, numbersep=5pt, language=, frame=tRBl}
+\lstdefinestyle{define}{frame=single, language=csh}
+
+\title{Great Experiences with PiP} % Book title
+\author{Atsushi Hori} % Author
+
+%--------------------------------------------------------------------------------
+\makeindex
+
+\begin{document}
+\maketitle
+
+\newpage % Make sure the following content is on a new page
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+
+\tableofcontents % Prints the table of contents
+\lstlistoflistings
+\listoffigures
+\listoftables
+
+\chapter{PiP Basics}
+
+\input{intro/intro}
+\input{tasks/tasks}
+\input{spawn/spawn}
+\input{sync/sync}
+
+\comment{
+  \input{commands/commands}
+  \input{discuss/discuss}
+
+  \chapter{PiP Advanced}
+  \input{task-spawn/task-spawn}
+  \input{exec-mode/exec-mode}
+
+  \appendix
+  \chapter{PiP Internals}
+  \input{internals/internals}
+  
+  \bibliography{ref}
+}
+
+\printindex
+
+\end{document}
