@@ -6,10 +6,38 @@ tasks.
 
 \subsection{Barrier Synchronization}
 
+Currently, there is only one synchronization method is supported by
+the PiP library, it is barrier synchronization. The API of PiP's
+barrier synchronization is borrowed from the one found in the PThread
+library. There are three functions in PiP,
+\pipterm{pip_barrier_init()}, \pipterm{pip_barrier_wait()}, and
+  \pipterm{pip_barrier_fin()}, corresponding to {\tt
+    pthread_barreir_init()}, {\tt pthread_barrier_wait()} and {\tt
+        pthread_barrier_destroy()}, respectively. 
+
 \lstinputlisting[style=program, caption={Barrier Synchronization
     ({\tt barrier})}, label=prg:barrier] {sync/examples/barrier.c}
+
+In Listing~\ref{prg:barrier}, the \pipterm{pip_init()} function is
+given a new non-{\tt NULL} value to the third argument. This is
+another form of exporting a pointer from the root to spawnd PiP
+tasks. In this example, the address of the \pipterm{pip_barrier_t}
+static variable is passed to children so that the children can
+synchronize by calling \pipterm{pip_barrier_wait()}.
+
+To clarify the effect of the barrier synchronization, the
+synchronization takes place only when the second parameter of the
+program execution is not given, and then the return values of
+\pipterm{pip_gettime()} are shown by PiP tasks. The
+\pipterm{pip_gettime()} returns the current value of {\tt
+  gettimeofday()} in double format with the unit of seconds.
+
+In the example of running of this program is shown in
+Listing~\ref{out:barrier}. In the first run, the barrier
+synchronization does not take place and large variance can be seen on
+the {\tt gettimeofday()} values. In the second run, where the barrier
+synchronization takes place, and smaller variance can be seen.
 
 \lstinputlisting[style=example, 
   caption={Barrier Synchronization - Execution},
   label=out:barrier] {sync/examples/barrier.out}
-

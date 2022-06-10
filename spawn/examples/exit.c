@@ -15,10 +15,11 @@ int main( int argc, char **argv ) {
       printf( "PiP task (PIPID:%d) done: %d\n",
 	      pipid_task, WEXITSTATUS(status) );
     }
+    pip_exit( 100 );
+    /* NEVER REACH HERE */
   } else {
     exitval = pipid * 10;
     pip_exit( exitval );
     /* NEVER REACH HERE */
   }
-  pip_exit( 100 );
 }

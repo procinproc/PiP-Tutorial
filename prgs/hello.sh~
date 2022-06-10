@@ -1,4 +1,0 @@
-$ pipcc hello.c
-$ ./a.out
-Hello World
-$ pip-exec -n 1 ./a.out

@@ -133,10 +133,10 @@ specifying the {\PIPID} who exported.
 
 In this program, a PiP task having {\PIPID} of zero (0) export
 the address of the variable {\tt x} by calling
-\pipterm{pip\_named\_export()} after setting the value of {\tt
+\pipterm{pip_named_export()} after setting the value of {\tt
   argv[1]}. The 
 other PiP tasks import the exported address by the PiP task 0 by
-calling \pipterm{pip\_named\_import()} function. Below is an execution
+calling \pipterm{pip_named_import()} function. Below is an execution
 result of this program. As shown, the exported value by PiP task 0 can
 be seen by the other PiP tasks. 
 
@@ -144,8 +144,8 @@ be seen by the other PiP tasks.
   caption={Execution of Export and Import},
   label=out:export-import] {tasks/examples/export-import.out}
 
-The \pipterm{pip\_named\_export()} function publishes an address with
-the given name. The \pipterm{pip\_named\_import()} function
+The \pipterm{pip_named_export()} function publishes an address with
+the given name. The \pipterm{pip_named_import()} function
 blocking-waits until the named address on the specified PiP task by
 {\PIPID}. It is not allowed to export an address having the same
 name twice or more to update the address, because this leads to a race
@@ -184,7 +184,7 @@ time, power and memory.
 \item Every PiP task has a unique {\PIPID}.
 \item Most PiP functions return error code defined in Linux.
 \item To obtain the address for accessing data of the other PiP tasks,
-  use the \pipterm{pip\_named\_export()} and
-  \pipterm{pip\_named\_import()} functions.  
+  use the \pipterm{pip_named_export()} and
+  \pipterm{pip_named_import()} functions.  
 \end{itemize}
 

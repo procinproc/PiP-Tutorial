@@ -5,6 +5,7 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage[nohyphen]{underscore}
 
 \hypersetup{colorlinks=true}
 %%% AH Macros
@@ -17,16 +18,16 @@
 \lstloadlanguages{C,csh}
 
 \lstset{basicstyle=\small\tt, numberbychapter=true, showstringspaces=false,
-  emph={pip\_get\_pipid, pip\_get\_ntasks,
-    pip\_init, pip\_fin,
-    pip\_spawn, pip\_wait, pip\_wait\_any,
-    pip\_task\_spawn, pip\_spawn\_program\_t,
-    pip\_spawn\_from\_func, pip\_spawn\_from_main, 
-    pip\_named\_export, pip\_named\_import, pip\_exit, 
-    pip\_barrier\_init, pip\_barrier\_wait, pip\_barrier\_fin,
-    pip\_barrier\_t, pip\_gettime,
-    PIP\_PIPID\_ROOT, PIP\_PIPID\_ANY, PIP\_PIPID\_MYSELF, 
-    PIP\_CPUCORE\_ASIS, PIP\_MODE\_PTHREAD, PIP\_MODE\_PROCESS,
+  emph={pip_get_pipid, pip_get_ntasks,
+    pip_init, pip_fin,
+    pip_spawn, pip_wait, pip_wait_any,
+    pip_task_spawn, pip_spawn_program_t,
+    pip_spawn_from_func, pip_spawn_from_main, 
+    pip_named_export, pip_named_import, pip_exit, 
+    pip_barrier_init, pip_barrier_wait, pip_barrier_fin,
+    pip_barrier_t, pip_gettime,
+    PIP_PIPID_ROOT, PIP_PIPID_ANY, PIP_PIPID_MYSELF, 
+    PIP_CPUCORE_ASIS, PIP_MODE_PTHREAD, PIP_MODE_PROCESS,
     pip-exec, pipcc, pipfc, pip-mode, printpipmode}, 
   emphstyle={\pipkw}, texcl=true, escapeinside={<(}{)>}}
 
@@ -61,16 +62,18 @@
 \input{tasks/tasks}
 \input{spawn/spawn}
 \input{sync/sync}
+\input{commands/commands}
 
 \comment{
-  \input{commands/commands}
   \input{discuss/discuss}
 
   \chapter{PiP Advanced}
-  \input{task-spawn/task-spawn}
   \input{exec-mode/exec-mode}
+  \input{task-spawn/task-spawn}
 
   \appendix
+  \chapter{PiP Installation}
+  \input{install/install}
   \chapter{PiP Internals}
   \input{internals/internals}
   
