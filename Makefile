@@ -1,12 +1,13 @@
+
+include ./rules.mk
+
 TARGET = main
-BIBS   = pip.bib
 LATEX  = pdflatex
 
 PDF    = $(TARGET).pdf
 
-SRCS = $(shell find .    -name '*.tex' -print)
-FIGS = $(shell find figs -name '*.pdf' -print)
-PRGS = $(shell find prgs -name '*.c'   -print)
+SRCS = $(shell find . -name '*.tex' -print)
+BIBS   = pip.bib
 
 all : $(PDF)
 
@@ -19,10 +20,11 @@ examples: pipkw.sh
 			echo $$ex; \
 			make -C $$ex; \
 		done
+.PHONY: examples
 
-$(PDF): examples $(SRCS) $(FIGS) $(PRGS) $(BIBS) Makefile
+$(PDF): $(SRCS) $(BIBS) Makefile
 	pdflatex $(TARGET)
-	rerun_count=5 ; \
+	rerun_count=5; \
 	while egrep -s 'Rerun (LaTeX|to get cross-references right)' $(TARGET).log; \
 	    do \
 	      if [ $${rerun_count} -eq 0 ]; then \
@@ -34,29 +36,26 @@ $(PDF): examples $(SRCS) $(FIGS) $(PRGS) $(BIBS) Makefile
 	      makeindex -l $(TARGET).idx; \
 	      rerun_count=`expr $${rerun_count} - 1` ;\
 	    done 
-	grep \
-	-e "LaTeX\ Warning" \
-	-e "Package\ natbib\ Warning" \
-	-e "undefined" \
-	-e "multiply\ defined" \
-	$(TARGET).log; \
+	grep    -e "LaTeX\ Warning" \
+		-e "Package\ natbib\ Warning" \
+		-e "undefined" \
+		-e "multiply\ defined" \
+		$(TARGET).log
 
-clean: 
-	rm -f $(PDF) *.lol *.lof *.lot *.toc *.bbl *.blg *.out *.aux *.log \
-	*.idx *.ilg *.ind *~ *.dvi
+clean-hook: 
+	$(RM) *.lol *.lof *.lot *.toc *.bbl *.blg 
+	$(RM) *.idx *.ilg *.ind *.out *.aux *.log
 	find ./*/ -name Makefile -print | \
 		while read ex; do \
 			dir=$$(dirname $$ex); \
 			make -C $$dir clean; \
 		done
 
-veryclean: clean 
-	rm -f $(PDF) pipkw.sh 
+veryclean-hook: clean 
+	$(RM) $(PDF) pipkw.sh 
 	find ./*/ -name Makefile -print | \
 		while read ex; do \
 			dir=$$(dirname $$ex); \
 			make -C $$dir veryclean; \
 		done
-
-distclean: veryclean
 

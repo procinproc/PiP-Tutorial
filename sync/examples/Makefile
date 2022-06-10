@@ -1,4 +1,6 @@
 
+include ../../rules.mk
+
 all: barrier.out
 
 barrier: barrier.c Makefile
@@ -7,8 +9,5 @@ barrier: barrier.c Makefile
 barrier.out: barrier barrier.sh ../../example.sh
 	../../example.sh < barrier.sh > barrier.out
 
-clean:
-	rm -f barrier *~
-
-veryclean: clean
-	rm -f *.out
+clean-hook:
+	$(RM) barrier

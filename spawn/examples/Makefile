@@ -1,4 +1,6 @@
 
+include ../../rules.mk
+
 all: spawn.out spawn-myself.out userfunc.out mainfunc.out wait.out waitany.out \
 	exit.out maps.out
 
@@ -19,15 +21,15 @@ mainfunc.out: mainfunc.c mainfunc.sh ../../example.sh
 	pipcc mainfunc.c -o mainfunc
 	../../example.sh < ./mainfunc.sh > mainfunc.out
 
-wait.out: wait.c exec.sh ../../example.sh
+wait.out: wait.c ../../example.sh
 	pipcc wait.c -o wait
 	../../example.sh < wait.sh > wait.out
 
-waitany.out: waitany.c exec.sh ../../example.sh
+waitany.out: waitany.c ../../example.sh
 	pipcc waitany.c -o waitany
 	../../example.sh < waitany.sh  > waitany.out
 
-exit.out: exit.c exec.sh ../../example.sh
+exit.out: exit.c ../../example.sh
 	pipcc exit.c -o exit
 	../../example.sh < exit.sh > exit.out
 
@@ -35,9 +37,6 @@ maps.out: maps.c maps.sh ../../example.sh
 	pipcc maps.c -o maps
 	./maps.sh
 
-clean:
-	rm -f spawn-root spawn-task spawn-myself userfunc mainfunc \
-	wait waitany exit maps *.exout *~
-
-veryclean: clean
-	rm -f *.out
+clean-hook:
+	$(RM) spawn-root spawn-task spawn-myself userfunc mainfunc \
+	wait waitany exit maps

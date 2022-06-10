@@ -1,4 +1,6 @@
 
+include ../../rules.mk
+
 all: hello.out hello-var.out hello-var-omp.out export-import.out
 
 hello.out: hello.c hello.sh ../../example.sh 
@@ -18,8 +20,8 @@ export-import.out: export-import.c export-import.sh ../../example.sh
 	pipcc export-import.c -o export-import
 	../../example.sh < export-import.sh > export-import.out
 
-clean:
-	rm -f a.out export-import *.exout *~ #*#
+clean-hook:
+	$(RM) a.out export-import *.exout
 
-veryclean: clean
-	rm -f *.out
+veryclean-hook: 
+	$(RM) *.out

@@ -1,5 +1,1 @@
-
-clean:
-	rm -f *~
-
-veryclean: clean
+include ../rules.mk
