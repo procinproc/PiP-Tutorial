@@ -1,0 +1,9 @@
+$ pipcc --silent const-dest.c -o const-dest
+$ pip-exec -n 2 ./const-dest
+[PIPID:ROOT] constructor is called (PID:27564)
+[PIPID:Task[0]] PiP task main (PID:27565)
+[PIPID:ROOT] constructor is called (PID:27564)
+[PIPID:Task[1]] PiP task main (PID:27566)
+[PIPID:Task[1]] destructor is called (PID:27564)
+[PIPID:Task[0]] destructor is called (PID:27564)
+$

@@ -1,0 +1,226 @@
+
+\section{Issues related to Linux Kernel and Glibc}
+
+This section will explain about the issues when implementing PiP. 
+
+\subsection{Loading a Program}
+
+Before going into the details about the Glibc issues when implementing
+PiP, readers should understand how a program is loaded into
+memory. This subsection describes only about the program loading
+procedure of Linux, apart from PiP implementation.
+
+When the Linux's {\tt execve()} system call to run a program, the
+Linux kernel open and read the executable file, searching the ELF
+section named ``{\tt .interp}.''
+
+\lstinputlisting[style=example, basicstyle=\tiny\tt, 
+  caption={{\tt .interp} Section of the {\tt ps} command},
+  label=out:interp] {glibc/examples/interp.out}
+
+Listing~\ref{out:interp} shows the value of the {\tt .interp} section,
+{\tt /lib64/ld-linux-x86-64.so.2}. The Linux kernel
+invokes the loader specified by the {\tt .interp} section and asks the
+loader to load a program specified by the {\tt execve()} parameter.
+Then the loader load the program and additionally load and link the shared
+libraries required to run the program. Once everything is loaded, the
+loader jumps into the starting function defined in Glibc to initialize
+Glibc and finally user-defined {\tt main()} function is called.
+
+The program loader, often simply called {\tt ld-linux.so}, is loaded
+once per address space and kept in memory until the end of the
+process. This is responsible for any loading process by resolving the
+external symbol references. The Glibc functions defined in the {\tt
+  libdl.so} ({\tt -ldl}), such as {\tt   dlopen()}, {\tt
+  dlmopen()}, {\tt dlsym()} and so on, are just API 
+and their functional bodies exist in the program loader.
+
+\subsection{PiP-glibc}
+
+PiP provides a new execution model which cannot be categorized into
+neither the process model nor the thread model. In this new model,
+although its name is not yet given, tasks share the same address
+space like the thread model, but maintaining the variable
+privatization like the process model. This execution
+model is novel and not yet recognized by most of the tool chains
+provided by Linux and others. Indeed, the most of the time to develop
+PiP was devoted to find niches in Glibc.
+
+\subsubsection{Number of name spaces}
+
+The number of names spaces which the {\tt dlmopen()} can create is
+hard-coded as 16. Considering PiP tasks run in parallel and the number
+of CPU cores nowadays, this number of 16 is apparently too small. The
+PiP package provides PiP-glibc where the number of name spaces is
+increased, up to 300 PiP tasks\footnote{Once I asked Glibc
+development members to increae the size, but they did not accept. Refer
+\url{https://sourceware.org/bugzilla/show_bug.cgi?id=23978}}. 
+
+The name space table resides in the {\tt ld-linux.so} and this means
+that the {\tt .interp} ELF section of PiP programs must be changed so
+that the program is loaded by the new {\tt ld-linux.so}. This can be
+done by specifying {\tt --dynamic-linker} option of the GNU linker and
+the \pipterm{pipcc} and \pipterm{pipfc} do this.
+
+The name space table resides at the top of a structure in {\tt
+  ld-linux.so}. Some Glibc functions refer to the members in this
+structure directly. This causes another problem. Once the size of the
+name space table is changed, the addresses of the other members in the
+same structure are also changes. As described, only one {\tt
+  ld-linux.so} can be loaded in an address space. As a result, all PiP 
+programs sharing the same address must be linked with the same Glibc. 
+
+\subsubsection{PiP-gdb}
+
+The {\tt ld-linux.so} embeds a tiny information for debugging into the
+loaded program. Unfortunately, I found that this code fragment
+resides on the pass calling the {\tt ld-linux.so} from the
+top (by the kernel), not on the pass called from {\tt dlopen()}
+  and {\tt dlmopen()}\footnote{I guess the loaded code by using {\tt
+    dlopen()} or {\tt dlmopen()} cannot be debugged.}. The patched
+  PiP-glibc fixed this issue. Thus, the \pipterm{pip-gdb} command
+  (Section~\ref{sec:pip-gdb}) can only work with 
+  the PiP programs linked with the patched PiP-gkibc.
+
+\subsubsection{Global lock}
+
+Most programs are linked with Glibc and PiP programs are no
+exception. PiP allows to run multiple PiP programs in the same address
+space. This means that each PiP task has its own Glibc. And the
+simultaneous calls of some Glibc functions may not work because of a
+race condition. 
+
+To avoid this condition, PiP library provides the functions,
+\pipterm{pip_glibc_lock()} and \pipterm{pip_glibc_unlock()}, to 
+serialize the Gilbc function calls. The following Glibc functions are
+wrapped by PiP library to introduce the lock and users do not have to
+care the race. 
+
+\begin{table}[ht]
+  \centering
+  \caption{Glibc functions wrapped by PiP library}
+  \vspace{3mm}
+  \tt
+  \begin{tabular}{lll}
+    \hline
+    dlsym	&
+    dlopen	&
+    dlmopen	\\
+    dlinfo	&
+    dlclose	&
+    dlerror	\\
+    dladdr	&
+    dlvsym	&
+    getaddrinfo	\\
+    freeaddrinfo &
+    gai_strerror &
+    pthread_create \\
+    \hline
+    pthread_exit \\
+    \hline
+    malloc 	&
+    free	&
+    calloc	\\
+    realloc	&
+    memalign 	&
+    posix_memalign \\
+    \hline
+  \end{tabular}
+\end{table}
+
+The functions {\tt pthread\_exit()} and below of this have another
+reason to have function wrapper. The wrapping reason of {\tt
+  pthread\_exit()} will be explained in the
+Section~\ref{sec:exec-mode} and the reason of wrapping malloc routines
+will be explained in Section~\ref{sec:malloc}. 
+
+These listed functions may not be complete. There can
+be a case where some other Glibc functions may suffer from the
+race condition. This problem can be avoided by introducing the above
+locking functions. This lock can be used recursively and users can
+avoid deadlock situation easily. 
+
+\subsubsection{\PIPKW{pip-unpie} program}
+
+The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
+to load a program by the {\tt dlmopen()} function\footnote{Refer
+\url{https://sourceware.org/bugzilla/show_bug.cgi?id=11754\#c15}}. The
+\pipterm{pip-unpie} program is to cheat this Glibc restriction. This
+program is automatically executed by the \pipterm{pipcc} or
+\pipterm{pipfc} when creating a PiP executable, and not to be invoked
+by users directly.
+
+\subsubsection{Constructors and Destructors}
+
+The constructors and destructors are used in C++
+programs. Constructors and destructors are list of
+functions. Generally, constructor functions are called just before the 
+program begins, and destructors functions are called when the program
+is about to exit.
+
+In PiP, the behavior of the constructors and destructors is
+somewhat different. To explain this, I should start explaining how the
+constructors and destructors are implemented in general. The
+constructor functions are listed in the {\tt .init_array} section of an ELF
+file. The destructor functions are listed in the {\tt .fini_array}
+section. Constructors are called when {\tt ld-linux.so} finishes
+loading and linking objects. Destructors are called when {\tt
+  dlclose()} is called.
+
+Now back to PiP. As described in 
+
+\subsection{Linux Kernel}
+
+%\subsubsection{Heap Segment and Address Space}
+
+There is another issue which comes from Linux kernel, not from
+Glibc. Before explaining this issue, let us start from the how an
+address space is composed. 
+
+\lstinputlisting[style=example, basicstyle=\tiny\tt, 
+  caption={A Memory Map Example},
+  label=out:maps] {glibc/examples/maps.out}
+
+Listing~\ref{out:maps} shows an example of the output of doing ``{\tt
+  cat /proc/$\langle$PID$\rangle$/maps}.'' Here, ``{\tt pip-exec -n 2
+  ./a.out}'' was executed, resulting one \pipterm{pip-exec} process
+and two {\tt ./a.out} tasks. The file, {\tt
+  /proc/$\langle$PID$\rangle$/maps}, lists all memory
+segments in an address space of the process {\tt $\langle$PID$\rangle$}
+usually. A loaded shared object has consecutive three or four segments; 
+executable, gap (not accessible, if any), constants and data. 
+The rightmost column of a line indicates the {\tt
+  mmap()}ed filename, the second from the left column indicates the
+permission of the memory segment. '{\tt r}' is readable, '{\tt w}' is
+writable, '{\tt x}' is executable and '{\tt p}' is private
+(copy-on-write). There are also some special segments whose filename
+is in a pair of square brackets; {\tt [stack]}, {\tt [heap]}, and so
+on. These are created by the Linux kernel for special purposes as
+their names suggest. The segments having no filename are created by
+the {\tt mmap()} system call. 
+
+Remember, this is the address space of running one PiP root and two PiP
+tasks, resulting to have all the segments of the three tasks. Usually,
+the heap segment, mainly used for {\tt malloc()}, exists only one per
+address space. As shown in this example, there is only one heap
+segment, meaning the heap segment is shared by three tasks (one for
+root and two for PiP tasks). Note that the all three tasks have
+exactly the same {\tt /proc/$\langle$PID$\rangle$/maps} content, and
+there are three sets of a shared library and only one set of {\tt
+  ld-linux.so} ({\tt ld-2.28.so}) can be seen in
+Listing~\ref{out:maps}.  
+
+The heap memory can be allocated or deallocated by calling the {\tt
+  brk()} system call. Usually, there are two calls of {\tt brk()} to
+allocate or deallocate heap memory, one for obtaining the current heap
+end address and another for setting the new heap end
+address. Unfortunately, this API is not thread-safe at all, and thus,
+the heap memory cannot be used safely by PiP tasks.
+
+Fortunately, the malloc routines in Glibc is designed to check if
+there are two or more name spaces and if so they do not use the {\tt
+  brk()} system call, use {\tt mmap()} instead. So, the Glibc malloc
+routines work with PiP without a problem. However, if some other
+routines use the {\tt brk()} system call (or {\tt sbrk()} Glibc
+function), for example, replacing the Glibc malloc routines with
+another malloc implementation, then this may result in a problem. 

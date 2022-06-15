@@ -1,13 +1,125 @@
 
 \section{PiP Commands}
 
-\subsection{\pipterm{pipcc} and \pipterm{pipfc}}
+This section will describe on the PiP commands in the PiP
+package. Some of them are already shown but explained very briefly. In
+this section, details of PiP commands will be explained.
 
-\subsection{\pipterm{pip-exec}}
+\subsection{\PIPKW{pip-man}}\label{sec:pip-man}
 
-\subsection{\pipterm{pip-check}}
+This command shows the PiP man pages. Although this is just a simple
+shell script to run Linux's {\tt man} command, users need not take 
+care about the man path by using this command.
 
-\subsection{\pipterm{pips}}
+\subsection{\PIPKW{pipcc} and \PIPKW{pipfc}}
 
-\subsection{\pipterm{pip-mode} and \pipterm{printpipmode}}
+As already described in Section~\ref{sec:pipcc-exec}, \pipterm{pipcc}
+is the compiler script for compiling PiP programs for C and C++ and
+\pipterm{pipfc} is for Fortran.
 
+The {\tt --which} option will show you the pass of the actual back-end
+compiler. Or, users can specify the back-end compiler by setting the 
+environment variable {\tt CC} for \pipterm{pipcc} or {\tt FC} for
+\pipterm{pipfc}.
+
+By default, \pipterm{pipcc} and \pipterm{pipfc} compile program to
+produce the code which can run as a PiP root process and/or a PiP
+task. Users may specify {\tt --piproot} option for PiP root only
+program, or {\tt --piptask} option for PiP task only program. Indeed,
+any PiP program compiled as PiP tasks can run as a PiP root too. Thus,
+{\tt --piptask} option is equivalent to {\tt --pipboth} (to
+be both root and task) option.
+
+The actual compile options to be passed to the back-end compiler are
+shown by 
+specifying the {\tt --cflags} option and the link options are shown by
+the {\tt --lflags} option. The {\tt --cflags} or {\tt --lflags}
+disables the actual compiling and/or linking process.
+All options and parameters not for \pipterm{pipcc} and those Linux
+commands cannot run as PiP 
+programs. Additionally, any shell script (shebang) cannot run as a PiP
+program. As shown in Listing~\ref{out:pip-check}, the {\tt ls} command
+is implemented a shell script indeed.
+
+\lstinputlisting[style=example, 
+  caption={{\tt pip-check} - Execution Example}, label=out:pip-check]
+                {commands/examples/pip-check.out}
+
+The \pipterm{pip-check} program does not guarantee a program to
+run as a PiP program, even if it tells so. 
+
+\subsection{\PIPKW{pip-exec}}
+
+The \pipterm{pip-exec} command is to invoke PiP tasks derived
+from one program in the examples so far. However, \pipterm{pip-exec}
+can invoke multiple programs and all PiP tasks derived from those
+programs share the same address space. To do this, programs are
+separated by colon (:) (Listing~\ref{out:pip-exec}).
+
+\lstinputlisting[style=example, 
+  caption={{\tt pip-exec} - Execution Example}, label=out:pip-exec]
+                {commands/examples/pip-exec.out}
+
+\subsection{\PIPKW{pips}}
+
+\pipterm{pips} is the command to output the list of currently running
+PiP roots and PiP tasks in the similar way of what the Linux's {\tt
+  ps} command does. Here is the example, running three (3)
+\pipterm{pip-exec} each of which execute {\tt a}, {\tt b}, or {\tt c}
+PiP tasks. 
+
+\begin{lstlisting}[frame=tRBl]
+$ pips
+PID   TID   TT       TIME     PIP COMMAND
+18741 18741 pts/0    00:00:00 RT  pip-exec
+18742 18742 pts/0    00:00:00 RG  pip-exec
+18743 18743 pts/0    00:00:00 RL  pip-exec
+18741 18744 pts/0    00:00:00 0T  a
+18745 18745 pts/0    00:00:00 0G  b
+18746 18746 pts/0    00:00:00 0L  c
+18747 18747 pts/0    00:00:00 1L  c
+18741 18748 pts/0    00:00:00 1T  a
+18749 18749 pts/0    00:00:00 1G  b
+18741 18750 pts/0    00:00:00 2T  a
+18751 18751 pts/0    00:00:00 2G  b
+18741 18752 pts/0    00:00:00 3T  a
+\end{lstlisting}
+
+As you see, this output looks very similar to the on of the {\tt ps}
+command. The unfamiliar column titled {\tt PIP} represents
+if this is a PiP root or PiP task (first charatcer. '{\tt R}' means
+root, the other numerical digit '{\tt 0-9}' means PiP task. The second
+character represents PiP execution mode, explaind in
+Section~\ref{sec:exec-mode}).
+
+This \pipterm{pips} command has many options. Refer PiP man page for
+more details (see also \ref{sec:pip-man}). 
+
+\subsection{\PIPKW{pip-gdb}}\label{sec:pip-gdb}
+
+\pipterm{pip-gdb} is PiP-aware version of {\tt gdb} (GNU
+debugger). PiP tasks are implemented as GDB's inferiors. Here is the
+example of PiP-gdb debugging session.
+
+\begin{lstlisting}[frame=tRBl]
+(pip-gdb) info inferiors
+  Num  Description              Executable
+* 4    process 1904 (pip 2)     /somewhere/pip-task-2
+  3    process 1903 (pip 1)     /somewhere/pip-task-1
+  2    process 1902 (pip 0)     /somewhere/pip-task-0
+  1    process 1897 (pip root)  /somewhere/pip-root
+\end{lstlisting}
+
+\subsection{\PIPKW{pip-mode} and \PIPKW{printpipmode}}
+
+The \pipterm{pip-mode} command is to set PiP executoin mode (refer to
+Section~\ref{sec:exec-mode}). 
+
+\subsection{\PIPKW{libpip.so}}
+
+The PiP library \pipterm{libpip.so} can also run as a program, showing the
+information how the library was build and installed.
+
+\lstinputlisting[style=example,basicstyle=\tiny\tt, 
+  caption={{\tt libpip.so} - Execution Example}, label=out:libpip]
+                {commands/examples/libpip.out}

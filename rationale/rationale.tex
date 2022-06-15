@@ -1,0 +1,40 @@
+
+\section{Rationale}\label{sec:rationale}
+
+The prosedure to spawn a PiP task is;
+
+\begin{enumerate}
+\item create a new name space by calling the Linux's {\tt dlmopen()}
+  function.
+\item create a PiP task process (or thread) by calling the Linux's
+  {\tt clone()} system call.
+\item jump into the starting function of a user program
+\end{enumerate}
+
+The {\tt dlmopen()} function can create a new name space, unlike {\tt
+  dlopen()}. Here, the {\it name space} is the global symbol names
+(functions and global variables) to be resolved at loading. By
+creating a new name space, functions and variables can be
+privatized from the other PiP tasks. 
+
+The order of calling the {\tt dlmopen()} and {\tt clone()} is very
+important.  At first, I tried to call them in the order of calling
+{\tt clone()} followed by {\tt dlmopen()}, because this way seemed to be
+quite natural, however, this does not work at all. This the reason of
+that only PiP root can spawn PiP tasks and wait for the terminations
+of PiP tasks. 
+
+In some cases (or, in most cases before CentOS/Redhat 8), the loaded
+address of a program is fixed by default. If this is the case, PiP
+cannot load multiple programs in the same address space. To enable
+this, the PiP executables must be compiled as \index{PIE} (Position
+Independent Executable) so that the programs can be loaded at any
+arbitrary address. All programs to be PiP tasks must be compiled as
+PIE, i.e., must be compiled with \pipterm{pipcc} or \pipterm{pipfc}
+with the {\tt --piptask} option (or nothing to use the default). Note
+that PiP root program may not be PIE.  
+
+By running the loaded program having a new name space with another
+thread, PiP task can be created. Unfortunately, things are not that
+simple. There are many issues coming from Glibc. The next section will
+describe these issues. 

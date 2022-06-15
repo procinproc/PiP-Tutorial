@@ -13,6 +13,7 @@ for kw in $pipkws; do
 done
 
 cat << EOF > ${output}
+#!/bin/sh
 sed ${sedcmd} -
 EOF
 

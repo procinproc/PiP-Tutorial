@@ -26,7 +26,7 @@ returning the number specified by the root.
 The \pipterm{pip_fin()} function works as the opposite of
 \pipterm{pip_init()}, finalizing PiP library and freeing allocated 
 resources. After calling \pipterm{pip_fin()}, most PiP library
-functions return an error code ({\tt EPERM}.
+functions return an error code ({\tt EPERM}).
 \comment{The other arguments will be explained in the
   Section~\ref{sec:advanced}.} 
 
@@ -83,7 +83,7 @@ execution.
   caption={Spawn Myself - Execution}, label=out:spawn-myself]
                 {spawn/examples/spawn-myself.out}
 
-\subsubsection{Starting from other than {\tt main}}
+\subsubsection{Starting from other than {\tt main}}\label{sec:spawn-func}
 
 PiP tasks start from the {\tt main()} function in the examples so
 far. PiP allows for PiP tasks to start user-defined function other
@@ -92,8 +92,7 @@ function instead of calling the \pipterm{pip_spawn()} function.
 
 \lstinputlisting[style=program, caption={Starting from user-defined
     function ({\tt userfunc})},
-  label=prg:userfunc]
-                {spawn/examples/userfunc.c}
+  label=prg:userfunc] {spawn/examples/userfunc.c}
 
 Listing~\ref{prg:userfunc} is the program of this example. To decrease
 the number of arguments to spawn a PiP task, the
@@ -188,9 +187,3 @@ PiP tasks and root can terminate their executions by calling
 \lstinputlisting[style=example, 
   caption={PiP Task Termination - Execution},
   label=out:exit] {spawn/examples/exit.out}
-
-\comment{
-\subsection{Address map}
-
-However, actual mapped addresses are up to Linux kernel. 
-}

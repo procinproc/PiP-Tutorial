@@ -1,0 +1,115 @@
+
+\section{Execution Mode}\label{sec:exec-mode}
+
+PiP library is designed to run on Linux. As described in
+Section~\ref{sec:rationale}, it heavily depends on the {\tt
+  dlmopen()} and {\tt clone()}. Especially, the {\tt clone()} is
+called with a rare combination of {\tt CLONE} flags. There are many
+Linux variants and some of them do not support such a {\tt CLONE} 
+flag combination (for example, McKernel). To run PiP on
+such environment, there are two PiP 
+execution modes, one for calling {\tt clone()} with the special flag
+combination and another for calling {\tt pthread_create()} (using the
+normal flag combination) to spawn a PiP task. The former is called
+\pipterm{process mode} and latter is called \pipterm{pthread mode}. In
+either mode, the PiP's basic nature, sharing address space and
+variable privatization are preserved. 
+
+\subsection{Differences Between Two Modes}
+
+The difference of the PiP \pipterm{execution mode} ends up with the
+difference of the {\tt clone()} flag combination. Unlike the
+\pipterm{pthread mode}, the {\tt CLONE} flags of {\tt CLONE_FS}, {\tt
+  CLONE_FILES}, {\tt CLONE_SIGHAND} and {\tt CLONE_THREAD} are reset,
+{\tt CLONE_VM} and {\tt CLONE_SYSVSEM} is set. 
+
+\begin{table}[ht]
+  \centering
+  \caption{Differences between two modes}\label{tbl:mode-diff}
+  \vspace{3mm}
+  \begin{tabular}{c||c|c}
+    \hline
+    & Process Mode & Pthread Mode \\
+    \hline
+    \hline
+    Address Space Sharing & yes & yes \\
+    Variable Privatization & yes & yes \\
+    File Descriptors (FDs) & not shared & shared \\
+    \hline
+  \end{tabular}
+\end{table}
+
+Table~\ref{tbl:mode-diff} shows the major differences between the two
+modes. There are many other differences, though, PiP library provides
+mode-agnostic functions so that users can write PiP programs without
+care of the mode differences. 
+
+\begin{table}[ht]
+  \centering
+  \caption{Mode-Agnostic Functions}\label{tbl:mode-agnostic}
+  \vspace{3mm}
+  \small
+  \begin{tabular}{c||c|c||l}
+    \hline
+    Mode-Agnostic & Process Mode & Pthread Mode & \multicolumn{1}{c}{note} \\
+    \hline
+    \pipterm{pip_exit()} & {\tt exit()} & {\tt pthread_exit()} &
+    termination \\
+    \pipterm{pip_wait()} & {\tt wait()} & {\tt pthread_join()} &
+    {\tiny wait termination} \\
+    \pipterm{pip_kill()} & {\tt kill()} & {\tt pthread_kill()} & send
+    signal \\
+    \pipterm{pip_sigmask()} & {\tt sigprocmask()} & {\tt
+      pthread_sigmask()} & signal mask \\
+    \pipterm{pip_signal_wait()} & sigwait() & sigwait() & wait signal
+    \\
+    \pipterm{pip_yield()} & {\tt sched_yield()} & {\tt
+      pthread_yield()} & yeild \\
+    \pipterm{pip_abort()} & {\tt abort()} & {\tt abort()} & kill all
+    tasks \\
+    \hline
+  \end{tabular}
+\end{table}
+
+There are also predicate functions for users to know the current
+mode listed below;
+
+\begin{table}[ht]
+  \centering
+  \caption{Execution Mode Predicates}\label{tbl:mode-predicates}
+  \vspace{3mm}
+  \begin{tabular}{c|c}
+    \hline
+    Function name & \multicolumn{1}{c}{note} \\
+    \hline
+    \pipterm{pip_is_threaded()} & if pthread mode \\
+    \pipterm{pip_is_shared_fd()} & if FDs are shared \\
+    \hline
+  \end{tabular}
+\end{table}
+
+\subsection{Specifying Execution Mode}
+
+The execution mode can be specified when to call \pipterm{pip_init()}
+and/or setting the \pipterm{PIP_MODE} environment variable at
+run-time. Below is the function prototype of the
+\pipterm{pip_init()}. The first three arguments are already described
+up until now.
+
+\begin{lstlisting}[frame=tRBl]
+int pip_init( int *pipidp,	[IN/OUT]
+              int *ntasksp,     [IN/OUT]
+              void **root_expp, [IN/OUT]
+              int opts );       [IN]
+\end{lstlisting}
+
+The possible values of the last {\tt opts} argument are one of 
+\pipterm{PIP_MODE_PROCESS} and \pipterm{PIP_MODE_PTHREAD}, or ORing
+the both. The value of zero is equal to {\tt
+  PIP_MODE_PROCESS|PIP_MODE_PTHREAD}. As for the \pipterm{PIP_MODE}
+environment, it can be a string of ``\pipterm{PIP_MODE_PROCESS}'' or
+``\pipterm{PIP_MODE_PTHREAD}.''
+When the {\tt opts} value is zero or {\tt OR}ing the both, then the
+\pipterm{PIP_MODE} envbironment value is checked. If the environment
+is not set, then the PiP library chooses the possible one.
+

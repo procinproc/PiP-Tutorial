@@ -7,9 +7,11 @@ LATEX  = pdflatex
 PDF    = $(TARGET).pdf
 
 SRCS = $(shell find . -name '*.tex' -print)
-BIBS   = pip.bib
+FIGS = $(shell find */Figs/ -name '*.pdf' -print)
+OUTS = $(shell find . -name '*.out' -print)
+BIBS = pip.bib
 
-all : $(PDF)
+all : examples $(PDF) Makefile
 
 pipkw.sh: pip-keywords.sh
 	./pip-keywords.sh
@@ -22,7 +24,7 @@ examples: pipkw.sh
 		done
 .PHONY: examples
 
-$(PDF): $(SRCS) $(BIBS) Makefile
+$(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
 	pdflatex $(TARGET)
 	rerun_count=5; \
 	while egrep -s 'Rerun (LaTeX|to get cross-references right)' $(TARGET).log; \

@@ -1,0 +1,44 @@
+
+\section{Summary}
+
+\subsection*{PiP root and PiP task}
+
+\begin{itemize}
+\item PiP programs must be compiled with the \pipterm{pipcc} 
+  (for C and C++) or \pipterm{pipfc} (for  FOrtran) command.
+\item PiP programs can run as PiP tasks by using the
+  \pipterm{pip-exec} command. 
+\item PiP programs can run as non-PiP tasks by invoking them as normal
+  programs.
+\item Unlike the conventional multi-thread model (i.e. OpenMP), static
+  variables in a PiP program are privatized and each PiP task has its
+  own set of the static variables.
+\item Unlike the conventional multi-process model (i.e. MPI), PiP
+  tasks may share the same address space and PiP tasks can access data
+  owned by the other PiP tasks. 
+\end{itemize}
+
+\subsection*{PiP API}
+
+\begin{itemize}
+\item Most PiP functions return error code defined in Linux.
+\item Every PiP task has a unique {\PIPID} per address space.
+\item PiP root must initialize PiP library by calling
+  \pipterm{pip_init()}. While child PiP task may or may not call the
+  initialization function.
+\item PiP root can spawn PiP tasks by calling the
+  \pipterm{pip\_spawn()} or \pipterm{pip_task_spawn()} function.
+\item To obtain the address for accessing data of the other PiP tasks,
+  use the \pipterm{pip_named_export()} and
+  \pipterm{pip_named_import()} functions.  
+\item The \pipterm{pip_named_export()} and \pipterm{pip_named_import()}
+  can be used to synchronize tasks. \pipterm{pip_barrier_wait} can
+  also be used for tasks to synchronize.
+\item The \pipterm{pip_exit()} function terminates the calling PiP
+  task and PiP root.
+\item PiP root can wait for the termination of a spawned PiP task, by
+  calling one of the \pipterm{pip_wait()} function family.
+\end{itemize}
+
+\subsection*{Commands}
+

@@ -5,7 +5,8 @@ In this chapter, how PiP tasks are created in a simple way and how PiP
 tasks works in the different way from the process (using MPI) and
 thread (using OpenMP) creations.
 
-\subsection{\pipterm{pipcc} and \pipterm{pip-exec} Commands}
+\subsection{\PIPKW{pipcc} and \PIPKW{pip-exec} Commands}
+\label{sec:pipcc-exec}
 
 Let me start with the well-known C program ``hello world'' which code
 is listed below;
@@ -166,25 +167,4 @@ based on the process model and there is no way to access data owned by
 the other MPI process.}. Basically, communication involves some form
 of data copying (done by software or hardware). Data copying consumes
 time, power and memory. 
-
-\subsection*{Summary}
-
-\begin{itemize}
-\item PiP programs must be compiled with the \pipterm{pipcc} 
-  (for C and C++. for Fortran use \pipterm{pipfc}) command.
-\item PiP programs can run as PiP tasks by using the
-  \pipterm{pip-exec} command. 
-\item PiP programs can run as non-PiP tasks by invoking them as normal
-  programs.
-\item Unlike the thread model, static variables in a PiP program are
-  privatized and each PiP task has its own set of the static
-  variables.
-\item Unlike the process model, PiP tasks may share the same address
-  space and PiP tasks can access data owned by the other PiP tasks.
-\item Every PiP task has a unique {\PIPID}.
-\item Most PiP functions return error code defined in Linux.
-\item To obtain the address for accessing data of the other PiP tasks,
-  use the \pipterm{pip_named_export()} and
-  \pipterm{pip_named_import()} functions.  
-\end{itemize}
 

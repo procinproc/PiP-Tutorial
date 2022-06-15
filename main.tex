@@ -6,12 +6,14 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage[nohyphen]{underscore}
+\usepackage{url}
 
 \hypersetup{colorlinks=true}
 %%% AH Macros
 \long\def\comment#1{}
 \def\pipkw{\tt\bf\color{blue}}%
-\def\pipterm#1{\index{#1}{\pipkw #1}}%
+\def\PIPKW#1{{\tt #1}}%
+\def\pipterm#1{{\pipkw #1}\index{#1}}%
 \def\PIPID{\pipterm{PIPID}}%
 \def\NULL{\tt NULL}%
 
@@ -20,15 +22,18 @@
 \lstset{basicstyle=\small\tt, numberbychapter=true, showstringspaces=false,
   emph={pip_get_pipid, pip_get_ntasks,
     pip_init, pip_fin,
-    pip_spawn, pip_wait, pip_wait_any,
+    pip_spawn, pip_wait, pip_wait_any, pip_trywait, pip_trywait_any, 
     pip_task_spawn, pip_spawn_program_t,
     pip_spawn_from_func, pip_spawn_from_main, 
     pip_named_export, pip_named_import, pip_exit, 
     pip_barrier_init, pip_barrier_wait, pip_barrier_fin,
     pip_barrier_t, pip_gettime,
+    pip_gettid, {process mode}, {pthread mode},
+    pip_glibc_lock, pip_glibc_unlock,
     PIP_PIPID_ROOT, PIP_PIPID_ANY, PIP_PIPID_MYSELF, 
-    PIP_CPUCORE_ASIS, PIP_MODE_PTHREAD, PIP_MODE_PROCESS,
-    pip-exec, pipcc, pipfc, pip-mode, printpipmode}, 
+    PIP_CPUCORE_ASIS, PIP_CPU_CORE_ABS,
+    PIP_MODE_PTHREAD, PIP_MODE_PROCESS,
+    pip-exec, pipcc, pipfc, pip-mode, printpipmode, pip-gdb}, 
   emphstyle={\pipkw}, texcl=true, escapeinside={<(}{)>}}
 
 
@@ -56,28 +61,37 @@
 \listoffigures
 \listoftables
 
-\chapter{PiP Basics}
+\chapter*{Introduction}
 
 \input{intro/intro}
+
+\chapter{PiP Basics}\label{chap:basics}
+\input{basics}
 \input{tasks/tasks}
 \input{spawn/spawn}
 \input{sync/sync}
 \input{commands/commands}
-\input{discuss/discuss}
 \input{summary/summary}
+%\input{faq/faq}
 
-\chapter{PiP Advanced}
+\chapter{PiP Advanced}\label{chap:advanced}
+\input{advanced}
+\input{rationale/rationale}
+\input{glibc/glibc}
+\input{exec-mode/exec-mode}
+\input{spawn-adv/spawn-adv}
+\input{malloc/malloc}
 
+\chapter{PiP Internals}
 \comment{
-
-  \input{exec-mode/exec-mode}
-  \input{task-spawn/task-spawn}
-
-  \appendix
-  \chapter{PiP Installation}
-  \input{install/install}
-  \chapter{PiP Internals}
   \input{internals/internals}
+  \input{issues/issues}
+}
+
+\appendix
+\chapter{PiP Installation}
+\comment{
+  \input{install/install}
   \chapter{Research Papers}
   \input{papers/papers}
   \bibliography{ref}

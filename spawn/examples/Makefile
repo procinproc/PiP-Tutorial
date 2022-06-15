@@ -2,7 +2,7 @@
 include ../../rules.mk
 
 all: spawn.out spawn-myself.out userfunc.out mainfunc.out wait.out waitany.out \
-	exit.out maps.out
+	exit.out
 
 spawn.out: spawn-root.c spawn-task.c spawn.sh ../../example.sh
 	pipcc spawn-root.c -o spawn-root
@@ -32,10 +32,6 @@ waitany.out: waitany.c ../../example.sh
 exit.out: exit.c ../../example.sh
 	pipcc exit.c -o exit
 	../../example.sh < exit.sh > exit.out
-
-maps.out: maps.c maps.sh ../../example.sh
-	pipcc maps.c -o maps
-	./maps.sh
 
 clean-hook:
 	$(RM) spawn-root spawn-task spawn-myself userfunc mainfunc \

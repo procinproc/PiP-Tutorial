@@ -1,0 +1,122 @@
+
+\section{Spawning Task - Advanced}\label{sec:spawn-adv}
+
+In this section, other features, not described so far, of
+\pipterm{pip_spawn()} and \pipterm{pip_task_spawn()} will be
+explained. For convenience, the function prototypes of these functions
+are shown below;
+
+\begin{lstlisting}[frame=tb]
+int pip_task_spawn( pip_spawn_program_t *progp, [IN]
+                    uint32_t coreno,            [IN]
+		    uint32_t opts,              [IN]
+		    int *pipidp,                [IN/OUT]
+		    pip_spawn_hook_t *hookp );  [IN]
+
+int pip_spawn( char *filename,                  [IN]
+               char **argv,                     [IN]
+               char **envv,                     [IN]
+	       int coreno,                      [IN]
+               int *pipidp,                     [IN/OUT]
+	       pip_spawnhook_t before,          [IN]
+               pip_spawnhook_t after,           [IN]
+               void *hookarg );                 [IN]
+\end{lstlisting}
+
+The first argument of \pipterm{pip_task_spawn()} function is already
+described in Section~\ref{sec:spawn-func}. This is structure is to
+pack the first three arguments of \pipterm{pip_spawn()}. 
+
+\subsection{CPU Core Binding}
+
+The {\tt coreno} argument is to bind the spawned PiP task to the
+specified CPU core. By default, this is the $N$th core number. If
+users want to specify the absolute core number, then the absolute core
+number should be {\tt OR}ed with
+\pipterm{PIP_CPUCORE_ABS}\footnote{This is because the core numbers
+are not contiguous on some CPU architecture, i.e., Fujitsu A64FX CPU.}
+Or, it can be \pipterm{PIP_CPUCORE_ASIS} not to bind.
+
+\subsection{Execution Context}
+
+Before explaining the rest of the arguments, readers should know about
+the execution context under PiP. The execution context can be defined
+as the state of CPU, i.e., contents of hardware registers. On PiP,
+this definition may not be enough. Let us have an example. Suppose
+that the same program runs as two PiP tasks and this program has a
+function {\tt foo()}. By passing the function pointer, by using the
+\pipterm{pip_named_export()} and \pipterm{pip_named_import()}, one of
+the PiP task can call the function of the other PiP
+task. Additionally, this function accesses a static variable, say {\tt
+  var}. If task $A$ calls function {\tt foo} of task $B$, then the
+called function accesses the variable owned by task $B$, not $A$.
+
+Thus, the execution context in PiP environment is different from the
+one in common sense and some times can become very subtle. In the PiP
+library, this happens quite often and makes debugging difficult.
+
+Further, the situation described above, i.e., the association of
+static variables and function address, deeply depends on the CPU
+architecture and tool chain. The above description is true on  {\tt
+  X86_64} and {\tt AArch64}, however, not true on {\tt X86_32}. Thus,
+it is not recommended do this.
+
+\subsection{Constructors and Destructors}
+
+\lstinputlisting[style=program,
+  caption={Constructors and Destructors},
+  label=prg:const-dest] {spawn-adv/examples/const-dest.c}
+
+\lstinputlisting[style=example, 
+  caption={Constructors and Destructors - Execution}, label=out:const-dest]
+                {spawn-adv/examples/const-dest.out}
+
+
+\subsection{Hooks}
+
+The last argument of \pipterm{pip_task_spawn()} is the structure
+packing the last three arguments of \pipterm{pip_spawn()}. The
+\pipterm{pip_spawn_hook_t} structure can be set by calling
+\pipterm{pip_spawn_hook()} function. Here is the prototype;
+
+\begin{lstlisting}[frame=tb]
+void pip_spawn_hook( pip_spawn_hook_t *hook,  [OUT]
+		     pip_spawnhook_t before,  [IN]
+		     pip_spawnhook_t after,   [IN]
+		     void *hookarg ) {        [IN]
+typedef int (*pip_spawnhook_t)( void* );
+\end{lstlisting}
+
+The {\tt before}function specified by this structure is called when a
+PiP task is created and just before calling the start function (i.e.,
+{\tt main()}). And the {\tt after} function is called when the PiP
+task is about to terminate. Both functions are called with the argument
+specified by the {\tt hookarg} to pass any arbitrary data. 
+
+Usually, new process is created by calling {\tt fork()} and {\tt
+execve()} in Linux/Unix. Here, file descriptors owned by
+parent process are passed to the created child. In many cases, those
+file descriptors are closed or duplicated (see also the next
+subsection) and some other settings are done between the calls of {\tt
+  fork()} and {\tt execve()}. In PiP, however, the task is created
+by one function and there is no chance to do the same setting when
+using {\tt fork} and {\tt exec}. 
+
+The execution of those hook functions are done by root with the root
+context. As described in Section~\ref{sec:rationale}, {\tt dlmopen()}
+is called by the root. Here is an example of this;
+
+
+
+\section{File Descriptors}
+
+In the process execution mode, file descriptors of the root process
+are passed to the spawned child. In the pthread mode, files
+descriptors are simply shared among PiP root and PiP tasks.
+
+If the close-on-exec flag of a file descriptor is set in process mode,
+then the file descriptor is closed before calling the before hook
+described above or before jump into the start function. 
+
+
+\subsection{Debugging Support}
