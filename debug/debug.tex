@@ -1,0 +1,82 @@
+
+\section{Debugging Support}
+
+Some environment variable settings may help debugging PiP programs.
+
+\subsection{\PIPKW{PIP_STOP_ON_START}}
+
+This environment variable is to stop (by sending {\tt SIGSTOP} to
+spawned PiP task just before calling the \pipterm{before hook} (if
+any). The value of this environment must meet the following format;
+
+\begin{lstlisting}[frame=tb]
+  PIP_STOP_START=[<commandfile>]@<PIPID>
+\end{lstlisting}
+
+The optional {\tt\option{commandfile}} is a command file or shell
+script to be executed on the suspension, and {\tt\option{N}} is the
+PIPID to be suspended. If {\tt\option{N}} is -1, then all spawned PiP
+tasks will be stopped. 
+
+\subsection{\PIPKW{PIP_GDB_SIGNALS}}
+
+This environment variable is to set the signals to trigger some
+actions by specifying the \pipterm{PIP_SHOW_MAPS} and 
+\pipterm{PIP_SHOW_PIPS}, followed by invoking PiP-gdb. The value of
+this environment is as follows;
+
+\begin{lstlisting}[frame=tb]
+  PIP_GDB_SIGNALS=[ <SIGNAME> ] { "+"|"-" <SIGNAME> }
+\end{lstlisting}
+
+The possible {\tt\option{SIGNAME}} vale are listed below;
+
+\begin{table}[ht]
+  \centering
+  \caption{Possible Signal Names for \pipterm{PIP_GDB_SIGNALS}}
+  \vspace{3mm}
+  \tt
+  \begin{tabular}{l}
+    SIGHUP \\
+    SIGINT \\
+    SIGQUIT \\
+    SIGILL \\
+    SIGABRT \\
+    SIGFPE \\
+    SIGINT \\
+    SIGSEGV \\
+    SIGPIPE \\
+    SIGUSR1 \\
+    SIGUSR2 \\
+    ALL \\
+  \end{tabular}
+\end{table}
+
+Here, {\tt ``ALL''} means all signals list in this table. Each signal
+name in this table can be concatenated by using the plus (+) and/or
+minus (-) symbols.  For example, ``{\tt ALL-SIGUSR1}'' indicates the
+all signals excluding {\tt SIGUSR1}. ``{\tt SIGUSR1+SIGUSR2+SIGINT}''
+represents {\tt SIGUSR1}, {\tt SIGUSR2} and {\tt SIGINT}. 
+
+\subsection{\PIPKW{PIP_SHOW_MAPS}}
+
+If \pipterm{PIP_SHOW_MAPS} environment is set to ``{\tt on}'' and the
+a signal specified by the \pipterm{PIP_GDB_SIGNALS} is delivered, then
+the address map (Listing~\ref{out:maps}, for example) will be shown. 
+
+\subsection{\PIPKW{PIP_SHOW_PIPS}}
+
+If \pipterm{PIP_SHOW_PIPS} environment is set to ``{\tt on}'' and the
+a signal specified by the \pipterm{PIP_GDB_SIGNALS} is delivered, then
+\pipterm{pips} command (Section~\ref{sec:pips}) is invoked to show the
+status of the other PiP tasks in the same address space.
+
+\subsection{\PIPKW{PIP_GDB_PATH} and \PIPKW{PIP_GDB_COMMAND} (\pipterm{
+process mode} only)}
+
+When \pipterm{PIP_GDB_PATH} is set to the path to \pipterm{pip-gdb}
+a signal specified by the \pipterm{PIP_GDB_SIGNALS} is delivered, then
+PiP gdb (Section~\ref{sec:pip-gdb}) will be invoked. If the value of
+the \pipterm{PIP_GDB_COMMAND} environment is set to a valid filename
+and if the filename contains some GDB commands, then PiP-gdb will be
+invoked to work with this command file. 

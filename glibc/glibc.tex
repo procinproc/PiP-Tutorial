@@ -1,5 +1,5 @@
 
-\section{Issues related to Linux Kernel and Glibc}
+\section{Issues related to Linux Kernel, Glibc and Tools}
 
 This section will explain about the issues when implementing PiP. 
 
@@ -98,7 +98,7 @@ care the race.
 
 \begin{table}[ht]
   \centering
-  \caption{Glibc functions wrapped by PiP library}
+  \caption{Glibc functions wrapped by PiP library}\label{tbl:pip-wrapper}
   \vspace{3mm}
   \tt
   \begin{tabular}{lll}
@@ -140,16 +140,6 @@ race condition. This problem can be avoided by introducing the above
 locking functions. This lock can be used recursively and users can
 avoid deadlock situation easily. 
 
-\subsubsection{\PIPKW{pip-unpie} program}
-
-The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
-to load a program by the {\tt dlmopen()} function\footnote{Refer
-\url{https://sourceware.org/bugzilla/show_bug.cgi?id=11754\#c15}}. The
-\pipterm{pip-unpie} program is to cheat this Glibc restriction. This
-program is automatically executed by the \pipterm{pipcc} or
-\pipterm{pipfc} when creating a PiP executable, and not to be invoked
-by users directly.
-
 \subsubsection{Constructors and Destructors}
 
 The constructors and destructors are used in C++
@@ -167,9 +157,39 @@ section. Constructors are called when {\tt ld-linux.so} finishes
 loading and linking objects. Destructors are called when {\tt
   dlclose()} is called.
 
-Now back to PiP. As described in 
+Now back to PiP. Again, constructors are called inside
+of the call of {\tt dlmopen()} when spawning a PiP task. The {\tt
+  dlmopen()} is called by the PiP root process. Thus, the constructors
+of a program are called by the root. Here is the example;
 
-\subsection{Linux Kernel}
+\lstinputlisting[style=program,
+  caption={Constructors and Destructors},
+  label=prg:const-dest] {glibc/examples/hello.cpp}
+
+Listing~\ref{prg:const-dest} is a C++ program having a constructor and
+destructor. When the constructor of this program is called, the PiP
+library is not yet initialized, and the \pipterm{pip_get_pipid()}
+return an error ({\tt EPERM}). So, the function {\tt pipidstr()} takes
+care of this situation. Listing~\ref{out:const-dest} shows the
+executoin example of this program. As shown, the PIDs output by the
+constructors are not the same with the ones of the PiP tasks. 
+
+\lstinputlisting[style=example, 
+  caption={Constructors and Destructors - Execution},
+  label=out:const-dest] {glibc/examples/hello.out}
+
+\subsubsection{\PIPKW{pip-unpie} program}
+
+The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
+to load a program by the {\tt dlmopen()} function\footnote{Refer
+\url{https://sourceware.org/bugzilla/show_bug.cgi?id=11754\#c15}}. The
+\pipterm{pip-unpie} program is to cheat this Glibc restriction. This
+program is automatically executed by the \pipterm{pipcc} or
+\pipterm{pipfc} when creating a PiP executable, and not to be invoked
+by users directly.
+
+
+\subsection{Linux Kernel}\label{sec:linux}
 
 %\subsubsection{Heap Segment and Address Space}
 
@@ -182,11 +202,11 @@ address space is composed.
   label=out:maps] {glibc/examples/maps.out}
 
 Listing~\ref{out:maps} shows an example of the output of doing ``{\tt
-  cat /proc/$\langle$PID$\rangle$/maps}.'' Here, ``{\tt pip-exec -n 2
+  cat /proc/\option{PID}/maps}.'' Here, ``{\tt pip-exec -n 2
   ./a.out}'' was executed, resulting one \pipterm{pip-exec} process
 and two {\tt ./a.out} tasks. The file, {\tt
-  /proc/$\langle$PID$\rangle$/maps}, lists all memory
-segments in an address space of the process {\tt $\langle$PID$\rangle$}
+  /proc/\option{PID}/maps}, lists all memory
+segments in an address space of the process {\tt \option{PID}}
 usually. A loaded shared object has consecutive three or four segments; 
 executable, gap (not accessible, if any), constants and data. 
 The rightmost column of a line indicates the {\tt
@@ -200,27 +220,51 @@ their names suggest. The segments having no filename are created by
 the {\tt mmap()} system call. 
 
 Remember, this is the address space of running one PiP root and two PiP
-tasks, resulting to have all the segments of the three tasks. Usually,
-the heap segment, mainly used for {\tt malloc()}, exists only one per
-address space. As shown in this example, there is only one heap
-segment, meaning the heap segment is shared by three tasks (one for
-root and two for PiP tasks). Note that the all three tasks have
-exactly the same {\tt /proc/$\langle$PID$\rangle$/maps} content, and
+tasks, resulting to have all the segments of the three tasks.
+Note that the all three tasks have
+exactly the same {\tt /proc/\option{PID}/maps} content, and
 there are three sets of a shared library and only one set of {\tt
   ld-linux.so} ({\tt ld-2.28.so}) can be seen in
-Listing~\ref{out:maps}.  
+Listing~\ref{out:maps}.
 
-The heap memory can be allocated or deallocated by calling the {\tt
-  brk()} system call. Usually, there are two calls of {\tt brk()} to
-allocate or deallocate heap memory, one for obtaining the current heap
-end address and another for setting the new heap end
-address. Unfortunately, this API is not thread-safe at all, and thus,
+Usually, the heap segment, mainly used by {\tt malloc()}, exists only
+one per address space. As shown in this example, there is only one heap
+segment, meaning the heap segment is shared by three tasks (one for
+root and two for PiP tasks). 
+
+The size of the heap segment can be increased or decreased by calling
+the {\tt brk()} system call. Most cases, there are two calls of {\tt
+  brk()} to allocate or deallocate heap memory, one for obtaining the
+current heap end address and another for setting the new heap end 
+address. Apparently, this API is not thread-safe at all, and thus,
 the heap memory cannot be used safely by PiP tasks.
 
 Fortunately, the malloc routines in Glibc is designed to check if
 there are two or more name spaces and if so they do not use the {\tt
   brk()} system call, use {\tt mmap()} instead. So, the Glibc malloc
-routines work with PiP without a problem. However, if some other
+routines can work with PiP without any problem. However, if some other 
 routines use the {\tt brk()} system call (or {\tt sbrk()} Glibc
-function), for example, replacing the Glibc malloc routines with
-another malloc implementation, then this may result in a problem. 
+function), for example, replacing the Glibc malloc routines with some
+other malloc implementation, then this shared heap may result in a
+problem. 
+
+\subsection{Tools}
+
+As described, PiP sets a special combination of the {\tt clone()}
+flags. As a result of this, some tools do not work. Here is the list
+of tools which are known to work or not at the time of this
+writing\footnote{{\tt ltrace} depends on version}. 
+
+\begin{table}[ht]
+  \centering
+  \caption{Compatibility of Tools}
+  \vspace{3mm}
+  \begin{tabular}{c|c}
+    \hline
+    Compatible & Incompatible \\
+    \hline
+    {\tt strace} & {\tt valgrind} \\
+    {\tt ltrace} \\
+    \hline
+  \end{tabular}
+  \end{table}

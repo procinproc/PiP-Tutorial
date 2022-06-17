@@ -60,7 +60,7 @@ separated by colon (:) (Listing~\ref{out:pip-exec}).
   caption={{\tt pip-exec} - Execution Example}, label=out:pip-exec]
                 {commands/examples/pip-exec.out}
 
-\subsection{\PIPKW{pips}}
+\subsection{\PIPKW{pips}}\label{sec:pips}
 
 \pipterm{pips} is the command to output the list of currently running
 PiP roots and PiP tasks in the similar way of what the Linux's {\tt
@@ -87,9 +87,9 @@ PID   TID   TT       TIME     PIP COMMAND
 
 As you see, this output looks very similar to the on of the {\tt ps}
 command. The unfamiliar column titled {\tt PIP} represents
-if this is a PiP root or PiP task (first charatcer. '{\tt R}' means
+if this is a PiP root or PiP task (first character. '{\tt R}' means
 root, the other numerical digit '{\tt 0-9}' means PiP task. The second
-character represents PiP execution mode, explaind in
+character represents PiP \pipterm{execution mode}, explained in
 Section~\ref{sec:exec-mode}).
 
 This \pipterm{pips} command has many options. Refer PiP man page for
@@ -112,7 +112,7 @@ example of PiP-gdb debugging session.
 
 \subsection{\PIPKW{pip-mode} and \PIPKW{printpipmode}}
 
-The \pipterm{pip-mode} command is to set PiP executoin mode (refer to
+The \pipterm{pip-mode} command is to set PiP execution mode (refer to
 Section~\ref{sec:exec-mode}). 
 
 \subsection{\PIPKW{libpip.so}}

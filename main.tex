@@ -16,6 +16,7 @@
 \def\pipterm#1{{\pipkw #1}\index{#1}}%
 \def\PIPID{\pipterm{PIPID}}%
 \def\NULL{\tt NULL}%
+\def\option#1{$\langle$#1$\rangle$}
 
 \lstloadlanguages{C,csh}
 
@@ -24,15 +25,20 @@
     pip_init, pip_fin,
     pip_spawn, pip_wait, pip_wait_any, pip_trywait, pip_trywait_any, 
     pip_task_spawn, pip_spawn_program_t,
-    pip_spawn_from_func, pip_spawn_from_main, 
+    pip_spawn_from_func, pip_spawn_from_main,
+    pip_spawn_hook, pip_spawn_hook_t,
     pip_named_export, pip_named_import, pip_exit, 
     pip_barrier_init, pip_barrier_wait, pip_barrier_fin,
-    pip_barrier_t, pip_gettime,
-    pip_gettid, {process mode}, {pthread mode},
+    pip_barrier_t, pip_gettime, pip_gettid,
+    {execution mode}, {process mode}, {pthread mode},
+    {before hook}, {after hook},
     pip_glibc_lock, pip_glibc_unlock,
     PIP_PIPID_ROOT, PIP_PIPID_ANY, PIP_PIPID_MYSELF, 
     PIP_CPUCORE_ASIS, PIP_CPU_CORE_ABS,
     PIP_MODE_PTHREAD, PIP_MODE_PROCESS,
+    PIP_PRELOAD,
+    PIP_STOP_ON_START, PIP_GDB_SIGNALS, PIP_SHOW_MAPS,
+    PIP_SHOW_PIPS, PIP_GDB_PATH, PIP_GDB_COMMAND,
     pip-exec, pipcc, pipfc, pip-mode, printpipmode, pip-gdb}, 
   emphstyle={\pipkw}, texcl=true, escapeinside={<(}{)>}}
 
@@ -80,6 +86,8 @@
 \input{glibc/glibc}
 \input{exec-mode/exec-mode}
 \input{spawn-adv/spawn-adv}
+\input{context/context}
+\input{debug/debug}
 \input{malloc/malloc}
 
 \chapter{PiP Internals}

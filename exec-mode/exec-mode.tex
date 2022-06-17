@@ -64,15 +64,15 @@ care of the mode differences.
     \pipterm{pip_signal_wait()} & sigwait() & sigwait() & wait signal
     \\
     \pipterm{pip_yield()} & {\tt sched_yield()} & {\tt
-      pthread_yield()} & yeild \\
-    \pipterm{pip_abort()} & {\tt abort()} & {\tt abort()} & kill all
-    tasks \\
+      pthread_yield()} & yield \\
+%%    \pipterm{pip_abort()} & {\tt abort()} & {\tt abort()} & kill all
+%%    tasks \\
     \hline
   \end{tabular}
 \end{table}
 
 There are also predicate functions for users to know the current
-mode listed below;
+mode listed below; 
 
 \begin{table}[ht]
   \centering
@@ -88,7 +88,12 @@ mode listed below;
   \end{tabular}
 \end{table}
 
-\subsection{Specifying Execution Mode}
+The meaning of \pipterm{pip_is_threaded()} and
+\pipterm{pip_is_shared_fd()} are the same in the current
+implementation. The reason to have those functions is that there might
+be the case where those two may have different meanings.
+
+\subsection{How to Specify Execution Mode}
 
 The execution mode can be specified when to call \pipterm{pip_init()}
 and/or setting the \pipterm{PIP_MODE} environment variable at
@@ -104,12 +109,14 @@ int pip_init( int *pipidp,	[IN/OUT]
 \end{lstlisting}
 
 The possible values of the last {\tt opts} argument are one of 
-\pipterm{PIP_MODE_PROCESS} and \pipterm{PIP_MODE_PTHREAD}, or ORing
-the both. The value of zero is equal to {\tt
+\pipterm{PIP_MODE_PROCESS} and \pipterm{PIP_MODE_PTHREAD}, {\tt or}ing
+the both, or zero. The value of zero is equal to {\tt
   PIP_MODE_PROCESS|PIP_MODE_PTHREAD}. As for the \pipterm{PIP_MODE}
 environment, it can be a string of ``\pipterm{PIP_MODE_PROCESS}'' or
 ``\pipterm{PIP_MODE_PTHREAD}.''
-When the {\tt opts} value is zero or {\tt OR}ing the both, then the
-\pipterm{PIP_MODE} envbironment value is checked. If the environment
-is not set, then the PiP library chooses the possible one.
+When the {\tt opts} value is zero or the value of {\tt or}ing the
+both, then the value of \pipterm{PIP_MODE} environment variable is
+checked. If the environment is not set, then the PiP library chooses
+an appropriate one. The {\tt opts} value and the environment value
+cannot not contradict.
 

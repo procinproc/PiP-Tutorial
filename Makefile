@@ -2,7 +2,7 @@
 include ./rules.mk
 
 TARGET = main
-LATEX  = pdflatex
+LATEX  = pdflatex < /dev/null
 
 PDF    = $(TARGET).pdf
 
@@ -25,7 +25,7 @@ examples: pipkw.sh
 .PHONY: examples
 
 $(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
-	pdflatex $(TARGET)
+	$(LATEX) $(TARGET)
 	rerun_count=5; \
 	while egrep -s 'Rerun (LaTeX|to get cross-references right)' $(TARGET).log; \
 	    do \
@@ -34,7 +34,7 @@ $(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
 	      fi; \
 	      echo "Rerunning latex .... ($${rerun_count})" ;\
 	      rm -f $(TARGET).log; \
-	      pdflatex $(TARGET); \
+	      $(LATEX) $(TARGET); \
 	      makeindex -l $(TARGET).idx; \
 	      rerun_count=`expr $${rerun_count} - 1` ;\
 	    done 
