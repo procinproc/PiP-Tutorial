@@ -1,0 +1,19 @@
+$ cat prog.c
+#include <pip/pip.h>
+int main( int argc, char **argv ) {
+  int pipid;
+  pip_get_pipid( &pipid );
+  printf( "This is %s [%d]\n", argv[0], pipid );
+  return 0;
+}
+$ pipcc --silent prog.c -o a.out
+$ cp a.out b.out
+$ cp a.out c.out
+$ pip-exec -n 2 ./a.out : -n 3 ./b.out : -n 1 ./c.out
+This is ./a.out [0]
+This is ./a.out [1]
+This is ./b.out [2]
+This is ./b.out [3]
+This is ./b.out [4]
+This is ./c.out [5]
+$

@@ -1,0 +1,6 @@
+$ pipcc --silent hello.c
+$ ./a.out
+Hello World
+$ <(\pipkw pip-exec)> ./a.out
+Hello World
+$

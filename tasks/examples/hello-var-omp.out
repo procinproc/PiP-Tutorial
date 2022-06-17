@@ -1,0 +1,16 @@
+$ pipcc --silent -fopenmp hello-var-omp.c
+$ export OMP_NUM_THREADS=2
+$ ./a.out
+Hello World (&x:0x557b2da01038)
+Hello World (&x:0x557b2da01038)
+$ <(\pipkw pip-exec)> -n 2 ./a.out
+Hello World (&x:0x7f75cfc77038)
+Hello World (&x:0x7f75cfc77038)
+Hello World (&x:0x7f75cdb40038)
+Hello World (&x:0x7f75cdb40038)
+$ mpiexec -n 2 ./a.out
+Hello World (&x:0x5635bb201038)
+Hello World (&x:0x5635bb201038)
+Hello World (&x:0x563cd9c01038)
+Hello World (&x:0x563cd9c01038)
+$

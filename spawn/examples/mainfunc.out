@@ -1,0 +1,6 @@
+$ ./mainfunc 4 "Calling main"
+MAIN: "Calling main" from PIPID:0/4
+MAIN: "Calling main" from PIPID:1/4
+MAIN: "Calling main" from PIPID:2/4
+MAIN: "Calling main" from PIPID:3/4
+$

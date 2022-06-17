@@ -1,0 +1,12 @@
+$ pipcc --silent hello-var-omp.c
+$ ./a.out
+Hello World (&x:0x557439001030)
+$ <(\pipkw pip-exec)> -n 3 ./a.out
+Hello World (&x:0x7fbc7058f030)
+Hello World (&x:0x7fbc6ee91030)
+Hello World (&x:0x7fbc6d793030)
+$ mpiexec -n 3 ./a.out
+Hello World (&x:0x55a24ca01030)
+Hello World (&x:0x5630d6e01030)
+Hello World (&x:0x555650e01030)
+$
