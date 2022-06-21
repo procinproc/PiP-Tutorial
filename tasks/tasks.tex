@@ -1,15 +1,15 @@
 
 \section{PiP Tasks}
 
-In this chapter, how PiP tasks are created in a simple way and how PiP
-tasks works in the different way from the process (using MPI) and
-thread (using OpenMP) creations.
+This section will describe how PiP tasks are created in a simple way
+and how PiP tasks works in the different way from the process (using
+MPI) and thread (using OpenMP) creations.
 
 \subsection{\PIPKW{pipcc} and \PIPKW{pip-exec} Commands}
 \label{sec:pipcc-exec}
 
-Let me start with the well-known C program ``hello world'' which code
-is listed below;
+The first example is  the well-known C program ``hello world'' listed
+below; 
 
 \lstinputlisting[style=program, caption={Hello World},label=prg:hello]
                 {tasks/examples/hello.c}
@@ -41,7 +41,7 @@ To explain the difference between process and PiP task, we slightly
 modify the ``hello world'' program as below;
 
 \lstinputlisting[style=program,
-  caption={Hello World with a static variable},
+  caption={Hello World having a static variable},
   label=prg:hello-var] {tasks/examples/hello-var.c}
 
 Now the ``Hello World'' program has a static variable
@@ -67,7 +67,7 @@ variable {\tt x} executed as PiP tasks are all different.
 This is because PiP tasks share the same address space but MPI does
 not. Readers may notice that threads also share the same address
 space and wonder the difference between PiP and OpenMP. The example
-below is the OpenMP version of the ``Hello Worls'' with a static
+below is the OpenMP version of the ``Hello World'' with a static
 variable. 
 
 \lstinputlisting[style=program,
@@ -108,7 +108,7 @@ is guaranteed to have its own static variable set, decoupling from the
 address space while maintaining the address space sharing. This is
 called {\bf variable privatization}. 
 
-The nature of PiP, privatized variables and sharing an address space,
+This nature of PiP, privatized variables and sharing an address space,
 makes it easy to exchange information among PiP tasks while
 maintaining the independence of each PiP task execution. 
 So far, it is shown that the ``Hello World'' program can run as PiP

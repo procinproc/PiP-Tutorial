@@ -8,10 +8,14 @@ hello.out: hello.c hello.sh ../../example.sh
 	../../pipkw.sh < hello.exout > hello.out
 
 hello-var.out: hello-var.c hello-var.sh ../../example.sh
+	if [ `cat /proc/sys/kernel/randomize_va_space` != 0 ]; then \
+		echo "ERROR: ASLR if on"; exit 1; fi
 	../../example.sh < hello-var.sh > hello-var.exout
 	../../pipkw.sh < hello-var.exout > hello-var.out
 
 hello-var-omp.out: hello-var-omp.c hello-var-omp.sh ../../example.sh
+	if [ `cat /proc/sys/kernel/randomize_va_space` != 0 ]; then \
+		echo "ERROR: ASLR if on"; exit 1; fi
 	OMP_NUM_THREADS=2 \
 	../../example.sh < hello-var-omp.sh > hello-var-omp.exout
 	../../pipkw.sh < hello-var-omp.exout > hello-var-omp.out

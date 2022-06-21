@@ -6,12 +6,12 @@ LATEX  = pdflatex < /dev/null
 
 PDF    = $(TARGET).pdf
 
-SRCS = $(shell find . -name '*.tex' -print)
-FIGS = $(shell find */Figs/ -name '*.pdf' -print)
-OUTS = $(shell find . -name '*.out' -print)
+SRCS = $(shell find . -name '*.tex' -type f -print)
+FIGS = $(shell find */Figs/ -name '*.pdf' -type f -print)
+OUTS = $(shell find */examples/ -name '*.out' -type f -print)
 BIBS = pip.bib
 
-all : examples $(PDF) Makefile
+all : clean examples $(PDF) Makefile
 
 pipkw.sh: pip-keywords.sh
 	./pip-keywords.sh
@@ -25,6 +25,7 @@ examples: pipkw.sh
 .PHONY: examples
 
 $(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
+	$(RM) $(TARGET).idx
 	$(LATEX) $(TARGET)
 	rerun_count=5; \
 	while egrep -s 'Rerun (LaTeX|to get cross-references right)' $(TARGET).log; \

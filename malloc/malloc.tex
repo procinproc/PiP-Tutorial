@@ -14,10 +14,10 @@ the consumer. As described so far, each PiP task has its own {\tt
   malloc()} and {\tt free()} routines associated with static variables
 holding and maintaining a memory pool. The consumer receives the data
 allocated from the memory pool of the producer and tries to {\tt
-  free()} it when it becomes unnecessary. However, the {\tt free()} on
-the consumer has no knowledge about the producer-allocated memory
-region and fails (Figure~\ref{fig:cross-malloc-free-issue}). I named
-this situation {\it cross-malloc-free}. 
+  free()} it when it becomes unnecessary. However, the {\tt free()}
+routine on the consumer has no knowledge about the producer-allocated
+memory region and fails (Figure~\ref{fig:cross-malloc-free-issue}). I
+named this situation {\it cross-malloc-free}. 
 
 \begin{figure}[ht]
 \centering
@@ -42,7 +42,7 @@ To deal with this, PiP library wraps {\tt malloc} routines as shown in
 Table~\ref{tbl:pip-wrapper}. When an memory region is allocated, the
 {\tt malloc} wrapper function embeds information who allocate the
 region. When this region is to be {\tt free()}ed, the {\tt free()}
-wrapper function connects the region to the freeing list of task
+wrapper function connects the region to the freeing list of the task
 allocating the region. The regions in the freeing list are eventually
 {\tt free()}ed when one of the {\tt malloc} functions is called by the
-producer. (Figure~\ref{fig:cross-malloc-free}). 
+producer (Figure~\ref{fig:cross-malloc-free}). 

@@ -1,0 +1,56 @@
+
+\section{Some Myths on PiP}
+
+\subsubsection*{Sharing an address with multiple programs can be a
+  severe security issue}\label{sec:security-issue}
+
+PiP allows to run programs sharing the same address space. The
+most important point here is to make information exchange among
+programs easy and efficient. If there is no information exchange among
+them, there is no reason to run them with the PiP environment.
+
+Basically, communicating programs share the same fate. Even a most
+simple case where two programs are connected by using the Linux/Unix
+pipe, one of the programs dies, the other programs also dies by
+receiving the {\tt SIGPIPE} signal. Communicating programs agree with
+others when to communicate and how to communicate. The PiP case is no
+exception.
+
+\subsubsection*{Sharing address space makes debugging difficult}
+
+It is true if one of the processes in a PiP environment destroy the
+data owned by the other(s) may lead to a catastrophic result. If this
+is done maliciously, then this cannot be avoided (see also
+above). If the destruction is triggered by a
+software bug, then this might be harder-to-debug than that of
+multi-process model.  There are two points here; 1) the higher 
+possibility of destructing of actual data, not accessing invalid memory
+region ({\tt SIGSEGV}), and 2) there are multiple execution entities.
+
+The ASLR can be some help for the former point. If ASLR is enabled,
+then the phenomenons of the bug can vary time to time. The situation
+of the latter point is almost the same with the multi-thread case.
+
+Anyway, I have no experiences for having bugs based on this situation
+up until now. 
+
+\subsubsection*{My program does not have any static variables and I do
+  not need PiP.}
+
+You may write programs without having any static variables. However,
+the functions implemented in Glibc have many static variables. Your
+runtime system may use some of the Glibc functions. So, in general, it
+is very hard to write programs not having any static variables.
+
+\subsubsection*{There must be some hidden overhead for running PiP
+  programs}
+
+So far, it is know that there is one overhead which is larger than
+the multi-process model. It is address space modification system
+calls, such as {\tt mmap()} and {\tt brk()}. This is because any
+modification of an address space must be locked inside of the OS
+kernel and this lock contention results in larger overhead. This
+situation is the same with the multi-thread model and the overhead of
+{\tt mmap()} is larger than the multi-process model but almost the
+same with the multi-thread model. There is no other known additional
+overhead in PiP so far. 

@@ -5,7 +5,7 @@
 
 \begin{itemize}
 \item PiP programs must be compiled with the \pipterm{pipcc} 
-  (for C and C++) or \pipterm{pipfc} (for  FOrtran) command.
+  (for C and C++) or \pipterm{pipfc} (for Fortran) command.
 \item PiP programs can run as PiP tasks by using the
   \pipterm{pip-exec} command. 
 \item PiP programs can run as non-PiP tasks by invoking them as normal
@@ -32,13 +32,11 @@
   use the \pipterm{pip_named_export()} and
   \pipterm{pip_named_import()} functions.  
 \item The \pipterm{pip_named_export()} and \pipterm{pip_named_import()}
-  can be used to synchronize tasks. \pipterm{pip_barrier_wait} can
+  can be used to synchronize tasks. \pipterm{pip_barrier_wait()} can
   also be used for tasks to synchronize.
 \item The \pipterm{pip_exit()} function terminates the calling PiP
   task and PiP root.
 \item PiP root can wait for the termination of a spawned PiP task, by
   calling one of the \pipterm{pip_wait()} function family.
 \end{itemize}
-
-\subsection*{Commands}
-
+ 

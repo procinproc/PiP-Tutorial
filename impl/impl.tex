@@ -1,0 +1,73 @@
+
+\section{PiP Implementation}
+
+\subsection{Spawning Tasks}
+
+Before PiP version 2.4, PiP tasks were created with the procedure as
+follows;
+
+\begin{enumerate}
+\item The spawned program is loaded by calling {\tt dlmopen()}.
+\item Glibc is initialized in the execution context of the loaded
+  program.
+\item Call {\tt clone()} or {\tt pthread_create()} to spawn the PiP task.
+\item The before hook is called.
+\item Jump into the starting function.
+\end{enumerate}
+
+From PiP version 2.4, the wrapper functions listed in
+Table~\ref{tbl:pip-wrapper} were introduced. When implementing the
+wrapper functions, I noticed that wrapping the {\tt dlsym()} is
+almost impossible.
+
+A function wrapper is usually implemented as; 1) obtain the wrapping
+function address by calling the {\tt dlsym()} with the {\tt RTLD_NEXT}
+argument, 2) do the wrapping job before and/or after calling the
+original function. The most of the Glibc {\tt malloc} routines has
+the other weak symbols ({\tt malloc()} and {\tt __libc_malloc()}, for
+example) and users can call the Glibc {\tt malloc} routines without
+calling {\tt dlsym()}. If there is no such weak symbol, we cannot
+create a wrapper function for {\tt dlsym()}. How can I
+wrap a Glibc function without calling {\tt dlsym()}?
+
+To solve this issue, I implemented another program, so called
+\pipterm{ldpip.so} to load the PiP library and user program. here is
+the details of new spawning process;
+
+\begin{enumerate}
+\item Load \pipterm{ldpip.so} in the PiP library package by calling
+  {\tt dlmopen()} and jump into a function defined inside of it.
+\item The starting function of \pipterm{ldpip.so} initializes Glibc.
+\item Obtain Glibc function addresses to wrap them later inside of
+  \pipterm{libpip.so}.
+\item Load shared objects specified by the \pipterm{PIP_PRELOAD}
+  environment variable.
+\item Load \pipterm{libpip.so}. 
+\item Load a user program.
+\item Call {\tt clone()} or {\tt pthread_create()} to spawn the PiP
+  task.
+\item Jump into a function inside of PiP library and initialize the
+  PiP library. 
+\item Jump into the start function.
+\end{enumerate}
+
+At the time of loading \pipterm{ldpip.so}, no wrapper functions are
+defined in this program and obtaining the Glibc function addresses is
+easy, just referencing them. After loading the \pipterm{libpip.so} and
+jumping into a function defined in \pipterm{libpip.so} where the
+wrapping functions are defined, the Glibc functions to be wrapped are
+now wrapped by using the function table created by
+\pipterm{ldpip.so}. 
+
+The Glibc initialization \footnote{Calling {\tt __ctype_init()}} must
+be done with the execution context of the spawned PiP task. In the
+older version of PiP library, this was done by; 1) calling {\tt
+  dlsym()} to the loaded handle, returned by {\tt dl(m)open()},
+to obtain the initialization function
+and then 2) jump into the function. In the new implementation, the
+initialization was done by simply calling the initialization function
+from the \pipterm{ldpip.so} where the execution context is the same
+with that of PiP task. 
+
+Thus, by introducing PiP loader program (\pipterm{ldpip.so}), things
+can go in a simpler way. 

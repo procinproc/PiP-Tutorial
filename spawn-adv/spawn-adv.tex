@@ -126,6 +126,6 @@ exactly the same one with  {\tt LD_PRELOAD}.
 By setting \pipterm{PIP_PRELOAD} in the same way of {\tt
   LD_PRELOAD} (colon (:) separated list of shared objects), those
 specified object files are loaded before loading user program. At the
-time of loading objects in the \pipterm{PIP_PRELOAD}, the Glibc and
-PiP library are already loaded, and users cannot override the
-functions provided by Glibc and PiP.  
+time of loading objects in the \pipterm{PIP_PRELOAD}, the Glibc is
+already loaded, and users cannot override the 
+functions provided by Glibc.

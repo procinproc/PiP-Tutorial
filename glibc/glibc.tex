@@ -182,7 +182,8 @@ constructors are not the same with the ones of the PiP tasks.
 
 The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
 to load a program by the {\tt dlmopen()} function\footnote{Refer
-\url{https://sourceware.org/bugzilla/show_bug.cgi?id=11754\#c15}}. The
+\url{https://sourceware.org/bugzilla/show_bug.cgi?id=11754\#c15}. I
+tested this situation but I cannot find this problem with PiP.}. The
 \pipterm{pip-unpie} program is to cheat this Glibc restriction. This
 program is automatically executed by the \pipterm{pipcc} or
 \pipterm{pipfc} when creating a PiP executable, and not to be invoked

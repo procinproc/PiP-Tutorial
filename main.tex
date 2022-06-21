@@ -17,6 +17,8 @@
 \def\PIPID{\pipterm{PIPID}}%
 \def\NULL{\tt NULL}%
 \def\option#1{$\langle$#1$\rangle$}
+\def\PIE{PIE\index{PIE}}
+\def\PIC{PIC\index{PIC}}
 
 \lstloadlanguages{C,csh}
 
@@ -47,7 +49,7 @@
 \lstdefinestyle{example}{numbers=none, numberstyle=\tiny, numbersep=5pt, language=, frame=tRBl}
 \lstdefinestyle{define}{frame=single, language=csh}
 
-\title{Great Experiences with PiP} % Book title
+\title{Great Experiences with PiP (Proecss-in-Process)} % Book title
 \author{Atsushi Hori} % Author
 
 %--------------------------------------------------------------------------------
@@ -62,14 +64,19 @@
 %	TABLE OF CONTENTS
 %----------------------------------------------------------------------------------------
 
+\chapter*{Preface}
+\input{preface}
+
+\chapter*{Acknowledgment}
+\input{ack}
+
 \tableofcontents % Prints the table of contents
 \lstlistoflistings
 \listoffigures
 \listoftables
 
 \chapter*{Introduction}
-
-\input{intro/intro}
+\input{intro}
 
 \chapter{PiP Basics}\label{chap:basics}
 \input{basics}
@@ -78,7 +85,7 @@
 \input{sync/sync}
 \input{commands/commands}
 \input{summary/summary}
-%\input{faq/faq}
+\input{myths/myths}
 
 \chapter{PiP Advanced}\label{chap:advanced}
 \input{advanced}
@@ -91,14 +98,12 @@
 \input{malloc/malloc}
 
 \chapter{PiP Internals}
-\comment{
-  \input{internals/internals}
+  \input{impl/impl}
   \input{issues/issues}
-}
 
 \appendix
-\chapter{PiP Installation}
 \comment{
+  \chapter{PiP Installation}
   \input{install/install}
   \chapter{Research Papers}
   \input{papers/papers}

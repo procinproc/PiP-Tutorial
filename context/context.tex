@@ -28,15 +28,15 @@ the format.
   caption={Function Call of Another - Execution}, label=out:context]
                 {context/examples/context.out}
 
-Thus, the execution context in PiP environment is different from the
-one in common sense and some times can become very subtle. In the PiP
-library, this happens quite often and makes debugging difficult.
+Thus, the execution context in PiP environment might be different from
+the one in common sense and some times its behavior becomes very
+subtle. In the PiP library, this happens quite often and makes
+debugging difficult. 
 
-Further, the situation described above, i.e., the association of
-static variables and function address, deeply depends on the CPU
-architecture and tool chain. The above description is true on  {\tt
-  X86_64} and {\tt AArch64}, however, not true on {\tt X86_32}. Thus,
-it is not recommended do this.
+Further, the association of static variables and function addresses
+heavily depends on the CPU architecture and tool chain. The above
+description is true on {\tt X86_64} and {\tt AArch64}, however, not
+true on {\tt X86_32}. Thus, it is not recommended do this.
 
 \subsubsection*{Rationale}
 
@@ -69,15 +69,16 @@ located on the last (readable and writable) segment of each set. A
 static variable is accessed by an instruction using the offset from
 the instruction (program counter relative addressing mode). Thus, the
 gap size between the code segment (top of the set) and variable segment
-(last of the set) is important to make all offsets constant and all gap
-sizes must be the same. In this way, variables and execution code are
-associated in PIE\footnote{This is not the case if not compiled as PIE.}.
+(bottom of the set) is important to make all offsets constant and thus
+all gap sizes must be the same. In this way, variables and execution
+code are associated in \PIE\footnote{This is not the case if not
+compiled as \PIE.} and \PIE programs and shared objects compiled with
+the \PIE or \PIC option can be loaded at any locations.
 
 Unfortunately, this addressing mode is not supported by all CPU
 architectures\footnote{Listing~\ref{out:context} is obtained by
 running the program on an {\tt X86_64} CPU}. For example, {\tt X86_32} 
-does not. On this 
-architecture, one general purpose register is sacrificed to point the
-variable segment, resulting performance degradation by loosing one
-general purpose register. And the program shown in
-Listing~\ref{prg:context} exhibits differently. 
+does not. On this architecture, one general purpose
+register is sacrificed to point the variable segment, resulting
+performance degradation by loosing one general purpose register. And
+the program shown in Listing~\ref{prg:context} exhibits differently. 

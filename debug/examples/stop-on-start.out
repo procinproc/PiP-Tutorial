@@ -1,0 +1,14 @@
+$ pipcc --silent hello.c -o hello
+$ echo $PIP_STOP_ON_START
+onstart.cmd@2
+$ pip-exec -n 4 ./hello
+Hello World
+Hello World
+PiP-INFO[3692(R):R] PiP task[2] (PID=3695) is SIGSTOPed and executing 'onstart.cmd' script
+### onstart.cmd ### hello 3695 2
+Hello World
+PID  TID  TT       STAT TIME     PIP COMMAND  
+3692 3692 pts/0    S+   00:00:00 RL  pip-exec 
+3695 3695 pts/0    T+   00:00:00 2L  hello    
+Hello World
+$
