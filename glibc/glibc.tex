@@ -29,11 +29,12 @@ Glibc and finally user-defined {\tt main()} function is called.
 
 The program loader, often simply called {\tt ld-linux.so}, is loaded
 once per address space and kept in memory until the end of the
-process. This is responsible for any loading process by resolving the
+process (see also Listing~\ref{out:maps}). This is responsible for any
+loading process by resolving the 
 external symbol references. The Glibc functions defined in the {\tt
-  libdl.so} ({\tt -ldl}), such as {\tt   dlopen()}, {\tt
+  libdl.so} ({\tt -ldl}), such as {\tt dlopen()}, {\tt
   dlmopen()}, {\tt dlsym()} and so on, are just API 
-and their functional bodies exist in the program loader.
+and their functional bodies exist in this program loader.
 
 \subsection{PiP-glibc}
 
@@ -53,8 +54,9 @@ hard-coded as 16. Considering PiP tasks run in parallel and the number
 of CPU cores nowadays, this number of 16 is apparently too small. The
 PiP package provides PiP-glibc where the number of name spaces is
 increased, up to 300 PiP tasks\footnote{Once I asked Glibc
-development members to increae the size, but they did not accept. Refer
-\url{https://sourceware.org/bugzilla/show_bug.cgi?id=23978}}. 
+development members to increae the size, but they did not accept my
+opinion. Refer
+\url{https://sourceware.org/bugzilla/show_bug.cgi?id=23978}}.  
 
 The name space table resides in the {\tt ld-linux.so} and this means
 that the {\tt .interp} ELF section of PiP programs must be changed so
@@ -128,11 +130,11 @@ care the race.
   \end{tabular}
 \end{table}
 
-The functions {\tt pthread\_exit()} and below of this have another
-reason to have function wrapper. The wrapping reason of {\tt
+The functions {\tt pthread\_exit()} and below in this table have
+another reason to have function wrappers. The wrapping reason of {\tt
   pthread\_exit()} will be explained in the
-Section~\ref{sec:exec-mode} and the reason of wrapping malloc routines
-will be explained in Section~\ref{sec:malloc}. 
+Section~\ref{sec:exec-mode} and the reason of wrapping {\tt malloc}
+routines will be explained in Section~\ref{sec:malloc}. 
 
 These listed functions may not be complete. There can
 be a case where some other Glibc functions may suffer from the
@@ -178,6 +180,12 @@ constructors are not the same with the ones of the PiP tasks.
   caption={Constructors and Destructors - Execution},
   label=out:const-dest] {glibc/examples/hello.out}
 
+\subsubsection{{\tt LD_PRELOAD}}
+
+{\tt LD_PRELOAD} only works with PiP root, not PiP tasks. This is
+because {\tt dlmopen()} simply ignores the {\tt LD_PRELOAD}
+environment setting. 
+
 \subsubsection{\PIPKW{pip-unpie} program}
 
 The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
@@ -190,7 +198,7 @@ program is automatically executed by the \pipterm{pipcc} or
 by users directly.
 
 
-\subsection{Linux Kernel}\label{sec:linux}
+\subsection{Heap Segment}\label{sec:heap}
 
 %\subsubsection{Heap Segment and Address Space}
 
@@ -237,17 +245,43 @@ The size of the heap segment can be increased or decreased by calling
 the {\tt brk()} system call. Most cases, there are two calls of {\tt
   brk()} to allocate or deallocate heap memory, one for obtaining the
 current heap end address and another for setting the new heap end 
-address. Apparently, this API is not thread-safe at all, and thus,
-the heap memory cannot be used safely by PiP tasks.
+address. This is exactly what the Glibc's {\tt sbrk()}
+does. Apparently, this API is not thread-safe at all, and thus, 
+the shared heap memory cannot be used safely by PiP tasks.
 
-Fortunately, the malloc routines in Glibc is designed to check if
+Fortunately, the {\tt malloc} routines in Glibc is designed to check if
 there are two or more name spaces and if so they do not use the {\tt
-  brk()} system call, use {\tt mmap()} instead. So, the Glibc malloc
+  brk()} system call, use {\tt mmap()} instead. So, the Glibc {\tt malloc}
 routines can work with PiP without any problem. However, if some other 
 routines use the {\tt brk()} system call (or {\tt sbrk()} Glibc
-function), for example, replacing the Glibc malloc routines with some
-other malloc implementation, then this shared heap may result in a
-problem. 
+function), for example, replacing the Glibc {\tt malloc} routines with
+some other malloc implementation, then this shared heap may result in a
+problem.
+
+\subsection{Core File}
+
+Suppose that we have a catastrophic situation and all PiP tasks and
+their root process dump core files of their own. On the current Linux,
+a core file is associated with a process (including threads inside of
+it). Thus, each PiP task and the root may produce core, resulting to
+have many core files. Here, the address space of them are shared and
+the created core files and all of them are almost the same excepting
+the CPU state. 
+
+Let me explain this with an example. Suppose that we have PiP task $A$
+and $B$ running on the same address space of the root $P$, and an
+error happens resulting all $P$, $A$, and $B$ produce core
+files. There can be a small time difference when to produce each core
+file. When the first core file, of $A$ for instance, is being created,
+the other $P$ and $B$ are still running and the memory of the shared 
+address space can be changed by those running tasks.
+{\tt gdb}, however, assumes that a core file is a consistent snapshot
+of memory and CPU state. The above PiP situation breaks this
+assumption. If $B$ produces another core file, may or may not be
+caused by the error on $A$, the same situation can happen.
+Thus, the \pipterm{pip-gdb} command (Section~ref{sec:pip-gdb}) does
+not support for debugging from a core file. To solve this issue,
+PiP-aware OS kernel is needed. 
 
 \subsection{Tools}
 

@@ -10,15 +10,15 @@
 
 \hypersetup{colorlinks=true}
 %%% AH Macros
-\long\def\comment#1{}
+\long\def\comment#1{}%
 \def\pipkw{\tt\bf\color{blue}}%
 \def\PIPKW#1{{\tt #1}}%
 \def\pipterm#1{{\pipkw #1}\index{#1}}%
 \def\PIPID{\pipterm{PIPID}}%
 \def\NULL{\tt NULL}%
-\def\option#1{$\langle$#1$\rangle$}
-\def\PIE{PIE\index{PIE}}
-\def\PIC{PIC\index{PIC}}
+\def\option#1{$\langle$#1$\rangle$}%
+\def\PIE{PIE\index{PIE}}%
+\def\PIC{PIC\index{PIC}}%
 
 \lstloadlanguages{C,csh}
 
@@ -71,9 +71,9 @@
 \input{ack}
 
 \tableofcontents % Prints the table of contents
-\lstlistoflistings
 \listoffigures
 \listoftables
+\lstlistoflistings
 
 \chapter*{Introduction}
 \input{intro}

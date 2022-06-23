@@ -1,3 +1,3 @@
-pipcc --silent hello.c
-./a.out
-pip-exec ./a.out
+pipcc --silent hello.c -o hello
+./hello
+pip-exec ./hello

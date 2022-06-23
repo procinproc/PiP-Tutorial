@@ -6,19 +6,22 @@ Some environment variable settings may help debugging PiP programs.
 \subsection{\PIPKW{PIP_STOP_ON_START}}
 
 This environment variable is to stop (by sending {\tt SIGSTOP} to
-spawned PiP task just before calling the \pipterm{before hook} (if
-any). The value of this environment must meet the following format;
+spawned PiP task just before calling the \pipterm{before hook}
+(Section~\ref{sec:hooks}), or jumping to the starting function if
+before hook is not given. The value of this environment must meet the
+following format;  
 
 \begin{lstlisting}[frame=tb]
-  PIP_STOP_START=[<commandfile>]@<PIPID>
+  PIP_STOP_START=[<script-file>]@<PIPID>
 \end{lstlisting}
 
-The optional {\tt\option{commandfile}} is a command file or shell
-script to be executed on the suspension, and {\tt\option{N}} is the
-PIPID to be suspended. If {\tt\option{N}} is -1, then all spawned PiP
-tasks will be stopped. The {\tt\option{commandfile}} is invoked with
-parameters; PID and PIPID of the PiP task, and a path to the program
-of the task.
+The optional {\tt\option{script}} is a shell
+script to be executed on the suspension, and {\tt\option{PIPID}} is the
+\PIPID\ to be suspended. If {\tt\option{PIPID}} is -1, then all spawned PiP
+tasks will be stopped. The {\tt\option{script}} is invoked with
+three parameters; PID and \PIPID\ of the stopped PiP task, followed by a
+path to the program of the task. Do not forget to set the {\it
+  executable} bit on this {\tt\option{script-file}} file.
 
 \lstinputlisting[style=program,
   caption={Stop-on-start Script Example},
@@ -31,7 +34,7 @@ on a Docker environment but {\tt ptrace} (and other commands using
 {\tt ptrace}) was unable to run in this example even withthe {\tt
   --cap-add=SYS_PTRACE} Docker option (I confirmed {\tt gdb} worked). So 
 \pipterm{pips} was used instead in this example.}. Note that 
-the target task is already stopped by the {\tt SIGSTOP}
+the target task is already stopped by delivering the {\tt SIGSTOP}
 signal. Somehow you have to explicitly deliver the {\tt SIGCONT}
 signal to the task if you want to resume the
 task. Listing~\ref{out:stop-on-start} shows the result of 

@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <pip/pip.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -39,10 +40,10 @@ int main( int argc, char **argv ) {
       pip_wait( pipid_task, NULL );
     }
   } else {
-    char msg[64];
-    sprintf( msg, "Hello from PIPID:%d\n", pipid );
-    int len = strlen( msg );
-    write( FD_TASK, msg, len );
+    char *msg;
+    asprintf( &msg, "Hello from PIPID:%d\n", pipid );
+    write( FD_TASK, msg, strlen( msg ) );
+    free( msg );
   }
   pip_fin();
   return 0;

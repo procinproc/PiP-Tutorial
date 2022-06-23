@@ -27,7 +27,7 @@ The first argument of \pipterm{pip_task_spawn()} function is already
 described in Section~\ref{sec:spawn-func}. This is structure is to
 pack the first three arguments of \pipterm{pip_spawn()}. 
 
-\subsubsection{Start Function}
+\subsection{Start Function}
 
 As already shown in Listing~\ref{sec:spawn-func}, these PiP spawn
 functions eventually jumps into the start function ({\tt main()} or
@@ -49,18 +49,36 @@ starting function by using the ELF information. Unfortunately, the
 local symbol information is lost if stripped, and PiP fails to find
 the starting function.
 
+\subsection{Stack Size}
+
+The stack size of spawned PiP tasks can be set by the
+\pipterm{PIP_STACKSIZE} environment variable. Like the {\tt
+  OMP_STACKSIZE} environment defined by OpenMP, its value may
+be suffixed by ``{\tt T},'' ``{\tt G},'' ``{\tt M},'' ``{\tt K},'' or
+``{\tt B}'' representing the {\it TiB}, {\it GiB}, {\it MiB}, {\it
+  KiB}, or{\it Byte} unit, respectively. If no suffix is present,
+{\it KiB} is assumed. Unless \pipterm{PIP_STACKSIZE} is
+specified, the environment variable {\tt KMP_STACKSIZE}, {\tt
+  GOMP_STACKSIZE}, or {\tt OMP_STACKSIZE} is also effective with the
+priority in this order.  The {\tt KMP_STACKSIZE}, {\tt
+  GOMP_STACKSIZE}, and {\tt OMP_STACKSIZE} also affects the size of
+OpenMP threads, however, \pipterm{PIP_STACKSIZE} only affects the stack
+size of PiP tasks. 
+
 \subsection{CPU Core Binding}
 
 The {\tt coreno} argument is to bind the spawned PiP task to the
 specified CPU core. By default, this is the $N$th core number. If
 users want to specify the absolute core number, then the absolute core
-number should be {\tt OR}ed with
-\pipterm{PIP_CPUCORE_ABS}\footnote{This is because the core numbers
-are not contiguous on some CPU architecture, i.e., Fujitsu A64FX CPU.}
-Or, it can be \pipterm{PIP_CPUCORE_ASIS} to bind to the same CPU cores
-as the root process calls the spawn function.
+number should be {\tt OR}ed with the
+\pipterm{PIP_CPUCORE_ABS} flag. If the core numbers are consecutive,
+specifying this flag may not affect the core number
+specification. This difference is only seen on some CPU architectures
+with non-contiguous core numbers (e.g., Fujitsu A64FX).
+The {\tt coreno} argument can be \pipterm{PIP_CPUCORE_ASIS} to bind to
+the same CPU cores as of the root process calling the spawn function.
 
-\subsection{File Descriptors and Spawn Hooks}
+\subsection{File Descriptors and Spawn Hooks}\label{sec:hooks}
 
 In the \pipterm{process mode}, file descriptors of the root process
 are duplicated and passed to the spawned child in the same way of what
@@ -114,18 +132,3 @@ Note that the execution of those hook functions are called by the root.
 \lstinputlisting[style=example, 
   caption={Before and After Hooks - Execution}, label=out:hook]
                 {spawn-adv/examples/hook.out}
-
-\subsection{PRELOAD}
-
-{\tt LD_PRELOAD} does not work when spawning PiP tasks. This is
-because {\tt dlmopen()} does not support this. Although it is
-impossible to support the function of the {\tt LD_PRELOAD} without
-modifying Glibc, PiP library supports similar function, but not
-exactly the same one with  {\tt LD_PRELOAD}.
-
-By setting \pipterm{PIP_PRELOAD} in the same way of {\tt
-  LD_PRELOAD} (colon (:) separated list of shared objects), those
-specified object files are loaded before loading user program. At the
-time of loading objects in the \pipterm{PIP_PRELOAD}, the Glibc is
-already loaded, and users cannot override the 
-functions provided by Glibc.

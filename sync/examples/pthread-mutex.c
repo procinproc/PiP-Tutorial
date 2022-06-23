@@ -9,19 +9,21 @@ typedef struct sync_tasks {
   int			count;
 } sync_t;
 sync_t	sync_tasks;
+int lock;
 void increment( sync_t *syncp ) {
   int tmp;
-  pthread_mutex_lock( &syncp->mutex );
+  if( lock ) pthread_mutex_lock( &syncp->mutex );
   tmp = syncp->count;
   usleep( 10 );
   syncp->count = tmp + 1;
-  pthread_mutex_unlock( &syncp->mutex );
+  if( lock ) pthread_mutex_unlock( &syncp->mutex );
 }
-int main() {
+int main( int argc, char **argv ) {
   int pipid, ntasks, i;
   sync_t *syncp;
   pip_get_pipid( &pipid );
   pip_get_ntasks( &ntasks );
+  lock = ( argc == 1 );
   if( pipid == 0 ) {
     syncp = &sync_tasks;
     pthread_barrier_init( &syncp->barr, NULL, ntasks );
@@ -34,6 +36,9 @@ int main() {
   pthread_barrier_wait( &syncp->barr );
   for( i=0; i<NITERS; i++ ) increment( syncp );
   pthread_barrier_wait( &syncp->barr );
-  if( pipid == 0 ) printf( "count=%d\n", syncp->count );
+  if( pipid == 0 ) {
+    printf( "count=%d (%d*%d)\n", syncp->count,
+	    ntasks, NITERS );
+  }
   return 0;
 }

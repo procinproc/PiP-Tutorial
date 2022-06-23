@@ -1,17 +1,18 @@
 
 \section{PiP Implementation}
 
-\subsection{Spawning Tasks}
+\subsection{Spawning Tasks}\label{sec:spawn-details}
 
 Before PiP version 2.4, PiP tasks were created with the procedure as
 follows;
 
 \begin{enumerate}
-\item The spawned program is loaded by calling {\tt dlmopen()}.
+\item The spawned program is loaded by calling {\tt dlmopen()},
 \item Glibc is initialized in the execution context of the loaded
-  program.
-\item Call {\tt clone()} or {\tt pthread_create()} to spawn the PiP task.
-\item The before hook is called.
+  program,
+\item Call {\tt clone()} or {\tt pthread_create()} (chosen by the
+  \pipterm{PIP_MODE} setting) to spawn the PiP task,
+\item The before hook is called if any, and finally
 \item Jump into the starting function.
 \end{enumerate}
 
@@ -36,19 +37,18 @@ the details of new spawning process;
 
 \begin{enumerate}
 \item Load \pipterm{ldpip.so} in the PiP library package by calling
-  {\tt dlmopen()} and jump into a function defined inside of it.
-\item The starting function of \pipterm{ldpip.so} initializes Glibc.
-\item Obtain Glibc function addresses to wrap them later inside of
-  \pipterm{libpip.so}.
-\item Load shared objects specified by the \pipterm{PIP_PRELOAD}
-  environment variable.
-\item Load \pipterm{libpip.so}. 
-\item Load a user program.
-\item Call {\tt clone()} or {\tt pthread_create()} to spawn the PiP
-  task.
+  {\tt dlmopen()} and jump into a function defined inside of it,
+\item The starting function of \pipterm{ldpip.so} initializes Glibc,
+\item Obtain Glibc function addresses to wrap them later by
+  \pipterm{libpip.so},
+\item Load \pipterm{libpip.so} by calling {\tt dlopen()},
+\item Load a user program by calling {\tt dlopen()},
+\item Call {\tt clone()} or {\tt pthread_create()} (chosen by the
+  \pipterm{PIP_MODE} setting) to spawn the PiP task,
 \item Jump into a function inside of PiP library and initialize the
-  PiP library. 
-\item Jump into the start function.
+  PiP library, 
+\item The before hook is called if any, and finally
+\item Jump into the starting function in the user program.
 \end{enumerate}
 
 At the time of loading \pipterm{ldpip.so}, no wrapper functions are
@@ -57,17 +57,30 @@ easy, just referencing them. After loading the \pipterm{libpip.so} and
 jumping into a function defined in \pipterm{libpip.so} where the
 wrapping functions are defined, the Glibc functions to be wrapped are
 now wrapped by using the function table created by
-\pipterm{ldpip.so}. 
+\pipterm{ldpip.so}\footnote{If actual dynamic linking would be done in
+the order of {\tt dl[m]open()}, then the wrapping functions in {\tt 
+  libpip.so} would not work as described here. As long as I checked,
+the Glibc ({\tt libc.so}) is at the last of the search order of {\tt
+  ld-linux.so}, and this works.}.
 
-The Glibc initialization \footnote{Calling {\tt __ctype_init()}} must
-be done with the execution context of the spawned PiP task. In the
-older version of PiP library, this was done by; 1) calling {\tt
-  dlsym()} to the loaded handle, returned by {\tt dl(m)open()},
-to obtain the initialization function
-and then 2) jump into the function. In the new implementation, the
+The Glibc initialization\footnote{Calling {\tt __ctype_init()}} must
+be done with the execution context (Section~\ref{sec:context}) of the
+  spawned PiP task. In the older version of PiP library, this was done
+  by; 1) calling {\tt dlsym()} to the loaded handle, returned by {\tt
+    dl[m]open()}, to obtain the initialization function
+and then 2) call the function. In the new implementation, the
 initialization was done by simply calling the initialization function
 from the \pipterm{ldpip.so} where the execution context is the same
 with that of PiP task. 
 
 Thus, by introducing PiP loader program (\pipterm{ldpip.so}), things
 can go in a simpler way. 
+
+
+\subsection{Calling {\tt clone()} System Call}\label{sec:clone}
+
+\subsection{Name of PiP Tasks}\label{sec:proc-name}
+
+
+
+

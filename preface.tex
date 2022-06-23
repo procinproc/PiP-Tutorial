@@ -1,12 +1,44 @@
 
+\section*{Motivation}
+
 I retired from my work from April 2022. Since then, I wrote this PiP
-tutorial. At the same time, I am maintaining PiP library
+tutorial while I am maintaining PiP library
 (\url{https://github.com/procinproc}).
 
+PiP provides a unique and new execution model. While I am maintaining
+the PiP library, I have been facing many issues caused by the current
+Glibc and Linux that are not aware of this new execution model. 
+I hope the new execution model which PiP provides would play an
+important role in computer science in the future, and I will continue
+maintaining the PiP library until then.
 
+Thinking the fact of that Glibc and Linux changing much more
+frequently than PiP because of man-power, I am not confident with
+adapting PiP with the upcoming Glibc and Linux. So, I decided to write
+this document to leave my ideas.
 
-Since PiP provides a new execution model not yet widely accepted, I am
-not confident with adapting PiP with the newer Glibc (currently
-supporting the Glibc attached with CentOS/Redhat 7 and 8). This is
-because the PiP implementation is heavily depending on the niches of
-Glibc. 
+This is the reason why this can not only be a tutorial for
+using PiP, but also a internal document. 
+
+\section*{Expected Readers}
+
+I tried to have example programs in this document as much as
+possible. Most of them are written in C. The current PiP library are
+tested to run on Linux (CentOS and Redhat, version 7 and 8). So
+readers must be familiar with C programming and Linux. 
+
+\section*{Sample Programs}
+
+All sample programs were tested to run and all the output examples are
+obtained by running the sample programs on a Docker environment.
+
+\section*{English}
+
+To my shame, supposing many readers noticed already, my English is
+quite poor. I would appreciate it if some of you would help me to
+improve the readability of this document (and man page documents). If
+this is the case, send me an e-mail ({\tt
+  procinproc-info@googlegroups.com} or {\tt ahori@me.com}) and I will
+give you the access right of the Github
+(\url{https://github.com/procinproc}). 
+

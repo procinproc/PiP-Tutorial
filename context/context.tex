@@ -1,4 +1,5 @@
-\section{Execution Context}
+
+\section{Execution Context}\label{sec:context}
 
 Before explaining the rest of the arguments, readers should know about
 the execution context under PiP. The execution context can be defined
@@ -14,7 +15,7 @@ called function accesses the variable owned by task $B$, not $A$
 (Listing~\ref{prg:context} and \ref{out:context}).
 
 \lstinputlisting[style=program,
-  caption={Function Call of Another},
+  caption={Function Call of Another Task},
   label=prg:context] {context/examples/context.c}
 
 In this example program, sorry, this goes off the side road,
@@ -25,7 +26,7 @@ string, just like {\tt printf()}, followed by argument(s) needed by
 the format. 
 
 \lstinputlisting[style=example, 
-  caption={Function Call of Another - Execution}, label=out:context]
+  caption={Function Call of Another Task - Execution}, label=out:context]
                 {context/examples/context.out}
 
 Thus, the execution context in PiP environment might be different from
@@ -67,13 +68,13 @@ a part of address map running three tasks, focusing on the Glibc ({\tt
 There are three sets of Glibc segments. The static variables are
 located on the last (readable and writable) segment of each set. A
 static variable is accessed by an instruction using the offset from
-the instruction (program counter relative addressing mode). Thus, the
-gap size between the code segment (top of the set) and variable segment
-(bottom of the set) is important to make all offsets constant and thus
-all gap sizes must be the same. In this way, variables and execution
-code are associated in \PIE\footnote{This is not the case if not
-compiled as \PIE.} and \PIE programs and shared objects compiled with
-the \PIE or \PIC option can be loaded at any locations.
+the instruction (program counter relative addressing mode) to the
+variable. Thus, the gap size between the code segment (top of the set)
+and variable segment (bottom of the set) is important to make all
+offsets constant and thus all gap sizes must be the same. In this way,
+variables and instructions are associated in \PIE\footnote{This is
+not the case if not compiled as \PIE.}, and \PIE\ programs and shared
+objects compiled with the \PIC\ option can be loaded at any locations.
 
 Unfortunately, this addressing mode is not supported by all CPU
 architectures\footnote{Listing~\ref{out:context} is obtained by

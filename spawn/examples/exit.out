@@ -1,7 +1,0 @@
-$ ./exit 4; echo $?
-PiP task (PIPID:0) done: 0
-PiP task (PIPID:1) done: 10
-PiP task (PIPID:2) done: 20
-PiP task (PIPID:3) done: 30
-100
-$

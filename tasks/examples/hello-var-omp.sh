@@ -1,5 +1,5 @@
-pipcc --silent -fopenmp hello-var-omp.c
+pipcc --silent -fopenmp hello-var-omp.c -o hello-var-omp
 export OMP_NUM_THREADS=2
-./a.out
-pip-exec -n 2 ./a.out
-mpiexec -n 2 ./a.out
+./hello-var-omp
+pip-exec -n 2 ./hello-var-omp
+mpiexec -n 2 ./hello-var-omp

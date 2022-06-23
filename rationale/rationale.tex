@@ -1,19 +1,20 @@
 
 \section{Rationale}\label{sec:rationale}
 
-The prosedure to spawn a PiP task is;
+The prosedure to spawn a PiP task is (more detailed procedure can be
+found at Section~\ref{sec:spawn-details});
 
 \begin{enumerate}
 \item create a new name space by calling the Linux's {\tt dlmopen()}
-  function.
+  function,
 \item create a PiP task process (or thread) by calling the Linux's
-  {\tt clone()} system call.
-\item jump into the starting function of a user program
+  {\tt clone()} system call, and 
+\item jump into the starting function of a user program.
 \end{enumerate}
 
 The {\tt dlmopen()} function can create a new name space, unlike {\tt
   dlopen()}. Here, the {\it name space} is the global symbol names
-(functions and global variables) to be resolved at loading. By
+(functions and global variables) to be resolved at loading a program. By
 creating a new name space, functions and variables can be
 privatized from the other PiP tasks. 
 
@@ -27,7 +28,7 @@ of PiP tasks.
 In some cases (or, in most cases before CentOS/Redhat 8), the loaded
 address of a program is fixed by default. If this is the case, PiP
 cannot load multiple programs in the same address space. To enable
-this, the PiP executables must be compiled as \PIE (Position
+this, the PiP executables must be compiled as \PIE\ (Position
 Independent Executable) so that the programs can be loaded at any
 arbitrary address. All programs to be PiP tasks must be compiled as
 \PIE, i.e., must be compiled with \pipterm{pipcc} or \pipterm{pipfc}

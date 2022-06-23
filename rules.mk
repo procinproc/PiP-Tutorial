@@ -4,7 +4,7 @@ RM = rm -f
 all:
 
 clean: clean-hook
-	$(RM) *.exout *~ #* .#* *#*#* .#* .DS_STORE
+	$(RM) *.exout *~ '#'* .'#'* *'#'*'#'* .'#'* .DS_STORE
 
 veryclean: clean veryclean-hook
 	$(RM) *.out
