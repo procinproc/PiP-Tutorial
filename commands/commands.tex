@@ -14,16 +14,16 @@ care about the man path by using this command.
 
 \subsection{\PIPKW{pipcc} and \PIPKW{pipfc}}
 
-As already described in Section~\ref{sec:pipcc-exec}, \pipterm{pipcc}
+As already described in Section~\ref{sec:pipcc-exec}, \pipcomm{pipcc}
 is the compiler script for compiling PiP programs for C and C++ and
-\pipterm{pipfc} is for Fortran.
+\pipcomm{pipfc} is for Fortran.
 
 The {\tt --which} option will show you the pass of the actual back-end
 compiler. Or, users can specify the back-end compiler by setting the 
-environment variable {\tt CC} for \pipterm{pipcc} or {\tt FC} for
-\pipterm{pipfc}.
+environment variable {\tt CC} for \pipcomm{pipcc} or {\tt FC} for
+\pipcomm{pipfc}.
 
-By default, \pipterm{pipcc} and \pipterm{pipfc} compile program to
+By default, \pipcomm{pipcc} and \pipcomm{pipfc} compile program to
 produce the code which can run as a PiP root process and/or a PiP
 task. Users may specify {\tt --piproot} option for PiP root only
 program, or {\tt --piptask} option for PiP task only program. Indeed,
@@ -36,7 +36,7 @@ shown by
 specifying the {\tt --cflags} option and the link options are shown by
 the {\tt --lflags} option. The {\tt --cflags} or {\tt --lflags}
 disables the actual compiling and/or linking process.
-All options and parameters not for \pipterm{pipcc} and those Linux
+All options and parameters not for \pipcomm{pipcc} and those Linux
 commands cannot run as PiP 
 programs. Additionally, any shell script (shebang) cannot run as a PiP
 program. As shown in Listing~\ref{out:pip-check}, the {\tt ls} command
@@ -46,13 +46,13 @@ is implemented a shell script indeed.
   caption={{\tt pip-check} - Execution Example}, label=out:pip-check]
                 {commands/examples/pip-check.out}
 
-The \pipterm{pip-check} program does not guarantee a program to
+The \pipcomm{pip-check} program does not guarantee a program to
 run as a PiP program, even if it tells so. 
 
 \subsection{\PIPKW{pip-exec}}
 
-The \pipterm{pip-exec} command is to invoke PiP tasks derived
-from one program in the examples so far. However, \pipterm{pip-exec}
+The \pipcomm{pip-exec} command is to invoke PiP tasks derived
+from one program in the examples so far. However, \pipcomm{pip-exec}
 can invoke multiple programs and all PiP tasks derived from those
 programs share the same address space. To do this, programs are
 separated by colon (:) (Listing~\ref{out:pip-exec}).
@@ -63,10 +63,10 @@ separated by colon (:) (Listing~\ref{out:pip-exec}).
 
 \subsection{\PIPKW{pips}}\label{sec:pips}
 
-\pipterm{pips} is the command to output the list of currently running
+\pipcomm{pips} is the command to output the list of currently running
 PiP roots and PiP tasks in the similar way of what the Linux's {\tt
   ps} command does. Here is the example, running three (3)
-\pipterm{pip-exec} each of which execute {\tt a}, {\tt b}, or {\tt c}
+\pipcomm{pip-exec} each of which execute {\tt a}, {\tt b}, or {\tt c}
 PiP tasks. 
 
 \begin{lstlisting}[frame=tRBl]
@@ -93,12 +93,12 @@ root, the other numerical digit '{\tt 0-9}' means PiP task. The second
 character represents PiP \pipterm{execution mode}, explained in
 Section~\ref{sec:exec-mode}).
 
-This \pipterm{pips} command has many options. Refer PiP man page
+This \pipcomm{pips} command has many options. Refer PiP man page
 (\ref{sec:pip-man}) for more details. 
 
 \subsection{\PIPKW{pip-gdb}}\label{sec:pip-gdb}
 
-\pipterm{pip-gdb} is PiP-aware version of {\tt gdb} (GNU
+\pipcomm{pip-gdb} is PiP-aware version of {\tt gdb} (GNU
 debugger). PiP tasks are implemented as GDB's inferiors. Here is the
 example of PiP-gdb debugging session.
 
@@ -111,11 +111,11 @@ example of PiP-gdb debugging session.
   1    process 1897 (pip root)  /somewhere/pip-root
 \end{lstlisting}
 
-\subsection{\PIPKW{pip-mode} and \PIPKW{printpipmode}}
+\subsection{\PIPKW{pip-mode} and \PIPKW{printpipmode}}\label{sec:pip-mode}
 
-The \pipterm{pip-mode} command is to set PiP execution mode and the
-\pipterm{printpipmode} outputs the current execution mode (refer to
-Section~\ref{sec:exec-mode}). 
+The \pipcomm{pip-mode} command is to set PiP execution mode and the
+\pipcomm{printpipmode} outputs the current execution mode (refer to
+Section~\ref{sec:exec-mode} and \ref{sec:proc-name}). 
 
 \subsection{\PIPKW{libpip.so}}
 

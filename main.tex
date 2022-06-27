@@ -13,7 +13,20 @@
 \long\def\comment#1{}%
 \def\pipkw{\tt\bf\color{blue}}%
 \def\PIPKW#1{{\tt #1}}%
-\def\pipterm#1{{\pipkw #1}\index{#1}}%
+\def\pipterm#1{{\pipkw #1}\index{PiP Term!#1}}%
+\def\pipfunc#1{{\pipkw #1}\index{PiP Function!#1}}%
+\def\pipstruct#1{{\pipkw #1}\index{PiP Type!#1}}%
+\def\pipcomm#1{{\pipkw #1}\index{PiP Command!#1}}%
+\def\pipenv#1{{\pipkw #1}\index{PiP Environment Variable!#1}}%
+\def\pipdef#1{{\pipkw #1}\index{PiP Define Symbol!#1}}%
+\def\environ#1{{\tt #1}\index{Environment Variable!#1}}%
+\def\linuxfunc#1{{\tt #1}\index{Linux Function!#1}}%
+\def\linuxcomm#1{{\tt #1}\index{Linux Command!#1}}%
+\def\linuxenv#1{{\tt #1}\index{Linux Environment Variable!#1}}%
+\def\linuxdef#1{{\tt #1}\index{Linux Define Symbol!#1}}%
+\def\linuxvar#1{{\tt #1}\index{Linux Variable!#1}}%
+\def\term#1{#1\index{#1}}%
+\def\mpi#1{{\tt #1}\index{MPI!#1}}%
 \def\PIPID{\pipterm{PIPID}}%
 \def\NULL{\tt NULL}%
 \def\option#1{$\langle$#1$\rangle$}%
@@ -56,7 +69,18 @@
 \makeindex
 
 \begin{document}
-\maketitle
+%%\maketitle
+\begin{titlepage}
+	\centering
+	\includegraphics[width=0.25\textwidth]{Figs/PiP-logo.pdf}
+        \par\vspace{3cm}
+	{\huge\bfseries Great Experiences with PiP (Proecss-in-Process)\par}
+	\vspace{9cm}
+	{\Large Atsushi Hori\par}
+	\vfill
+% Bottom of the page
+	{\Large \today\par}
+\end{titlepage}
 
 \newpage % Make sure the following content is on a new page
 
@@ -67,13 +91,13 @@
 \chapter*{Preface}
 \input{preface}
 
-\chapter*{Acknowledgment}
-\input{ack}
-
 \tableofcontents % Prints the table of contents
 \listoffigures
 \listoftables
 \lstlistoflistings
+
+\chapter*{Acknowledgment}
+\input{ack}
 
 \chapter*{Introduction}
 \input{intro}
@@ -98,15 +122,17 @@
 \input{malloc/malloc}
 
 \chapter{PiP Internals}
-  \input{impl/impl}
-  \input{issues/issues}
+\input{impl/impl}
+\input{issues/issues}
+
+\chapter{PiP Installation}
+\input{install}
+\input{install/pip-pip}
+
+\chapter{Research Papers}
 
 \appendix
 \comment{
-  \chapter{PiP Installation}
-  \input{install/install}
-  \chapter{Research Papers}
-  \input{papers/papers}
   \bibliography{ref}
 }
 

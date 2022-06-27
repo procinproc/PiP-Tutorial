@@ -1,5 +1,18 @@
 
 \section{Remaining Issues}
 
-\subsection{Recycling PiP Tasks}
+\subsection{Retrieving Memory}\label{sec:retrive}
 
+Let us suppose a case where PiP task $A$ pass a pointer to PiP task
+$B$ (Listing~\ref{out:export-import}, for example). After then, task
+$A$ terminates for some reason. What if task $B$ tries to dereference
+the pointer to access data which task $A$ had? This situation can also
+happen if the string obtained by calling {\tt getenv()} is passed to
+the other task. The consequence of this may introduce difficult
+situation hard to debug. This situation must be detected by compilers
+and/or tools which are aware of PiP-style execution model.
+
+So, I decided not to reclaim any memory resources when a task
+terminates, not calling {\tt dlclose()} nor {\tt free()}. In the
+current PiP implementation, \PIPID\ can be allocated only once. And
+not releasing memory resource will not cause further problem.

@@ -28,17 +28,17 @@ path to the program of the task. Do not forget to set the {\it
   label=prg:stop-on-start] {debug/examples/onstart.cmd}
 
 Listing~\ref{prg:stop-on-start} shows an example of the script for the
-\pipterm{PIP_STOP_ON_START}. Here, \pipterm{pips} command is invoked
+\pipenv{PIP_STOP_ON_START}. Here, \pipcomm{pips} command is invoked
 instead of some debugging command\footnote{All examples are executed
 on a Docker environment but {\tt ptrace} (and other commands using
 {\tt ptrace}) was unable to run in this example even withthe {\tt
   --cap-add=SYS_PTRACE} Docker option (I confirmed {\tt gdb} worked). So 
-\pipterm{pips} was used instead in this example.}. Note that 
+\pipcomm{pips} was used instead in this example.}. Note that 
 the target task is already stopped by delivering the {\tt SIGSTOP}
 signal. Somehow you have to explicitly deliver the {\tt SIGCONT}
 signal to the task if you want to resume the
 task. Listing~\ref{out:stop-on-start} shows the result of 
-\pipterm{PIP_STOP_ON_START} execution with this script file. 
+\pipenv{PIP_STOP_ON_START} execution with this script file. 
 
 \lstinputlisting[style=example, basicstyle=\tiny\tt, 
   caption={Stop-on-start Script Example - Execution},
@@ -46,10 +46,10 @@ task. Listing~\ref{out:stop-on-start} shows the result of
 
 \subsection{\PIPKW{PIP_GDB_SIGNALS}}
 
-This environment variable \pipterm{PIP_GDB_SIGNALS} is to set the
+This environment variable \pipenv{PIP_GDB_SIGNALS} is to set the
 signals to trigger some actions by specifying the
-\pipterm{PIP_SHOW_MAPS} and \pipterm{PIP_SHOW_PIPS}, followed by
-PiP-gdb invocation. The value of this environment is as follows;
+\pipenv{PIP_SHOW_MAPS} and \pipenv{PIP_SHOW_PIPS}, followed by
+the PiP-gdb invocation. The value of this environment is as follows;
 
 \begin{lstlisting}[frame=tb]
   PIP_GDB_SIGNALS=[ <SIGNAME> ] { "+"|"-" <SIGNAME> }
@@ -59,7 +59,7 @@ The possible {\tt\option{SIGNAME}} vale are listed below;
 
 \begin{table}[ht]
   \centering
-  \caption{Possible Signal Names for \pipterm{PIP_GDB_SIGNALS}}
+  \caption{Possible Signal Names for \pipenv{PIP_GDB_SIGNALS}}
   \vspace{3mm}
   \tt
   \begin{tabular}{l}
@@ -86,23 +86,22 @@ represents {\tt SIGUSR1}, {\tt SIGUSR2} and {\tt SIGINT}.
 
 \subsection{\PIPKW{PIP_SHOW_MAPS}}
 
-If \pipterm{PIP_SHOW_MAPS} environment is set to ``{\tt on}'' and the
-a signal specified by the \pipterm{PIP_GDB_SIGNALS} is delivered, then
+If \pipenv{PIP_SHOW_MAPS} environment is set to ``{\tt on}'' and the
+a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
 the address map (Listing~\ref{out:maps}, for example) will be shown. 
 
 \subsection{\PIPKW{PIP_SHOW_PIPS}}
 
-If \pipterm{PIP_SHOW_PIPS} environment is set to ``{\tt on}'' and the
-a signal specified by the \pipterm{PIP_GDB_SIGNALS} is delivered, then
-\pipterm{pips} command (Section~\ref{sec:pips}) is invoked to show the
+If \pipenv{PIP_SHOW_PIPS} environment is set to ``{\tt on}'' and the
+a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
+\pipcomm{pips} command (Section~\ref{sec:pips}) is invoked to show the
 status of the other PiP tasks in the same address space.
 
-\subsection{\PIPKW{PIP_GDB_PATH} and \PIPKW{PIP_GDB_COMMAND} (\pipterm{%
-process mode} only)}
+\subsection{\PIPKW{PIP_GDB_PATH} and \PIPKW{PIP_GDB_COMMAND}}
 
-When \pipterm{PIP_GDB_PATH} is set to the path to \pipterm{pip-gdb}
-a signal specified by the \pipterm{PIP_GDB_SIGNALS} is delivered, then
+When \pipenv{PIP_GDB_PATH} is set to the path to \pipcomm{pip-gdb}
+a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
 PiP gdb (Section~\ref{sec:pip-gdb}) will be invoked. If the value of
-the \pipterm{PIP_GDB_COMMAND} environment is set to a valid filename
+the \pipenv{PIP_GDB_COMMAND} environment is set to a valid filename
 and if the filename contains some GDB commands, then PiP-gdb will be
 invoked to work with this command file. 

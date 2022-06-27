@@ -1,5 +1,30 @@
 
-\section{Some Myths on PiP}
+\section{Myths on PiP}
+
+\subsection*{I cannot see the difference between shared memory and
+  what PiP does}
+
+The shared memory model enables to access the data owned by the other
+process. While the POSIX share memory model allows to share only newly
+allocated memory region, while another shared memory mode provided by 
+XPMEM\footnote{\url{https://github.com/hpc/xpmem}} allows for the
+other process to access any memory region. Thus both look
+the same in terms of accessing the data owned by the other.
+
+However, the mechanisms of both memory models are quite different. To
+have a shared memory, one must call a system call to ask OS kernel to
+have the shared memory. This kind of system calls, modifying the
+memory mapping, are quite expensive. On the other hand, PiP tasks are 
+mapped in one memory address, and a PiP task can access any data owned
+by the others once the addresses of the data are known, without calling
+any expensive system calls. In terms of how memory regions are mapped,
+I name the way what PiP does \pipterm{shared address space model}, as
+oppose to the \term{shared memory model}. 
+
+If the data to be shared are scattered in an address space and hard to
+pack in a memory region, or the shared data are being dynamically
+allocated, then the \term{shared address space model} has the
+advantage.  
 
 \subsubsection*{Sharing an address with multiple programs can be a
   severe security issue}\label{sec:security-issue}
@@ -12,7 +37,7 @@ them, there is no reason to run them with the PiP environment.
 Basically, communicating programs share the same fate. Even a most
 simple case where two programs are connected by using the Linux/Unix
 pipe, one of the programs dies, the other programs also dies by
-receiving the {\tt SIGPIPE} signal. Communicating programs agree with
+receiving the \linuxdef{SIGPIPE} signal. Communicating programs agree with
 others when to communicate and how to communicate. The PiP case is no
 exception.
 
@@ -25,11 +50,11 @@ above). If the destruction is triggered by a
 software bug, then this might be harder-to-debug than that of
 multi-process model.  There are two points here; 1) the higher 
 possibility of destructing of actual data, not accessing invalid memory
-region ({\tt SIGSEGV}), and 2) there are multiple execution entities.
+region (\linuxdef{SIGSEGV}), and 2) there are multiple execution entities.
 
-The ASLR can be some help for the former point. If ASLR is enabled,
-then the phenomenons of the bug can vary time to time. The situation
-of the latter point is almost the same with the multi-thread case.
+The \term{ASLR} can be some help for the former point. If \term{ASLR}
+is enabled, then the phenomenons of the bug can vary time to time. The
+situation of the latter point is almost the same with the multi-thread case.
 
 Anyway, I have no experiences for having bugs based on this situation
 up until now. 
@@ -42,15 +67,37 @@ the functions implemented in Glibc have many static variables. Your
 runtime system may use some of the Glibc functions. So, in general, it
 is very hard to write programs not having any static variables.
 
+\subsubsection*{PiP may consume more memory than the other execution
+  models}
+
+The answer is yes, but not that much. Listing~\ref{out:maps} shows
+how memory segments of running PiP tasks are mapped in one address
+space. For example, Glibc ({\tt libc-2.28.so}),
+Listing~\ref{out:glibc-segs} shows only the memory segments related to
+Glibc, loaded three (3) times onto memory in this case, running one
+PiP root and two PiP tasks each of which requires Glibc. Each segment
+set is a memory map of {\tt libc-2.28.so}. All three segment sets are 
+mapped from the same file, and the amount of consumed memory is the
+same with having only one set. 
+
+In the multi-process model, Each address space of a process has only
+one {\tt libs-2.28.so} segment set, but another process has also the
+same memory mapping of Glibc. Thus, roughly speaking, the amount of
+memory required to run PiP tasks is almost the same with the one of
+running multiple processes. However, in the multi-thread model, there
+is only one variable segment shared among threads, regardless to the
+number of threads. And the amount of memory for running PiP tasks is
+larger than that of running multiple threads. 
+
 \subsubsection*{There must be some hidden overhead for running PiP
   programs}
 
 So far, it is know that there is one overhead which is larger than
 the multi-process model. It is address space modification system
-calls, such as {\tt mmap()} and {\tt brk()}. This is because any
-modification of an address space must be locked inside of the OS
-kernel and this lock contention results in larger overhead. This
-situation is the same with the multi-thread model and the overhead of
-{\tt mmap()} is larger than the multi-process model but almost the
-same with the multi-thread model. There is no other known additional
-overhead in PiP so far. 
+calls, such as \linuxfunc{mmap()} and \linuxfunc{brk()}. This is
+because any modification of an address space must be locked inside of
+the OS kernel and this lock contention results in larger
+overhead. This situation is the same with the multi-thread model and
+the overhead of \linuxfunc{mmap()} is larger than the multi-process
+model but almost the same with the multi-thread model. There is no
+other known additional overhead in PiP so far. 

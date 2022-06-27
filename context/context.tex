@@ -7,7 +7,7 @@ as the state of CPU, i.e., contents of hardware registers. On PiP,
 this definition may not be enough. Let us have an example. Suppose
 that the same program runs as two PiP tasks and this program has a
 function {\tt foo()}. By passing the function pointer, by using the
-\pipterm{pip_named_export()} and \pipterm{pip_named_import()}, one of
+\pipfunc{pip_named_export()} and \pipfunc{pip_named_import()}, one of
 the PiP task can call the function of the other PiP
 task. Additionally, this function accesses a static variable, say {\tt
   var}. If task $A$ calls function {\tt foo} of task $B$, then the
@@ -19,8 +19,8 @@ called function accesses the variable owned by task $B$, not $A$
   label=prg:context] {context/examples/context.c}
 
 In this example program, sorry, this goes off the side road,
-\pipterm{pip_named_export()} and 
-\pipterm{pip_named_import()} are called differently than
+\pipfunc{pip_named_export()} and 
+\pipfunc{pip_named_import()} are called differently than
 before. The final argument of these functions is actually a format
 string, just like {\tt printf()}, followed by argument(s) needed by
 the format. 

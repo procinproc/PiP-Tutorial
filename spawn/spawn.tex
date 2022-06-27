@@ -1,9 +1,9 @@
 
 \section{Spawning PiP Tasks and Waiting Terminations}
 
-The \pipterm{pip-exec} command spawns PiP tasks. The
+The \pipcomm{pip-exec} command spawns PiP tasks. The
 process which spawns PiP tasks is called {\bf (PiP) root} process. The
-\pipterm{pip-exec} process is a PiP root process. 
+\pipcomm{pip-exec} process is a PiP root process. 
 PiP tasks spawned by the root process are mapped and executed in the
 address space of the root. In this chapter, how to spawn PiP tasks
 will be explained.
@@ -14,43 +14,43 @@ will be explained.
 
 Listing~\ref{prg:spawn-root} is an example of a PiP root program. It
 spawns $N$ PiP tasks, where $N$ is specified by the first parameter
-of the program. The \pipterm{pip_init()} function must be called to
+of the program. The \pipfunc{pip_init()} function must be called to
 initialize the PiP library before calling any other PiP functions,
-although there some exceptions to this. The \pipterm{pip_init()} may
+although there some exceptions to this. The \pipfunc{pip_init()} may
 look strange because this function behaves differently depending
 on if it is called from a PiP root or PiP task. The first argument is
 output returning {\PIPID} of the calling task. The second input
 arguments is to specify the maximum number of spawning PiP tasks. This
 second argument becomes output if this is called by a PiP task,
 returning the number specified by the root.
-The \pipterm{pip_fin()} function works as the opposite of
-\pipterm{pip_init()}, finalizing PiP library and freeing allocated 
-resources. After calling \pipterm{pip_fin()}, most PiP library
-functions return an error code ({\tt EPERM}).
+The \pipfunc{pip_fin()} function works as the opposite of
+\pipfunc{pip_init()}, finalizing PiP library and freeing allocated 
+resources. After calling \pipfunc{pip_fin()}, most PiP library
+functions return an error code (\linuxdef{EPERM}).
 \comment{The other arguments will be explained in the
   Section~\ref{sec:advanced}.} 
 
-The \pipterm{pip_spawn()} function is called after then. The first and
-second arguments are the same with the Linux's {\tt execve}
+The \pipfunc{pip_spawn()} function is called after then. The first and
+second arguments are the same with the Linux's \linuxfunc{execve()}
 function; the first is to specify the executable file to be executed
 and the second argument is to specify the parameters executing the
 program. The third is to specify environment variables. When it is
-{\NULL}, then value of the Glibc global variable {\tt environ} is
+{\NULL}, then value of the Glibc global variable \linuxvar{environ} is
 taken. Th fourth argument is to specify the CPU core number to bind
 the spawned PiP task and which CPU core. In this example, the value of
-\pipterm{PIP_CPUCORE_ASIS} means that the (CPU) core-bind should be
-the same with the one when calling \pipterm{pip_spawn()}. The fifth
-is an input and output argument and you can specify {\PIPID} or
-set to \pipterm{PIP_PIPID_ANY} so that PiP library can choose
-any. After calling \pipterm{pip_spawn()}, the argument returns the
-actual {\PIPID}. 
+\pipdef{PIP_CPUCORE_ASIS} means that the (CPU) core-bind should be
+the same with the one when calling \pipfunc{pip_spawn()}. The fifth
+is an input and output argument and you can specify \PIPID\ or
+set to \pipdef{PIP_PIPID_ANY} so that PiP library can choose
+any. After calling \pipfunc{pip_spawn()}, the argument returns the
+actual \PIPID. 
 
 \lstinputlisting[style=program, caption={Spawn ({\tt spawn-root})},
   label=prg:spawn-root] {spawn/examples/spawn-root.c}
 
 Listing~\ref{prg:spawn-task} is very similar to the ``Hello World''
 program in the previous section. The major difference here is calling
-the \pipterm{pip_init()} function. Unlike root, this function call is
+the \pipfunc{pip_init()} function. Unlike root, this function call is
 optional in the PiP task program. By calling this, you can get 
 {\PIPID} and the number of maximum PiP tasks which are specified by the
 root. Linsting~\ref{out:spawn} shows an example of the execution of
@@ -69,9 +69,9 @@ Listing~\ref{prg:spawn-root} and \ref{prg:spawn-task}.
 A program can be both or either PiP root and PiP
 task. Listing~\ref{prg:spawn-myself} shows an example of combining the
 programs of Listing~\ref{prg:spawn-root} and \ref{prg:spawn-task}. We
-hope you can understand the strange behavior of \pipterm{pip_init()}
+hope you can understand the strange behavior of \pipfunc{pip_init()}
 function. The PiP root process also acts like a PiP task. It has a
-special PIPID, {\tt PIP_PIPID_ROOT}. 
+special PIPID, \pipdef{PIP_PIPID_ROOT}. 
 Listing~\ref{out:spawn-myself} shows the example of this
 execution. 
 
@@ -87,8 +87,8 @@ execution.
 
 PiP tasks start from the {\tt main()} function in the examples so
 far. PiP allows for PiP tasks to start user-defined function other
-than {\tt main()}. In this case, use the \pipterm{pip_task_spawn()}
-function instead of calling the \pipterm{pip_spawn()} function.
+than {\tt main()}. In this case, use the \pipfunc{pip_task_spawn()}
+function instead of calling the \pipfunc{pip_spawn()} function.
 
 \lstinputlisting[style=program, caption={Starting from user-defined
     function ({\tt userfunc})},
@@ -96,10 +96,10 @@ function instead of calling the \pipterm{pip_spawn()} function.
 
 Listing~\ref{prg:userfunc} is the program of this example. To decrease
 the number of arguments to spawn a PiP task, the
-\pipterm{pip_spawn_program_t} structure is defined. This structure
+\pipstruct{pip_spawn_program_t} structure is defined. This structure
 holds all information for spawning a program, including path to
 executable file, function name, and so on. To hide the details of the
-structure, \pipterm{pip_spawn_from_func()} function is also defined
+structure, \pipfunc{pip_spawn_from_func()} function is also defined
 to set these information. The user-defined function must have one
 argument ({\tt void*}) and return an integer value which is the same
 as the return value from the {\tt main()} function.
@@ -108,16 +108,16 @@ as the return value from the {\tt main()} function.
   caption={Starting from user-defined function - Execution},
   label=out:userfunc] {spawn/examples/userfunc.out}
 
-The \pipterm{pip_spawn()} was firstly introduced (from version
+The \pipfunc{pip_spawn()} was firstly introduced (from version
 1). After then, I noticed users can start PiP tasks other than main,
-and the \pipterm{pip_task_spawn()} function was
+and the \pipfunc{pip_task_spawn()} function was
 introduced (from version 2 or later). The
-\pipterm{pip_spawn_program_t} structure must be set 
-by calling the \pipterm{pip_spawn_from_main()} function when
+\pipstruct{pip_spawn_program_t} structure must be set 
+by calling the \pipfunc{pip_spawn_from_main()} function when
 starting from the {\tt main()} function. Listing~\ref{prg:mainfunc} is
 the program rewritten version of Listing~\ref{prg:spawn-myself} by
-using the \pipterm{pip_task_spawn()} and
-\pipterm{pip_spawn_from_main()}.
+using the \pipfunc{pip_task_spawn()} and
+\pipfunc{pip_spawn_from_main()}.
 
 \lstinputlisting[style=program, caption={Starting from main
     function ({\tt mainfunc})},
@@ -131,18 +131,18 @@ using the \pipterm{pip_task_spawn()} and
 
 \subsection{Waiting for Terminations of PiP tasks}
 
-As readers may have already noticed, the \pipterm{pip_wait()} is the
+As readers may have already noticed, the \pipfunc{pip_wait()} is the
 function to wait for terminations of the spawned PiP tasks. The
-\pipterm{pip_wait()} function acts like the Linux's {\tt wait()}
-function. In many cases, Linux's {\tt wait()} function works with PiP
-tasks, but there is a certain case it does not. So, it is recommended
-for users to use \pipterm{pip_wait()} function.
+\pipfunc{pip_wait()} function acts like the Linux's \linuxfunc{wait()}
+function. In many cases, Linux's \linuxfunc{wait()} function works
+with PiP tasks, but there is a certain case it does not. So, it is
+recommended for users to use \pipfunc{pip_wait()} function.
 
-The argument of the \pipterm{pip_wait()} is the pointer to an integer
-variable, the same with the Linux's {\tt wait()} call. The returned
-integer can be examined by using the Linux's {\tt WIFEXITED}, {\tt
-  WIFSIGNALED}, {\tt WEXITSTATUS}, {\tt WIFSIGNALED}, and {\tt
-  WTERMISIG} macros.
+The argument of the \pipfunc{pip_wait()} is the pointer to an integer
+variable, the same with the Linux's \linuxfunc{wait()} call. The
+returned integer can be examined by using the Linux's
+\linuxdef{WIFEXITED}, \linuxdef{WIFSIGNALED}, \linuxdef{WEXITSTATUS},
+\linuxdef{WIFSIGNALED}, and \linuxdef{WTERMISIG} macros. 
 
 \lstinputlisting[style=program, caption={Waiting for specified PiP task
     terminations ({\tt wait})}, label=prg:wait]
@@ -152,14 +152,14 @@ integer can be examined by using the Linux's {\tt WIFEXITED}, {\tt
   caption={Waiting for specified PiP task terminations - Execution},
   label=out:wait] {spawn/examples/wait.out}
 
-\pipterm{pip_wait()} waits for the PiP task termination specified by
+\pipfunc{pip_wait()} waits for the PiP task termination specified by
         {\PIPID}. 
-\pipterm{pip_wait_any()} function can wait for any PiP tasks and
+\pipfunc{pip_wait_any()} function can wait for any PiP tasks and
         {\PIPID} and exit status are returned when terminated (See
         Listing~\ref{prg:waitany} and \ref{out:waitany}).
-        \pipterm{pip_trywait()} and \pipterm{pip_trywait_any()} are
-        the non-blocking versions of \pipterm{pip_wait()} and
-        \pipterm{pip_wait_any()}, respectively. 
+        \pipfunc{pip_trywait()} and \pipfunc{pip_trywait_any()} are
+        the non-blocking versions of \pipfunc{pip_wait()} and
+        \pipfunc{pip_wait_any()}, respectively. 
 
 \lstinputlisting[style=program, caption={Waiting for any PiP task
     terminations ({\tt waitany})}, label=prg:waitany]
@@ -173,13 +173,13 @@ integer can be examined by using the Linux's {\tt WIFEXITED}, {\tt
 \subsection{Terminating PiP tasks}
 
 PiP tasks and root can terminate their executions by calling
-\pipterm{pip_exit()} function. This function acts like the Linux's
-        {\tt exit()} function. As described above, it is recommended
-        to use \pipterm{pip_exit()} 
-        instead of {\tt exit()}, because the Linux's {\tt exit()}
+\pipfunc{pip_exit()} function. This function acts like the Linux's
+        \linuxfunc{exit()} function. As described above, it is recommended
+        to use \pipfunc{pip_exit()} 
+        instead of \linuxfunc{exit()}, because the Linux's \linuxfunc{exit()}
         function works in most cases, however, there is a case it does
         not. Listing~\ref{prg:exit} and \ref{out:exit} show the
-        example showing how \pipterm{pip_exit()} works.
+        example showing how \pipfunc{pip_exit()} works.
 
 \lstinputlisting[style=program, caption={PiP Task Termination
     function ({\tt exit})}, label=prg:exit] {spawn/examples/exit.c}

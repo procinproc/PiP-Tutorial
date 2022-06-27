@@ -2,7 +2,7 @@
 \section{Spawning Tasks - Advanced}\label{sec:spawn-adv}
 
 In this section, other features, not described so far, of
-\pipterm{pip_spawn()} and \pipterm{pip_task_spawn()} will be
+\pipfunc{pip_spawn()} and \pipfunc{pip_task_spawn()} will be
 explained. For convenience, the function prototypes of these functions
 are shown below;
 
@@ -23,9 +23,9 @@ int pip_spawn( char *filename,                  [IN]
                void *hookarg );                 [IN]
 \end{lstlisting}
 
-The first argument of \pipterm{pip_task_spawn()} function is already
+The first argument of \pipfunc{pip_task_spawn()} function is already
 described in Section~\ref{sec:spawn-func}. This is structure is to
-pack the first three arguments of \pipterm{pip_spawn()}. 
+pack the first three arguments of \pipfunc{pip_spawn()}. 
 
 \subsection{Start Function}
 
@@ -41,8 +41,8 @@ met here;
   executable file must not be stripped.
 \end{itemize}
 
-As for the {\tt main()} function, the \pipterm{pipcc} and
-\pipterm{pipfc} compile programs with the {\tt -rdynamic} option to
+As for the {\tt main()} function, the \pipcomm{pipcc} and
+\pipcomm{pipfc} compile programs with the {\tt -rdynamic} option to
 make the symbol global. As for the user-defined local symbol, PiP
 library read the executable file to spawn and tries to find the
 starting function by using the ELF information. Unfortunately, the
@@ -52,18 +52,19 @@ the starting function.
 \subsection{Stack Size}
 
 The stack size of spawned PiP tasks can be set by the
-\pipterm{PIP_STACKSIZE} environment variable. Like the {\tt
-  OMP_STACKSIZE} environment defined by OpenMP, its value may
+\pipdef{PIP_STACKSIZE} environment variable. Like the
+\linuxenv{OMP_STACKSIZE} environment defined by OpenMP, its value may 
 be suffixed by ``{\tt T},'' ``{\tt G},'' ``{\tt M},'' ``{\tt K},'' or
 ``{\tt B}'' representing the {\it TiB}, {\it GiB}, {\it MiB}, {\it
   KiB}, or{\it Byte} unit, respectively. If no suffix is present,
-{\it KiB} is assumed. Unless \pipterm{PIP_STACKSIZE} is
-specified, the environment variable {\tt KMP_STACKSIZE}, {\tt
-  GOMP_STACKSIZE}, or {\tt OMP_STACKSIZE} is also effective with the
-priority in this order.  The {\tt KMP_STACKSIZE}, {\tt
-  GOMP_STACKSIZE}, and {\tt OMP_STACKSIZE} also affects the size of
-OpenMP threads, however, \pipterm{PIP_STACKSIZE} only affects the stack
-size of PiP tasks. 
+{\it KiB} is assumed. Unless \pipdef{PIP_STACKSIZE} is
+specified, the environment variable \linuxenv{KMP_STACKSIZE},
+  \linuxenv{GOMP_STACKSIZE}, or \linuxenv{OMP_STACKSIZE} is also effective
+  with the 
+priority in this order.  The \linuxenv{KMP_STACKSIZE},
+\linuxenv{GOMP_STACKSIZE}, and \linuxenv{OMP_STACKSIZE} also affects the
+size of OpenMP threads, however, \pipdef{PIP_STACKSIZE} only affects
+the stack size of PiP tasks. 
 
 \subsection{CPU Core Binding}
 
@@ -71,29 +72,29 @@ The {\tt coreno} argument is to bind the spawned PiP task to the
 specified CPU core. By default, this is the $N$th core number. If
 users want to specify the absolute core number, then the absolute core
 number should be {\tt OR}ed with the
-\pipterm{PIP_CPUCORE_ABS} flag. If the core numbers are consecutive,
+\pipdef{PIP_CPUCORE_ABS} flag. If the core numbers are consecutive,
 specifying this flag may not affect the core number
 specification. This difference is only seen on some CPU architectures
 with non-contiguous core numbers (e.g., Fujitsu A64FX).
-The {\tt coreno} argument can be \pipterm{PIP_CPUCORE_ASIS} to bind to
+The {\tt coreno} argument can be \pipdef{PIP_CPUCORE_ASIS} to bind to
 the same CPU cores as of the root process calling the spawn function.
 
 \subsection{File Descriptors and Spawn Hooks}\label{sec:hooks}
 
 In the \pipterm{process mode}, file descriptors of the root process
 are duplicated and passed to the spawned child in the same way of what
-{\tt fork()} does. In the \pipterm{pthread mode}, files descriptors
+\linuxfunc{fork()} does. In the \pipterm{pthread mode}, files descriptors
 are simply shared among PiP root and PiP tasks. 
 
-If the close-on-exec flag of a file descriptor owned by the root
+If the \term{close-on-exec} flag of a file descriptor owned by the root
 process is set in \pipterm{process mode}, then the file descriptor is
 closed after calling the \pipterm{before hook} described above (if
 any), and then jump into the start function.  
 
-The last argument of \pipterm{pip_task_spawn()} is the structure
-packing the last three arguments of \pipterm{pip_spawn()}. The
-\pipterm{pip_spawn_hook_t} structure can be set by calling
-\pipterm{pip_spawn_hook()} function. Here is the prototype;
+The last argument of \pipfunc{pip_task_spawn()} is the structure
+packing the last three arguments of \pipfunc{pip_spawn()}. The
+\pipstruct{pip_spawn_hook_t} structure can be set by calling
+\pipfunc{pip_spawn_hook()} function. Here is the prototype;
 
 \begin{lstlisting}[frame=tb]
 void pip_spawn_hook( pip_spawn_hook_t *hook,  [OUT]
@@ -109,15 +110,15 @@ PiP task is created and before calling the start function (e.g.,
 task is about to terminate. Both functions are called with the argument
 specified by the {\tt hookarg} to pass any arbitrary data. 
 
-In general, a new process is created by calling {\tt fork()} and {\tt
-execve()} in Linux/Unix. Here, file descriptors owned by
+In general, a new process is created by calling \linuxfunc{fork()} and
+\linuxfunc{execve()} in Linux/Unix. Here, file descriptors owned by
 parent process are passed to the created child. In many cases, those
 file descriptors are closed or duplicated and some other settings take
-place between the calls of {\tt fork()} and {\tt execve()}. In PiP,
-however, the task is created by only one function and there is no
-chance to do the same settings with the ones of using {\tt
-  fork\&exec}. These hook functions are provided for this purpose. Here 
-is an example of these hook functions;  
+place between the calls of \linuxfunc{fork()} and
+\linuxfunc{execve()}. In PiP, however, the task is created by only one
+function and there is no chance to do the same settings with the ones
+of using {\tt fork\&exec}. These hook functions are provided for this
+purpose. Here is an example of these hook functions;  
 
 \lstinputlisting[style=program,
   caption={Before and After Hooks},

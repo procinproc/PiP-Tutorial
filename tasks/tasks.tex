@@ -3,7 +3,7 @@
 
 This section will describe how PiP tasks are created in a simple way
 and how PiP tasks works in the different way from the process (using
-MPI) and thread (using OpenMP) creations.
+\term{MPI}) and thread (using \term{OpenMP}) creations.
 
 \subsection{\PIPKW{pipcc} and \PIPKW{pip-exec} Commands}
 \label{sec:pipcc-exec}
@@ -15,20 +15,20 @@ below;
                 {tasks/examples/hello.c}
 
 As you can see, this program is exactly the same with the normal C
-program. If this program is compiled with the \pipterm{pipcc} command,
+program. If this program is compiled with the \pipcomm{pipcc} command,
 then this program can run as a normal C program or as a PiP task by
-using the \pipterm{pip-exec} command.
+using the \pipcomm{pip-exec} command.
 
 \lstinputlisting[style=example, 
   caption={Hello World - Compile and Execute}, label=out:hello]
                 {tasks/examples/hello.out}
 
-The \pipterm{pipcc} command is written as a shell script to call a real
+The \pipcomm{pipcc} command is written as a shell script to call a real
 C compiler with appropriate options, such as {\tt -I}, {\tt -L} and so
 on. If the {\tt --silent} option is omitted, then you will see the
-options how \pipterm{pipcc} script calls the backend C/C++ compiler.
+options how \pipcomm{pipcc} script calls the backend C/C++ compiler.
 
-The \pipterm{pip-exec} command in this example is to execute an
+The \pipcomm{pip-exec} command in this example is to execute an
 executable file as PiP tasks, not as a normal Linux process.
 
 This example does not show how the hello program behaves differently
@@ -46,12 +46,12 @@ modify the ``hello world'' program as below;
 
 Now the ``Hello World'' program has a static variable
 {\tt x} and its address is printed out with the ``Hello World''
-message. The \pipterm{pip-exec} command may take an option to specify
+message. The \pipcomm{pip-exec} command may take an option to specify
 the number of PiP tasks to be created and executed in parallel. In the
 following execution example, the number of three (3) is
 specified. Additionally, the output of the same {\tt a.out} execution
-using MPI. It should be noted that the ``Hello World'' program runs in
-parallel with \pipterm{pip-exec} and {\tt mpiexec}. 
+using \term{MPI}. It should be noted that the ``Hello World'' program runs in
+parallel with \pipcomm{pip-exec} and \mpi{mpiexec}. 
 
 \lstinputlisting[style=example, 
   caption={Hello World with a static variable - Compile and Execute},
@@ -61,13 +61,13 @@ The first execution of {\tt a.out} shows that the variable {\tt x} is
 located at the address of {\tt 0x555555601030}\footnote{For
 simplicity, we disabled ASLR (Address Space Layout Randomization) in
 this example.}. This situation is the 
-same with the MPI execution\footnote{MPICH implementation where each
+same with the \term{MPI} execution\footnote{MPICH implementation where each
 MPI rank has its own address space.}. However, the locations of the
 variable {\tt x} executed as PiP tasks are all different.
-This is because PiP tasks share the same address space but MPI does
+This is because PiP tasks share the same address space but \term{MPI} does
 not. Readers may notice that threads also share the same address
-space and wonder the difference between PiP and OpenMP. The example
-below is the OpenMP version of the ``Hello World'' with a static
+space and wonder the difference between PiP and \term{OpenMP}. The example
+below is the \term{OpenMP} version of the ``Hello World'' with a static
 variable. 
 
 \lstinputlisting[style=program,
@@ -75,8 +75,8 @@ variable.
   label=prg:hello-var-omp] {tasks/examples/hello-var-omp.c}
 
 The execution output of program~\ref{prg:hello-var-omp} is shown
-below. Here, the addresses of variable {\tt x} are the same in OpenMP
-and MPI executions. However, the addresses of the variable with PiP
+below. Here, the addresses of variable {\tt x} are the same in \term{OpenMP}
+and \term{MPI} executions. However, the addresses of the variable with PiP
 execution are different pairs. 
 
 \lstinputlisting[style=example, 
@@ -84,12 +84,12 @@ execution are different pairs.
   label=out:hello-var-omp] {tasks/examples/hello-var-omp.out}
 
 Figure~\ref{fig:tasks:hello-var-omp} explains these differences. In
-OpenMP, the OpenMP threads share the same address space and variable
-{\tt x} is shared among threads. In MPI, each MPI process has its own
-address space and two (2) threads run in each address space and share
-the variable in the same MPI process. In PiP,
-all PiP tasks share the same address space, however, each PiP task has
-its own variables and thread 0 and 1 share
+\term{OpenMP}, the \term{OpenMP thread}s share the same address space
+and variable {\tt x} is shared among threads. In \term{MPI}, each
+\term{MPI process} has its own address space and two (2) threads run
+in each address space and share the variable in the same \term{MPI
+  process}. In PiP, all PiP tasks share the same address space,
+however, each PiP task has its own variables and thread 0 and 1 share
 the variable in the same PiP task, but not sharing the variables in
 the different PiP task (Figure~\ref{fig:tasks:hello-var-omp}).
 
@@ -106,7 +106,7 @@ static variables and threads running on the same address space share
 the same static variables. In the PiP execution model, each PiP task
 is guaranteed to have its own static variable set, decoupling from the
 address space while maintaining the address space sharing. This is
-called {\bf variable privatization}. 
+called {\bf \term{variable privatization}}. 
 
 This nature of PiP, privatized variables and sharing an address space,
 makes it easy to exchange information among PiP tasks while
@@ -134,10 +134,10 @@ specifying the {\PIPID} who exported.
 
 In this program, a PiP task having {\PIPID} of zero (0) export
 the address of the variable {\tt x} by calling
-\pipterm{pip_named_export()} after setting the value of {\tt
+\pipfunc{pip_named_export()} after setting the value of {\tt
   argv[1]}. The 
 other PiP tasks import the exported address by the PiP task 0 by
-calling \pipterm{pip_named_import()} function. Below is an execution
+calling \pipfunc{pip_named_import()} function. Below is an execution
 result of this program. As shown, the exported value by PiP task 0 can
 be seen by the other PiP tasks. 
 
@@ -145,8 +145,8 @@ be seen by the other PiP tasks.
   caption={Execution of Export and Import},
   label=out:export-import] {tasks/examples/export-import.out}
 
-The \pipterm{pip_named_export()} function publishes an address with
-the given name. The \pipterm{pip_named_import()} function
+The \pipfunc{pip_named_export()} function publishes an address with
+the given name. The \pipfunc{pip_named_import()} function
 blocking-waits until the named address on the specified PiP task by
 {\PIPID}. It is not allowed to export an address having the same
 name twice or more to update the address, because this leads to a race
@@ -158,13 +158,13 @@ error code is the same with the ones defined by Linux. In
 the examples so far and hereinafter, the returned code is not checked
 because of simplicity and readability. 
 
-In MPI, it is not allowed to access the data owned by the other
+In \term{MPI}, it is not allowed to access the data owned by the other
 processes in the same node. Communication is the only way allowed in
-MPI\footnote{Strictly speaking, some MPI implementations based on the
-thread model may allow this. Major MPI implementation, such MPICH,
-Open MPI, and many other MPI implementations provided by vendors are
+\term{MPI}\footnote{Strictly speaking, some \term{MPI} implementations based on the
+thread model may allow this. Major \term{MPI} implementation, such MPICH,
+Open MPI, and many other \term{MPI} implementations provided by vendors are
 based on the process model and there is no way to access data owned by
-the other MPI process.}. Basically, communication involves some form
+the other \term{MPI process}.}. Basically, communication involves some form
 of data copying (done by software or hardware). Data copying consumes
 time, power and memory. 
 
