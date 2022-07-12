@@ -9,29 +9,34 @@
 \usepackage{url}
 
 \hypersetup{colorlinks=true}
+
 %%% AH Macros
 \long\def\comment#1{}%
 \def\pipkw{\tt\bf\color{blue}}%
 \def\PIPKW#1{{\tt #1}}%
 \def\pipterm#1{{\pipkw #1}\index{PiP Term!#1}}%
+\def\PIPID{\pipterm{PIPID}}%
 \def\pipfunc#1{{\pipkw #1}\index{PiP Function!#1}}%
 \def\pipstruct#1{{\pipkw #1}\index{PiP Type!#1}}%
 \def\pipcomm#1{{\pipkw #1}\index{PiP Command!#1}}%
 \def\pipenv#1{{\pipkw #1}\index{PiP Environment Variable!#1}}%
 \def\pipdef#1{{\pipkw #1}\index{PiP Define Symbol!#1}}%
-\def\environ#1{{\tt #1}\index{Environment Variable!#1}}%
+
 \def\linuxfunc#1{{\tt #1}\index{Linux Function!#1}}%
 \def\linuxcomm#1{{\tt #1}\index{Linux Command!#1}}%
 \def\linuxenv#1{{\tt #1}\index{Linux Environment Variable!#1}}%
 \def\linuxdef#1{{\tt #1}\index{Linux Define Symbol!#1}}%
 \def\linuxvar#1{{\tt #1}\index{Linux Variable!#1}}%
+
 \def\term#1{#1\index{#1}}%
 \def\mpi#1{{\tt #1}\index{MPI!#1}}%
-\def\PIPID{\pipterm{PIPID}}%
 \def\NULL{\tt NULL}%
-\def\option#1{$\langle$#1$\rangle$}%
 \def\PIE{PIE\index{PIE}}%
 \def\PIC{PIC\index{PIC}}%
+
+\def\arch#1{{\tt #1}\index{CPU Architecture!#1}}
+
+\def\option#1{$\langle$#1$\rangle$}%
 
 \lstloadlanguages{C,csh}
 
@@ -45,13 +50,10 @@
     pip_named_export, pip_named_import, pip_exit, 
     pip_barrier_init, pip_barrier_wait, pip_barrier_fin,
     pip_barrier_t, pip_gettime, pip_gettid,
-    {execution mode}, {process mode}, {pthread mode},
-    {before hook}, {after hook},
     pip_glibc_lock, pip_glibc_unlock,
     PIP_PIPID_ROOT, PIP_PIPID_ANY, PIP_PIPID_MYSELF, 
     PIP_CPUCORE_ASIS, PIP_CPU_CORE_ABS,
     PIP_MODE_PTHREAD, PIP_MODE_PROCESS,
-    PIP_PRELOAD,
     PIP_STOP_ON_START, PIP_GDB_SIGNALS, PIP_SHOW_MAPS,
     PIP_SHOW_PIPS, PIP_GDB_PATH, PIP_GDB_COMMAND,
     pip-exec, pipcc, pipfc, pip-mode, printpipmode, pip-gdb}, 
@@ -60,7 +62,7 @@
 
 \lstdefinestyle{program}{numbers=none, numberstyle=\tiny, numbersep=5pt, frame=tb, language=C}
 \lstdefinestyle{example}{numbers=none, numberstyle=\tiny, numbersep=5pt, language=, frame=tRBl}
-\lstdefinestyle{define}{frame=single, language=csh}
+%%\lstdefinestyle{define}{frame=single, language=csh}
 
 \title{Great Experiences with PiP (Proecss-in-Process)} % Book title
 \author{Atsushi Hori} % Author
@@ -100,7 +102,7 @@
 \input{ack}
 
 \chapter*{Introduction}
-\input{intro}
+\input{intro}\label{sec:intro}
 
 \chapter{PiP Basics}\label{chap:basics}
 \input{basics}
@@ -120,6 +122,7 @@
 \input{context/context}
 \input{debug/debug}
 \input{malloc/malloc}
+\input{xpmem/xpmem}
 
 \chapter{PiP Internals}
 \input{impl/impl}

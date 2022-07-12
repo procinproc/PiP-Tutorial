@@ -204,9 +204,17 @@ constructors are not the same with the ones of the PiP tasks.
 
 \linuxenv{LD_PRELOAD} only works with PiP root, not PiP tasks. This is
 because \linuxfunc{dlmopen()} simply ignores the \linuxenv{LD_PRELOAD}
-environment setting. 
+environment setting.
 
-\subsubsection{\PIPKW{pip-unpie} program}
+\subsubsection{Shared Objects}
+
+Some shared objects, such as GCC related runtime libraries, must be
+located in the same directory where the {\tt ld-linux.so}
+does. The \pipcomm{piplnlibs} shell script found in the PiP-glibc
+package makes symbolic links of the shared objects in the {\tt /lib64}
+directories to meet with the restriction.
+
+\subsubsection{Loading Program by {\tt dlmopen()}}
 
 The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
 to load a program by the \linuxfunc{dlmopen()} function\footnote{Refer
@@ -216,6 +224,17 @@ tested this situation but I cannot find this problem with PiP.}. The
 program is automatically executed by the \pipcomm{pipcc} or
 \pipcomm{pipfc} when creating a PiP executable, and not to be invoked
 by users directly.
+
+\subsection{Glibc {\tt RAPTH} Setting}
+
+When using Spack\footnote{\url{PIPKW{pip-unpie} program}}, it
+automatically adds {\tt RPATH}s for every program and PiP is no
+exception. A problem arises when to install the PiP-glibc by using
+Spack. When the PiP-glibc is built by using Spack, Spack adds the {\tt
+  RPATH} setting to the compiled Glibc, but it is not allowed in
+CentOS/Redhat 8 to load Glibc with the {\tt RPATH} setting. To avoid
+this, PiP-gilbc has a program (\pipcomm{annul_annul_rpatha}) to unset
+the {\tt RPATH} setting of the compiled Glibc.
 
 \subsection{Linux}
 

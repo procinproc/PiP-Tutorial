@@ -2,7 +2,7 @@
 \section{Myths on PiP}
 
 \subsection*{I cannot see the difference between shared memory and
-  what PiP does}
+  what PiP does}\label{sec:shared-memory-myth}
 
 The shared memory model enables to access the data owned by the other
 process. While the POSIX share memory model allows to share only newly
@@ -19,7 +19,8 @@ mapped in one memory address, and a PiP task can access any data owned
 by the others once the addresses of the data are known, without calling
 any expensive system calls. In terms of how memory regions are mapped,
 I name the way what PiP does \pipterm{shared address space model}, as
-oppose to the \term{shared memory model}. 
+oppose to the \term{shared memory model}. It should be noted that the
+shared address space model includes the shared memory model.
 
 If the data to be shared are scattered in an address space and hard to
 pack in a memory region, or the shared data are being dynamically

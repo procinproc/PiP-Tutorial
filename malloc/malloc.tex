@@ -41,11 +41,10 @@ routines, but I believe this situation must be avoided.
 \end{figure}
 
 To deal with this, PiP library wraps \linuxfunc{malloc} routines as shown in
-Table~\ref{tbl:pip-wrapper}. When an memory region is allocated, the
-\linuxfunc{malloc} wrapper function embeds information who allocate the
-region. When this region is to be \linuxfunc{free()}ed, the
+Table~\ref{tbl:pip-wrapper}. When a memory region is allocated, the
+\linuxfunc{malloc} wrapper function embeds the information who
+allocates that region. When this region is to be \linuxfunc{free()}ed, the
 \linuxfunc{free()} wrapper function connects the region to the freeing
 list of the task allocating the region. The regions in the freeing
 list are eventually \linuxfunc{free()}ed when one of the \linuxfunc{malloc}
-functions is called by the producer
-(Figure~\ref{fig:cross-malloc-free}).  
+wrapper functions (Figure~\ref{fig:cross-malloc-free}).  

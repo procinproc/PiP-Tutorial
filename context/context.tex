@@ -36,8 +36,9 @@ debugging difficult.
 
 Further, the association of static variables and function addresses
 heavily depends on the CPU architecture and tool chain. The above
-description is true on {\tt X86_64} and {\tt AArch64}, however, not
-true on {\tt X86_32}. Thus, it is not recommended do this.
+description is true on \arch{X86_64} and \arch{AArch64},
+however, not true on \arch{X86_32}. Thus, it is not recommended
+do this. 
 
 \subsubsection*{Rationale}
 
@@ -78,7 +79,7 @@ objects compiled with the \PIC\ option can be loaded at any locations.
 
 Unfortunately, this addressing mode is not supported by all CPU
 architectures\footnote{Listing~\ref{out:context} is obtained by
-running the program on an {\tt X86_64} CPU}. For example, {\tt X86_32} 
+running the program on an \arch{X86_64} CPU}. For example, \arch{X86_32} 
 does not. On this architecture, one general purpose
 register is sacrificed to point the variable segment, resulting
 performance degradation by loosing one general purpose register. And
