@@ -1,41 +1,3 @@
-@InProceedings{10.1007/978-3-031-10419-0_5,
-author="Hori, Atsushi
-and Ouyang, Kaiming
-and Gerofi, Balazs
-and Ishikawa, Yutaka",
-editor="Panda, Dhabaleswar K.
-and Sullivan, Michael",
-title="On the Difference Between Shared Memory and Shared Address Space in HPC Communication",
-booktitle="Supercomputing Frontiers",
-year="2022",
-publisher="Springer International Publishing",
-address="Cham",
-pages="59--78",
-abstract="Shared memory mechanisms, e.g., POSIX shmem or XPMEM, are widely used to implement efficient intra-node communication among processes running on the same node. While POSIX shmem allows other processes to access only newly allocated memory, XPMEM allows accessing any existing data and thus enables more efficient communication because the send buffer content can directly be copied to the receive buffer. Recently, the shared address space model has been proposed, where processes on the same node are mapped into the same address space at the time of process creation, allowing processes to access any data in the shared address space. Process-in-Process (PiP) is an implementation of such mechanism. The functionalities of shared memory mechanisms and the shared address space model look very similar -- both allow accessing the data of other processes --, however, the shared address space model includes the shared memory model. Their internal mechanisms are also notably different. This paper clarifies the differences between the shared memory and the shared address space models, both qualitatively and quantitatively. This paper is not to showcase applications of the shared address space model, but through minimal modifications to an existing MPI implementation it highlights the basic differences between the two models. The following four MPI configurations are evaluated and compared; 1) POSIX Shmem, 2) XPMEM, 3) PiP-Shmem, where intra-node communication is implemented to utilize POSIX shmem but MPI processes share the same address space, and 4) PiP-XPMEM, where XPMEM functions are implemented by the PiP library (without the need for linking to XPMEM library). Evaluation is done using the Intel MPI benchmark suite and six HPC benchmarks (HPCCG, miniGhost, LULESH2.0, miniMD, miniAMR and mpiGraph). Most notably, mpiGraph performance of PiP-XPMEM outperforms the XPMEM implementation by almost 1.5x. The performance numbers of HPCCG, miniGhost, miniMD, LULESH2.0 running with PiP-Shmem and PiP-XPMEM are comparable with those of POSIX Shmem and XPMEM. PiP is not only a practical implementation of the shared address space model, but it also provides opportunities for developing new optimization techniques, which the paper further elaborates on.",
-isbn="978-3-031-10419-0"
-}
-
-
-@INPROCEEDINGS{9555958,
-  author={Ouyang, Kaiming and Si, Min and Hori, Astushi and Chen, Zizhong and Balaji, Pavan},
-  booktitle={2021 IEEE International Conference on Cluster Computing (CLUSTER)}, 
-  title={Daps: A Dynamic Asynchronous Progress Stealing Model for MPI Communication}, 
-  year={2021},
-  volume={},
-  number={},
-  pages={516-527},
-  doi={10.1109/Cluster48925.2021.00027}}
- 
-@inproceedings{10.5555/3433701.3433748, author = {Ouyang, Kaiming and Si, Min and Hori, Atsushi and Chen, Zizhong and Balaji, Pavan}, title = {CAB-MPI: Exploring Interprocess Work-Stealing towards Balanced MPI Communication}, year = {2020}, isbn = {9781728199986}, publisher = {IEEE Press}, abstract = {Load balance is essential for high-performance applications. Unbalanced communication can cause severe performance degradation, even in computation-balanced BSP applications. Designing communication-balanced applications is challenging, however, because of the diverse communication implementations at the underlying runtime system. In this paper, we address this challenge through an interprocess work-stealing scheme based on process-memory-sharing techniques. We present CAB-MPI, an MPI implementation that can identify idle processes inside MPI and use these idle resources to dynamically balance communication workload on the node. We design throughput-optimized strategies to ensure efficient stealing of the data movement tasks. We demonstrate the benefit of work stealing through several internal processes in MPI, including intranode data transfer, pack/unpack for noncontiguous communication, and computation in one-sided accumulates. The implementation is evaluated through a set of microbenchmarks and proxy applications on Intel Xeon and Xeon Phi platforms.}, booktitle = {Proceedings of the International Conference for High Performance Computing, Networking, Storage and Analysis}, articleno = {36}, numpages = {15}, keywords = {load balance, MPI, communication, work stealing}, location = {Atlanta, Georgia}, series = {SC '20} }
-
-@INPROCEEDINGS{9150340,
-  author={A. {Hori} and B. {Gerofi} and Y. {Ishikawa}},
-  booktitle={2020 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)}, 
-  title={An Implementation of User-Level Processes using Address Space Sharing}, 
-  year={2020},
-  volume={},
-  number={},
-  pages={976-984},}
 
 @inproceedings{10.1145/3208040.3208045,
 author = {Hori, Atsushi and Si, Min and Gerofi, Balazs and Takagi, Masamichi and Dayal, Jai and Balaji, Pavan and Ishikawa, Yutaka},
@@ -53,4 +15,111 @@ numpages = {13},
 keywords = {MPI, in-situ, parallel execution model, intra-node communication},
 location = {Tempe, Arizona},
 series = {HPDC '18}
+}
+
+@INPROCEEDINGS{9555958,
+  author={Ouyang, Kaiming and Si, Min and Hori, Astushi and Chen, Zizhong and Balaji, Pavan},
+  booktitle={2021 IEEE International Conference on Cluster Computing (CLUSTER)}, 
+  title={Daps: A Dynamic Asynchronous Progress Stealing Model for MPI Communication}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={516-527},
+  doi={10.1109/Cluster48925.2021.00027}}
+ 
+@inproceedings{10.5555/3433701.3433748,
+  author = {Ouyang, Kaiming and Si, Min and Hori, Atsushi and Chen, Zizhong and Balaji, Pavan},
+  title = {CAB-MPI: Exploring
+    Interprocess Work-Stealing towards Balanced MPI Communication},
+  year = {2020},
+  isbn = {9781728199986},
+  publisher = {IEEE Press},
+  abstract = {Load balance is essential for high-performance
+    applications. Unbalanced communication can cause
+    severe performance degradation, even in
+    computation-balanced BSP applications. Designing
+    communication-balanced applications is challenging,
+    however, because of the diverse communication
+    implementations at the underlying runtime system. In
+    this paper, we address this challenge through an
+    interprocess work-stealing scheme based on
+    process-memory-sharing techniques. We present
+    CAB-MPI, an MPI implementation that can identify
+    idle processes inside MPI and use these idle
+    resources to dynamically balance communication
+    workload on the node. We design throughput-optimized
+    strategies to ensure efficient stealing of the data
+    movement tasks. We demonstrate the benefit of work
+    stealing through several internal processes in MPI,
+    including intranode data transfer, pack/unpack for
+    noncontiguous communication, and computation in
+    one-sided accumulates. The implementation is
+    evaluated through a set of microbenchmarks and proxy
+    applications on Intel Xeon and Xeon Phi platforms.},
+  booktitle = {Proceedings of the International
+    Conference for High Performance Computing,
+    Networking, Storage and Analysis},
+  articleno = {36},
+  numpages = {15},
+  keywords = {load balance, MPI, communication, work stealing},
+  location = {Atlanta, Georgia},
+  series = {SC '20} } 
+
+@INPROCEEDINGS{9150340,
+  author={A. {Hori} and B. {Gerofi} and Y. {Ishikawa}},
+  booktitle={2020 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)}, 
+  title={An Implementation of User-Level Processes using Address Space Sharing}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={976-984},}
+
+@InProceedings{10.1007/978-3-031-10419,
+author="Hori, Atsushi
+and Ouyang, Kaiming
+and Gerofi, Balazs
+and Ishikawa, Yutaka",
+editor="Panda, Dhabaleswar K.
+and Sullivan, Michael",
+title="On the Difference Between Shared Memory and Shared Address Space in HPC Communication",
+booktitle="Supercomputing Frontiers",
+year="2022",
+publisher="Springer International Publishing",
+address="Cham",
+pages="59--78",
+abstract="Shared memory mechanisms, e.g., POSIX shmem or XPMEM, are
+widely used to implement efficient intra-node communication among
+processes running on the same node. While POSIX shmem allows other
+processes to access only newly allocated memory, XPMEM allows
+accessing any existing data and thus enables more efficient
+communication because the send buffer content can directly be copied
+to the receive buffer. Recently, the shared address space model has
+been proposed, where processes on the same node are mapped into the
+same address space at the time of process creation, allowing processes
+to access any data in the shared address space. Process-in-Process
+(PiP) is an implementation of such mechanism. The functionalities of
+shared memory mechanisms and the shared address space model look very
+similar -- both allow accessing the data of other processes --,
+however, the shared address space model includes the shared memory
+model. Their internal mechanisms are also notably different. This
+paper clarifies the differences between the shared memory and the
+shared address space models, both qualitatively and
+quantitatively. This paper is not to showcase applications of the
+shared address space model, but through minimal modifications to an
+existing MPI implementation it highlights the basic differences
+between the two models. The following four MPI configurations are
+evaluated and compared; 1) POSIX Shmem, 2) XPMEM, 3) PiP-Shmem, where
+intra-node communication is implemented to utilize POSIX shmem but MPI
+processes share the same address space, and 4) PiP-XPMEM, where XPMEM
+functions are implemented by the PiP library (without the need for
+linking to XPMEM library). Evaluation is done using the Intel MPI
+benchmark suite and six HPC benchmarks (HPCCG, miniGhost, LULESH2.0,
+miniMD, miniAMR and mpiGraph). Most notably, mpiGraph performance of
+PiP-XPMEM outperforms the XPMEM implementation by almost 1.5x. The
+performance numbers of HPCCG, miniGhost, miniMD, LULESH2.0 running
+with PiP-Shmem and PiP-XPMEM are comparable with those of POSIX Shmem
+and XPMEM. PiP is not only a practical implementation of the shared
+address space model, but it also provides opportunities for developing
+new optimization techniques, which the paper further elaborates on.", 
+isbn="978-3-031-10419-0"
 }

@@ -10,6 +10,8 @@
 
 \hypersetup{colorlinks=true}
 
+\bibliographystyle{abstract}
+
 %%% AH Macros
 \long\def\comment#1{}%
 \def\pipkw{\tt\bf\color{blue}}%
@@ -18,7 +20,7 @@
 \def\PIPID{\pipterm{PIPID}}%
 \def\pipfunc#1{{\pipkw #1}\index{PiP Function!#1}}%
 \def\pipstruct#1{{\pipkw #1}\index{PiP Type!#1}}%
-\def\pipcomm#1{{\pipkw #1}\index{PiP Command!#1}}%
+\def\pipcmd#1{{\pipkw #1}\index{PiP Command!#1}}%
 \def\pipenv#1{{\pipkw #1}\index{PiP Environment Variable!#1}}%
 \def\pipdef#1{{\pipkw #1}\index{PiP Define Symbol!#1}}%
 
@@ -35,6 +37,9 @@
 \def\PIC{PIC\index{PIC}}%
 
 \def\arch#1{{\tt #1}\index{CPU Architecture!#1}}
+\def\AMD{{\tt x86\_64}}%
+\def\INTEL{{\tt x86\_32}}%
+\def\ARM{{\tt AArch64}}%
 
 \def\option#1{$\langle$#1$\rangle$}%
 
@@ -104,7 +109,7 @@
 \chapter*{Introduction}
 \input{intro}\label{sec:intro}
 
-\chapter{PiP Basics}\label{chap:basics}
+\chapter{Basics}\label{chap:basics}
 \input{basics}
 \input{tasks/tasks}
 \input{spawn/spawn}
@@ -113,7 +118,7 @@
 \input{summary/summary}
 \input{myths/myths}
 
-\chapter{PiP Advanced}\label{chap:advanced}
+\chapter{Advanced}\label{chap:advanced}
 \input{advanced}
 \input{rationale/rationale}
 \input{glibc/glibc}
@@ -124,20 +129,20 @@
 \input{malloc/malloc}
 \input{xpmem/xpmem}
 
-\chapter{PiP Internals}
+\chapter{Internals}
 \input{impl/impl}
 \input{issues/issues}
 
-\chapter{PiP Installation}
+\chapter{Installation}
 \input{install}
+\input{install/source}
 \input{install/pip-pip}
-
-\chapter{Research Papers}
+\input{install/spack}
 
 \appendix
-\comment{
-  \bibliography{ref}
-}
+
+\bibliography{pip}
+\nocite{*}%
 
 \printindex
 

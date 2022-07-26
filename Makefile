@@ -3,6 +3,7 @@ include ./rules.mk
 
 TARGET = main
 LATEX  = pdflatex < /dev/null
+BIBTEX = bibtex
 
 PDF    = $(TARGET).pdf
 
@@ -11,7 +12,9 @@ FIGS = $(shell find */Figs/ -name '*.pdf' -type f -print)
 OUTS = $(shell find */examples/ -name '*.out' -type f -print)
 BIBS = pip.bib
 
-all : clean examples $(PDF) Makefile
+all : clean examples Makefile
+	rm -f $(PDF)
+	make $(PDF)
 
 pipkw.sh: pip-keywords.sh
 	./pip-keywords.sh
@@ -26,18 +29,19 @@ examples: pipkw.sh
 
 $(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
 	$(RM) $(TARGET).idx
-	$(LATEX) $(TARGET)
-	rerun_count=5; \
+	$(LATEX)  $(TARGET)
+	$(BIBTEX) $(TARGET)
+	rerun_count=5; rcount=0; \
 	while egrep -s 'Rerun (LaTeX|to get cross-references right)' $(TARGET).log; \
 	    do \
-	      if [ $${rerun_count} -eq 0 ]; then \
+	      if [ $${rcount} -ge $${rerun_count} ]; then \
 		echo 'Something goes wrong'; exit 1; \
 	      fi; \
 	      echo "Rerunning latex .... ($${rerun_count})" ;\
 	      rm -f $(TARGET).log; \
 	      $(LATEX) $(TARGET); \
 	      makeindex -l $(TARGET).idx; \
-	      rerun_count=`expr $${rerun_count} - 1` ;\
+	      rcount=`expr $${rcount} + 1` ;\
 	    done 
 	grep    -e "LaTeX\ Warning" \
 		-e "Package\ natbib\ Warning" \
@@ -46,7 +50,7 @@ $(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
 		$(TARGET).log
 
 clean-hook: 
-	$(RM) *.lol *.lof *.lot *.toc *.bbl *.blg 
+	$(RM) *.lol *.lof *.lot *.toc *.bbl *.blg *.bbl
 	$(RM) *.idx *.ilg *.ind *.out *.aux *.log
 	find ./*/ -name Makefile -print | \
 		while read ex; do \

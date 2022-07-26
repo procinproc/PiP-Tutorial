@@ -41,8 +41,8 @@ met here;
   executable file must not be stripped.
 \end{itemize}
 
-As for the {\tt main()} function, the \pipcomm{pipcc} and
-\pipcomm{pipfc} compile programs with the {\tt -rdynamic} option to
+As for the {\tt main()} function, the \pipcmd{pipcc} and
+\pipcmd{pipfc} compile programs with the {\tt -rdynamic} option to
 make the symbol global. As for the user-defined local symbol, PiP
 library read the executable file to spawn and tries to find the
 starting function by using the ELF information. Unfortunately, the

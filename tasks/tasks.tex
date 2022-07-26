@@ -15,20 +15,20 @@ below;
                 {tasks/examples/hello.c}
 
 As you can see, this program is exactly the same with the normal C
-program. If this program is compiled with the \pipcomm{pipcc} command,
+program. If this program is compiled with the \pipcmd{pipcc} command,
 then this program can run as a normal C program or as a PiP task by
-using the \pipcomm{pip-exec} command.
+using the \pipcmd{pip-exec} command.
 
 \lstinputlisting[style=example, 
   caption={Hello World - Compile and Execute}, label=out:hello]
                 {tasks/examples/hello.out}
 
-The \pipcomm{pipcc} command is written as a shell script to call a real
+The \pipcmd{pipcc} command is written as a shell script to call a real
 C compiler with appropriate options, such as {\tt -I}, {\tt -L} and so
 on. If the {\tt --silent} option is omitted, then you will see the
-options how \pipcomm{pipcc} script calls the backend C/C++ compiler.
+options how \pipcmd{pipcc} script calls the backend C/C++ compiler.
 
-The \pipcomm{pip-exec} command in this example is to execute an
+The \pipcmd{pip-exec} command in this example is to execute an
 executable file as PiP tasks, not as a normal Linux process.
 
 This example does not show how the hello program behaves differently
@@ -46,12 +46,12 @@ modify the ``hello world'' program as below;
 
 Now the ``Hello World'' program has a static variable
 {\tt x} and its address is printed out with the ``Hello World''
-message. The \pipcomm{pip-exec} command may take an option to specify
+message. The \pipcmd{pip-exec} command may take an option to specify
 the number of PiP tasks to be created and executed in parallel. In the
 following execution example, the number of three (3) is
 specified. Additionally, the output of the same {\tt a.out} execution
 using \term{MPI}. It should be noted that the ``Hello World'' program runs in
-parallel with \pipcomm{pip-exec} and \mpi{mpiexec}. 
+parallel with \pipcmd{pip-exec} and \mpi{mpiexec}. 
 
 \lstinputlisting[style=example, 
   caption={Hello World with a static variable - Compile and Execute},

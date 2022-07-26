@@ -127,7 +127,7 @@ implemented in the patched-glibc (Section~\ref{sec:name-space}). If
 
 \subsection{Name of PiP Tasks}\label{sec:proc-name}
 
-Some readers may wonder how the \pipcomm{pips} command
+Some readers may wonder how the \pipcmd{pips} command
 (Section~\ref{sec:pips}) can distinguish the PiP tasks and the other
 normal processes and/or threads. In Linux, each process and thread can
 have a name, which can be seen by the \linuxcomm{top} command in the {\tt
@@ -171,8 +171,8 @@ The name may have up to 16 characters and PiP occupies the first two
 characters The remaining 14 characters are used for representing
 original command name. The abbreviation column in
 Table~\ref{tbl:name-2} shows the characters used by the
-\pipcomm{pip-mode} command (Section~\ref{sec:pip-mode}) to specify the
+\pipcmd{pip-mode} command (Section~\ref{sec:pip-mode}) to specify the
 PiP execution mode.
-The \pipcomm{pips} command can now distinguish the normal processes or
+The \pipcmd{pips} command can now distinguish the normal processes or
 threads from the PiP roots and PiP tasks by using those first 2
 characters of the command.

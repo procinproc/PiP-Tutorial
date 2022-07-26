@@ -81,7 +81,7 @@ The name space table resides in the {\tt ld-linux.so} and this means
 that the {\tt .interp} ELF section of PiP programs must be changed so
 that the program is loaded by the new {\tt ld-linux.so}. This can be
 done by specifying {\tt --dynamic-linker} option of the GNU linker and
-the \pipcomm{pipcc} and \pipcomm{pipfc} do this.
+the \pipcmd{pipcc} and \pipcmd{pipfc} do this.
 
 The name space table resides at the top of a structure in {\tt
   ld-linux.so}. Some Glibc functions refer to the members in this
@@ -100,7 +100,7 @@ top (by the kernel), not on the pass called from \linuxfunc{dlopen()}
   and {\tt dlmopen()}\footnote{I guess the loaded code by using
   \linuxfunc{dlopen()} or \linuxfunc{dlmopen()} cannot be debugged.}. The
   patched 
-  PiP-glibc fixed this issue. Thus, the \pipcomm{pip-gdb} command
+  PiP-glibc fixed this issue. Thus, the \pipcmd{pip-gdb} command
   (Section~\ref{sec:pip-gdb}) can only work with 
   the PiP programs linked with the patched PiP-glibc.
 
@@ -210,7 +210,7 @@ environment setting.
 
 Some shared objects, such as GCC related runtime libraries, must be
 located in the same directory where the {\tt ld-linux.so}
-does. The \pipcomm{piplnlibs} shell script found in the PiP-glibc
+does. The \pipcmd{piplnlibs} shell script found in the PiP-glibc
 package makes symbolic links of the shared objects in the {\tt /lib64}
 directories to meet with the restriction.
 
@@ -220,9 +220,9 @@ The Glibc in CentOS/RedHat 8 (and possibly newer ones) does not allow
 to load a program by the \linuxfunc{dlmopen()} function\footnote{Refer
 \url{https://sourceware.org/bugzilla/show_bug.cgi?id=11754\#c15}. I
 tested this situation but I cannot find this problem with PiP.}. The
-\pipcomm{pip-unpie} program is to cheat this Glibc restriction. This
-program is automatically executed by the \pipcomm{pipcc} or
-\pipcomm{pipfc} when creating a PiP executable, and not to be invoked
+\pipcmd{pip-unpie} program is to cheat this Glibc restriction. This
+program is automatically executed by the \pipcmd{pipcc} or
+\pipcmd{pipfc} when creating a PiP executable, and not to be invoked
 by users directly.
 
 \subsection{Glibc {\tt RAPTH} Setting}
@@ -233,7 +233,7 @@ exception. A problem arises when to install the PiP-glibc by using
 Spack. When the PiP-glibc is built by using Spack, Spack adds the {\tt
   RPATH} setting to the compiled Glibc, but it is not allowed in
 CentOS/Redhat 8 to load Glibc with the {\tt RPATH} setting. To avoid
-this, PiP-gilbc has a program (\pipcomm{annul_annul_rpatha}) to unset
+this, PiP-gilbc has a program (\pipcmd{annul_annul_rpatha}) to unset
 the {\tt RPATH} setting of the compiled Glibc.
 
 \subsection{Linux}
@@ -250,7 +250,7 @@ address space is composed.
 
 Listing~\ref{out:maps} shows an example of the output of doing ``{\tt
   cat /proc/\option{PID}/maps}.'' Here, ``{\tt pip-exec -n 2
-  ./a.out}'' was executed, resulting one \pipcomm{pip-exec} process
+  ./a.out}'' was executed, resulting one \pipcmd{pip-exec} process
 and two {\tt ./a.out} tasks. The file, {\tt
   /proc/\option{PID}/maps}, lists all memory
 segments in an address space of the process {\tt \option{PID}}
@@ -319,7 +319,7 @@ address space can be changed by those running tasks.
 of memory and CPU state. The above PiP situation breaks this
 assumption. If $B$ produces another core file, may or may not be
 caused by the error on $A$, the same situation can happen.
-Thus, the \pipcomm{pip-gdb} command (Section~ref{sec:pip-gdb}) does
+Thus, the \pipcmd{pip-gdb} command (Section~ref{sec:pip-gdb}) does
 not support for debugging from a core file. To solve this issue,
 PiP-aware OS kernel is needed. 
 

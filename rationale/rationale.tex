@@ -32,7 +32,7 @@ cannot load multiple programs in the same address space. To enable
 this, the PiP executables must be compiled as \PIE\ (Position
 Independent Executable) so that the programs can be loaded at any
 arbitrary address. All programs to be PiP tasks must be compiled as
-\PIE, i.e., must be compiled with \pipcomm{pipcc} or \pipcomm{pipfc}
+\PIE, i.e., must be compiled with \pipcmd{pipcc} or \pipcmd{pipfc}
 with the {\tt --piptask} option (or nothing to use the default). Note
 that PiP root program may not be \PIE.  
 

@@ -28,12 +28,12 @@ path to the program of the task. Do not forget to set the {\it
   label=prg:stop-on-start] {debug/examples/onstart.cmd}
 
 Listing~\ref{prg:stop-on-start} shows an example of the script for the
-\pipenv{PIP_STOP_ON_START}. Here, \pipcomm{pips} command is invoked
+\pipenv{PIP_STOP_ON_START}. Here, \pipcmd{pips} command is invoked
 instead of some debugging command\footnote{All examples are executed
 on a Docker environment but {\tt ptrace} (and other commands using
 {\tt ptrace}) was unable to run in this example even withthe {\tt
   --cap-add=SYS_PTRACE} Docker option (I confirmed {\tt gdb} worked). So 
-\pipcomm{pips} was used instead in this example.}. Note that 
+\pipcmd{pips} was used instead in this example.}. Note that 
 the target task is already stopped by delivering the {\tt SIGSTOP}
 signal. Somehow you have to explicitly deliver the {\tt SIGCONT}
 signal to the task if you want to resume the
@@ -94,12 +94,12 @@ the address map (Listing~\ref{out:maps}, for example) will be shown.
 
 If \pipenv{PIP_SHOW_PIPS} environment is set to ``{\tt on}'' and the
 a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
-\pipcomm{pips} command (Section~\ref{sec:pips}) is invoked to show the
+\pipcmd{pips} command (Section~\ref{sec:pips}) is invoked to show the
 status of the other PiP tasks in the same address space.
 
 \subsection{\PIPKW{PIP_GDB_PATH} and \PIPKW{PIP_GDB_COMMAND}}
 
-When \pipenv{PIP_GDB_PATH} is set to the path to \pipcomm{pip-gdb}
+When \pipenv{PIP_GDB_PATH} is set to the path to \pipcmd{pip-gdb}
 a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
 PiP gdb (Section~\ref{sec:pip-gdb}) will be invoked. If the value of
 the \pipenv{PIP_GDB_COMMAND} environment is set to a valid filename
