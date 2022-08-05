@@ -1,5 +1,5 @@
 
-@inproceedings{10.1145/3208040.3208045,
+@inproceedings{1-Hori18,
 author = {Hori, Atsushi and Si, Min and Gerofi, Balazs and Takagi, Masamichi and Dayal, Jai and Balaji, Pavan and Ishikawa, Yutaka},
 title = {Process-in-Process: Techniques for Practical Address-Space Sharing},
 year = {2018},
@@ -8,7 +8,33 @@ publisher = {Association for Computing Machinery},
 address = {New York, NY, USA},
 url = {https://doi.org/10.1145/3208040.3208045},
 doi = {10.1145/3208040.3208045},
-abstract = {The two most common parallel execution models for many-core CPUs today are multiprocess (e.g., MPI) and multithread (e.g., OpenMP). The multiprocess model allows each process to own a private address space, although processes can explicitly allocate shared-memory regions. The multithreaded model shares all address space by default, although threads can explicitly move data to thread-private storage. In this paper, we present a third model called process-in-process (PiP), where multiple processes are mapped into a single virtual address space. Thus, each process still owns its process-private storage (like the multiprocess model) but can directly access the private storage of other processes in the same virtual address space (like the multithread model).The idea of address-space sharing between multiple processes itself is not new. What makes PiP unique, however, is that its design is completely in user space, making it a portable and practical approach for large supercomputing systems where porting existing OS-based techniques might be hard. The PiP library is compact and is designed for integrating with other runtime systems such as MPI and OpenMP as a portable low-level support for boosting communication performance in HPC applications. We showcase the uniqueness of the PiP environment through both a variety of parallel runtime optimizations and direct use in a data analysis application. We evaluate PiP on several platforms including two high-ranking supercomputers, and we measure and analyze the performance of PiP by using a variety of micro- and macro-kernels, a proxy application as well as a data analysis application.},
+note = {({\bf Note: This is the first paper proposing Process-in-Process.})},
+abstract = {The two most common parallel execution models for many-core CPUs today
+  are multiprocess (e.g., MPI) and multithread (e.g., OpenMP). The
+  multiprocess model allows each process to own a private address
+  space, although processes can explicitly allocate shared-memory
+  regions. The multithreaded model shares all address space by
+  default, although threads can explicitly move data to thread-private
+  storage. In this paper, we present a third model called
+  process-in-process (PiP), where multiple processes are mapped into a
+  single virtual address space. Thus, each process still owns its
+  process-private storage (like the multiprocess model) but can
+  directly access the private storage of other processes in the same
+  virtual address space (like the multithread model). The idea of
+  address-space sharing between multiple processes itself is not
+  new. What makes PiP unique, however, is that its design is
+  completely in user space, making it a portable and practical
+  approach for large supercomputing systems where porting existing
+  OS-based techniques might be hard. The PiP library is compact and is
+  designed for integrating with other runtime systems such as MPI and
+  OpenMP as a portable low-level support for boosting communication
+  performance in HPC applications. We showcase the uniqueness of the
+  PiP environment through both a variety of parallel runtime
+  optimizations and direct use in a data analysis application. We
+  evaluate PiP on several platforms including two high-ranking
+  supercomputers, and we measure and analyze the performance of PiP by
+  using a variety of micro- and macro-kernels, a proxy application as
+  well as a data analysis application.}, 
 booktitle = {Proceedings of the 27th International Symposium on High-Performance Parallel and Distributed Computing},
 pages = {131–143},
 numpages = {13},
@@ -16,25 +42,63 @@ keywords = {MPI, in-situ, parallel execution model, intra-node communication},
 location = {Tempe, Arizona},
 series = {HPDC '18}
 }
-
-@INPROCEEDINGS{9555958,
-  author={Ouyang, Kaiming and Si, Min and Hori, Astushi and Chen, Zizhong and Balaji, Pavan},
-  booktitle={2021 IEEE International Conference on Cluster Computing (CLUSTER)}, 
-  title={Daps: A Dynamic Asynchronous Progress Stealing Model for MPI Communication}, 
-  year={2021},
+ 
+@INPROCEEDINGS{2-Hori20,
+  author={A. {Hori} and B. {Gerofi} and Y. {Ishikawa}},
+  booktitle={2020 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)}, 
+  title={An Implementation of User-Level Processes using Address Space Sharing}, 
+  year={2020},
   volume={},
   number={},
-  pages={516-527},
-  doi={10.1109/Cluster48925.2021.00027}}
- 
-@inproceedings{10.5555/3433701.3433748,
+  pages={976-984},
+  note = {({\bf Note: This is the second paper on PiP experimental version (v3)
+    implementing Bi-Level Thread and User-Level Process.})},
+  abstract={There is a
+    wide range of implementation approaches to multi-threading. 
+User-level threads are efficient because threads can be scheduled by a
+user-defined scheduling policy that suits the needs of the specific
+application.  However, user-level threads are unable to handle blocking
+system-calls efficiently. To the contrary, kernel-level threads incur large
+overhead during context switching.  Kernel-level threads are scheduled by the
+scheduling policy provided by the OS kernel which is hard to customize to
+application needs. We propose a novel thread execution model, {\em bi-level
+thread}, that combines the best aspects of the two conventional thread
+implementations. A bi-level thread can be either a kernel-level thread or a
+user-level thread at runtime. Consequently, the context switching overhead of a
+bi-level thread is as low as that of user-level threads, but thread scheduling
+can be defined by user policies. Blocking system-calls, on the other hand, can
+be called as a kernel-level thread without blocking the execution of other
+user-level threads.
+
+Furthermore, the proposed bi-level thread is combined with
+an address space sharing technique which allows processes to share the same
+virtual address space. Processes sharing the same address space can be
+scheduled with the same technique as user-level threads, thus we call this
+implementation a {\em user-level process}. However, the main difference between
+threads and processes is that threads share most of the kernel state of the
+underlying process, such as process ID and file descriptors, whereas different
+processes do not. A user-level process must guarantee that the system-calls
+always access the appropriate kernel information that belongs to the particular
+process. We call this {\em system-call consistency}.
+
+In this paper, we show that the proposed bi-level threads, implemented in an
+address space sharing library, can resolve the blocking system-call issue of
+user-level threads, while at the same time it retains system-call consistency
+for the user-level process. A prototype implementation, ULP-PiP, proves these
+concepts and the basic performance of the prototype is evaluated. Evaluation
+results using asynchronous I/O indicate that the overlap ratio of our
+implementation outperforms that in Linux.}}
+
+@inproceedings{3-Ouyang20,
   author = {Ouyang, Kaiming and Si, Min and Hori, Atsushi and Chen, Zizhong and Balaji, Pavan},
   title = {CAB-MPI: Exploring
     Interprocess Work-Stealing towards Balanced MPI Communication},
   year = {2020},
   isbn = {9781728199986},
   publisher = {IEEE Press},
-  abstract = {Load balance is essential for high-performance
+  note = {({\bf Note: This is the first MPI optimization paper using PiP.})},
+  abstract = {
+    Load balance is essential for high-performance 
     applications. Unbalanced communication can cause
     severe performance degradation, even in
     computation-balanced BSP applications. Designing
@@ -65,16 +129,49 @@ series = {HPDC '18}
   location = {Atlanta, Georgia},
   series = {SC '20} } 
 
-@INPROCEEDINGS{9150340,
-  author={A. {Hori} and B. {Gerofi} and Y. {Ishikawa}},
-  booktitle={2020 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)}, 
-  title={An Implementation of User-Level Processes using Address Space Sharing}, 
-  year={2020},
+@INPROCEEDINGS{4-Ouyang21,
+  author={Ouyang, Kaiming and Si, Min and Hori, Astushi and Chen, Zizhong and Balaji, Pavan},
+  booktitle={2021 IEEE International Conference on Cluster Computing (CLUSTER)}, 
+  title={Daps: A Dynamic Asynchronous Progress Stealing Model for MPI Communication}, 
+  year={2021},
   volume={},
   number={},
-  pages={976-984},}
+  pages={516-527},
+  doi={10.1109/Cluster48925.2021.00027},
+  note = {({\bf Note: This is the another MPI optimization paper using PiP.})},
+  abstract={
+    MPI provides nonblocking point-to-point and one- sided
+    communication models to help applications achieve com- munication
+    and computation overlap. These models provide the opportunity for
+    MPI to offload data transfer to low level network hardware while
+    the user process is computing. In practice, however, MPI
+    implementations have to often handle complex data transfer in
+    software due to limited capability of network hardware. Therefore,
+    additional asynchronous progress is necessary to ensure prompt
+    progress of these software- handled communication. Traditional
+    mechanisms either spawn an additional background thread on each
+    MPI process or launch a fixed number of helper processes on each
+    node. Both mechanisms may degrade performance in user computation
+    due to statically occupied CPU resources. The user has to
+    fine-tune the progress resource deployment to gain overall
+    performance. For complex multiphase applications, unfortunately,
+    severe per- formance degradation may occur due to dynamically
+    changing communication characteristics and thus changed progress
+    re- quirement. This paper proposes a novel Dynamic Asynchronous
+    Progress Stealing model, called Daps, to completely address the
+    asynchronous progress complication. Daps is implemented inside the
+    MPI runtime. It dynamically leverages idle MPI processes to steal
+    communication progress tasks from other busy computing processes
+    located on the same node. The basic concept of Daps is
+    straightforward; however, various implementation challenges have
+    to be resolved due to the unique requirements of interprocess data
+    and code sharing. We present our design that ensures high
+    performance while maintaining strict program correctness. We
+    compare Daps with state-of-the-art asynchronous progress
+    approaches by utilizing both microbenchmarks and HPC proxy
+    applications.}}
 
-@InProceedings{10.1007/978-3-031-10419,
+@InProceedings{5-Hori22,
 author="Hori, Atsushi
 and Ouyang, Kaiming
 and Gerofi, Balazs
@@ -87,7 +184,11 @@ year="2022",
 publisher="Springer International Publishing",
 address="Cham",
 pages="59--78",
-abstract="Shared memory mechanisms, e.g., POSIX shmem or XPMEM, are
+isbn="978-3-031-10419-0",
+note = {({\bf Note: This is the third paper on PiP comparing shared memory
+model and shared address space model which PiP provides.})},
+abstract="Shared memory
+mechanisms, e.g., POSIX shmem or XPMEM, are 
 widely used to implement efficient intra-node communication among
 processes running on the same node. While POSIX shmem allows other
 processes to access only newly allocated memory, XPMEM allows
@@ -120,6 +221,100 @@ performance numbers of HPCCG, miniGhost, miniMD, LULESH2.0 running
 with PiP-Shmem and PiP-XPMEM are comparable with those of POSIX Shmem
 and XPMEM. PiP is not only a practical implementation of the shared
 address space model, but it also provides opportunities for developing
-new optimization techniques, which the paper further elaborates on.", 
-isbn="978-3-031-10419-0"
+new optimization techniques, which the paper further elaborates on."}
 }
+
+  @phdthesis{6-Ouyang22,
+    author = {Kaiming Ouyang},
+    itle = "{Exploring Interprocess Techniques for High-Performance
+      MPI Communication}",
+    school = {University of California Riverside},
+    year = {2022},
+    note = {({\it Dr. Ouyang's Ph.D. Thesis using PiP.})},
+    abstract = {
+      In exascale computing era, applications are executed
+      at larger scale than ever before, which results in higher
+      requirement of scalability for communication library
+      design. Message Pass- ing Interface (MPI) is widely adopted by
+      the parallel application nowadays for interprocess
+      communication, and the performance of the communication can
+      significantly impact the overall performance of applications
+      especially at large scale.
+      
+      There are many aspects of MPI communication that need to be
+      explored for the maximal message rate and network
+      throughput.
+
+      Considering load balance, communication load balance
+      is essential for high-performance applications. Unbalanced
+      communication can cause severe performance degradation, even in
+      computation-balanced Bulk Synchronous Parallel (BSP)
+      applications. MPI communi- cation imbalance issue is not well
+      investigated like computation load balance. Since the
+      communication is not fully controlled by application developers,
+      designing communication- balanced applications is challenging
+      because of the diverse communication implementations at the
+      underlying runtime system.
+
+      In addition, MPI provides nonblocking point-to-point and
+      one-sided communica- tion models where asynchronous progress is
+      required to guarantee the completion of MPI communications and
+      achieve better communication and computation
+      overlap. Traditional mechanisms either spawn an additional
+      background thread on each MPI process or launch a fixed number
+      of helper processes on each node. For complex multiphase
+      applications, unfortunately, severe performance degradation may
+      occur due to dynamically changing communication
+      characteristics.
+
+      On the other hand, as the number of CPU cores and nodes adopted
+      by the ap- plications greatly increases, even the small message
+      size MPI collectives can result in the huge communication
+      overhead at large scale if they are not carefully
+      designed. There are MPI collective algorithms that have been
+      hierarchically designed to saturate inter-node network bandwidth
+      for the maximal communication performance. Meanwhile, advanced
+      shared memory techniques such as XPMEM, KNEM and CMA are adopted
+      to accelerate intra-node MPI collective
+      communication. Unfortunately, these studies mainly focus on
+      large-message collective optimization which leaves small- and
+      medium-message MPI collec- tives suboptimal. In addition, they
+      are not able to achieve the optimal performance due to the
+      limitations of the shared memory techniques.
+
+      To solve these issues, we first present CAB-MPI, an MPI
+      implementation that can identify idle processes inside MPI and
+      use these idle resources to dynamically balance com- munication
+      workload on the node. We design throughput-optimized strategies
+      to ensure efficient stealing of the data movement tasks. The
+      experimental results show the benefits of CAB-MPI through
+      several internal processes in MPI, including intranode data
+      transfer, pack/unpack for noncontiguous communication, and
+      computation in one-sided accumulates through a set of
+      microbenchmarks and proxy applications on Intel Xeon and Xeon
+      Phi plat- forms. Then, we propose a novel Dynamic Asynchronous
+      Progress Stealing model (Daps) to completely address the
+      asynchronous progress complication; Daps is implemented inside
+      the MPI runtime, and it dynamically leverages idle MPI processes
+      to steal communication progress tasks from other busy computing
+      processes located on the same node. We compare Daps with
+      state-of-the-art asynchronous progress approaches by utilizing
+      both microbench- marks and HPC proxy applications, and the
+      results show the Daps can outperform the baselines and achieve
+      less idleness during asynchronous communication. Finally, to
+      fur- ther improve MPI collectives performance, we propose
+      Process-in-Process based Multiobject Interprocess MPI Collective
+      (PiP-MColl) design to maximize small and medium-message MPI
+      collective performance at a large scale.  Different from
+      previous studies, PiP-MColl is designed with efficient multiple
+      senders and receivers collective algorithms and adopts
+      Process-in-Process shared memory technique to avoid unnecessary
+      system call and page fault overhead to achieve the best intra-
+      and inter-node message rate and throughput. We focus on three
+      widely used MPI collectives MPI Scatter, MPI Allgather and MPI
+      Allreduce and apply PiP-MColl to them. Our microbenchmark and
+      real-world HPC application ex- perimental results show PiP-MColl
+      can significantly improve the collective performance at a large
+      scale compared with baseline PiP-MPICH and other widely used MPI
+      libraries such as OpenMPI, MVAPICH2 and Intel MPI. 
+    }}

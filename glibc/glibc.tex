@@ -233,7 +233,7 @@ exception. A problem arises when to install the PiP-glibc by using
 Spack. When the PiP-glibc is built by using Spack, Spack adds the {\tt
   RPATH} setting to the compiled Glibc, but it is not allowed in
 CentOS/Redhat 8 to load Glibc with the {\tt RPATH} setting. To avoid
-this, PiP-gilbc has a program (\pipcmd{annul_annul_rpatha}) to unset
+this, PiP-gilbc has a program (\pipcmd{annul_rpatha}) to unset
 the {\tt RPATH} setting of the compiled Glibc.
 
 \subsection{Linux}
@@ -314,14 +314,14 @@ error happens resulting all $P$, $A$, and $B$ produce core
 files. There can be a small time difference when to produce each core
 file. When the first core file, of $A$ for instance, is being created,
 the other $P$ and $B$ are still running and the memory of the shared 
-address space can be changed by those running tasks.
+address space can be altered by those running tasks.
 \linuxcomm{gdb}, however, assumes that a core file is a consistent snapshot
 of memory and CPU state. The above PiP situation breaks this
 assumption. If $B$ produces another core file, may or may not be
 caused by the error on $A$, the same situation can happen.
-Thus, the \pipcmd{pip-gdb} command (Section~ref{sec:pip-gdb}) does
+Thus, the \pipcmd{pip-gdb} command (Section~\ref{sec:pip-gdb}) does
 not support for debugging from a core file. To solve this issue,
-PiP-aware OS kernel is needed. 
+PiP-aware OS kernel to have the consistent core files is needed. 
 
 \subsection{Tools}
 
