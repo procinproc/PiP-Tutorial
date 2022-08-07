@@ -1,0 +1,59 @@
+#!/bin/sh
+cd PiP-build
+PIPTOP=$PWD
+### Building PiP-glibc (optional)
+echo '$' git clone https://github.com/procinproc/PiP-glibc.git
+echo '  ...'
+git clone https://github.com/procinproc/PiP-glibc.git >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' mkdir glibc-build
+mkdir glibc-build
+echo '$' pushd glibc-build
+pushd glibc-build > /dev/null
+echo '$' ../PiP-glibc/build.sh $PIPTOP/install
+echo '  ...'
+../PiP-glibc/build.sh $PIPTOP/install >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' popd
+popd > /dev/null
+### Building PiP Library
+echo '$' git clone https://github.com/procinproc/PiP.git
+echo '  ...'
+git clone https://github.com/procinproc/PiP.git >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' pushd PiP
+pushd PiP > /dev/null
+echo '$' ./configure --prefix=$PIPTOP/install --with-glibc-libdir=$PIPTOP/install/lib
+echo '  ...'
+./configure --prefix=$PIPTOP/install --with-glibc-libdir=$PIPTOP/install/lib >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' make install
+echo '  ...'
+make install >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' popd
+popd > /dev/null
+### Testing PiP Library (optional)
+echo '$' git clone https://github.com/procinproc/PiP-Testsuite.git
+echo '  ...'
+git clone https://github.com/procinproc/PiP-Testsuite.git >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' pushd PiP-Testsuite
+pushd PiP-Testsuite > /dev/null
+echo '$' ./configure --with-pip=$PIPTOP/install
+echo '  ...'
+./configure --with-pip=$PIPTOP/install >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' make test
+echo '  ...'
+make test >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' popd
+popd > /dev/null
+### Building PiP-gdb (optional)
+echo '$' git clone https://github.com/procinproc/PiP-gdb.git
+echo '  ...'
+git clone https://github.com/procinproc/PiP-gdb.git >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' pushd PiP-gdb
+pushd PiP-gdb > /dev/null
+echo '$' ./build.sh --prefix=$PIPTOP/install --with-pip=$PIPTOP/install
+echo '  ...'
+./build.sh --prefix=$PIPTOP/install --with-pip=$PIPTOP/install >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' ./test.sh
+echo '  ...'
+./test.sh >> /home/ahori/git/pip-2/PiP-Tutorial/install/examples/src-build.log 2>&1
+echo '$' popd
+popd > /dev/null
+### done

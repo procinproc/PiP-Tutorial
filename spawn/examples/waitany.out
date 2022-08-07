@@ -1,0 +1,6 @@
+$ ./waitany 4
+PiP task (PIPID:0) done: 0
+PiP task (PIPID:1) done: 1
+PiP task (PIPID:2) done: 2
+PiP task (PIPID:3) done: 3
+$

@@ -1,0 +1,16 @@
+$ pip-check /usr/bin/ps
+/usr/bin/ps : not a PiP program
+$ pip-check /usr/bin/ls
+/usr/bin/ls : not an ELF file
+$ cat /usr/bin/ls
+#!/usr/bin/coreutils --coreutils-prog-shebang=ls
+$ pipcc --silent pip.c -o pip
+$ pip-check ./pip
+./pip : Root&Task
+$ pipcc --silent --piptask pip.c -o pip-task
+$ pip-check ./pip-task
+./pip-task : Root&Task
+$ pipcc --silent --piproot pip.c -o pip-root
+$ pip-check ./pip-root
+./pip-root : Root
+$

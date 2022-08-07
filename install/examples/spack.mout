@@ -1,0 +1,5 @@
+$ git clone https://github.com/spack/spack.git
+$ cd bin
+$ ./spack install process-in-process
+  ...
+$

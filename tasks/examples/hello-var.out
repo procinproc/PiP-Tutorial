@@ -1,0 +1,10 @@
+$ pipcc --silent hello-var.c -o hello-var
+$ ./hello-var
+Hello World (&x:0x555555601030)
+$ <(\pipkw pip-exec)> -n 3 ./hello-var
+Hello World (&x:0x7ffff67d9030)
+Hello World (&x:0x7ffff48db030)
+Hello World (&x:0x7fffee92c030)
+$ mpiexec -n 3 ./hello-var
+sh: mpiexec: command not found
+$

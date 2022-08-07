@@ -1,0 +1,5 @@
+$ pip-exec -n 10 ./pthread-mutex
+count=10000 (10*1000)
+$ pip-exec -n 10 ./pthread-mutex NOLOCK
+count=993 (10*1000)
+$

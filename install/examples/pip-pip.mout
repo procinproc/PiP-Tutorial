@@ -1,0 +1,17 @@
+$ git clone https://github.com/procinproc/PiP-pip.git
+$ cd PiP-pip
+$ ./pip-pip --yes
+
+RedHat/CentOS:		 8
+CPU Architecture:	 x86_64
+
+List of installations
+GITHUB 	PiP-v2
+  Prefix dir:	 ${PWD}/install/x86_64_centos-8_github_pip-2
+  Work dir:	 ${PWD}/work/x86_64_centos-8_github_pip-2
+
+  .....
+
+Summary
+OK	git https://github.com/procinproc/PiP.git@pip-2 ${PWD}/install/x86_64_centos-8_github_pip-2
+$

@@ -1,0 +1,14 @@
+$ ${PIPLIBDIR}/libpip.so
+Package:	Process-in-Processs
+Version:	2.4.1
+License:	the 2-clause simplified BSD License
+Build OS:	Linux 5.10.104-linuxkit #1 SMP Thu Mar 17 17:08:06 UTC 2022
+Build CC:	gcc (GCC) 8.5.0 20210514 (Red Hat 8.5.0-4)
+Prefix dir:	/home/ahori/git/pip-2/install
+PiP-glibc:	/home/ahori/pip-glibc/install/lib
+ld-linux:	/home/ahori/pip-glibc/install/lib/ld-2.28.so
+Commit Hash:	2485d3f923302ef03432bc52a5ddc3c4b0398fca
+Debug build:	no
+URL:		https://github.com/procinproc/PiP/
+mailto:		procinproc-info@googlegroups.com
+$

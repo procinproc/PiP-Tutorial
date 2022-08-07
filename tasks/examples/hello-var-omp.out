@@ -1,0 +1,13 @@
+$ pipcc --silent -fopenmp hello-var-omp.c -o hello-var-omp
+$ export OMP_NUM_THREADS=2
+$ ./hello-var-omp
+Hello World (&x:0x555555601038)
+Hello World (&x:0x555555601038)
+$ <(\pipkw pip-exec)> -n 2 ./hello-var-omp
+Hello World (&x:0x7ffff67d9038)
+Hello World (&x:0x7ffff67d9038)
+Hello World (&x:0x7fffefde3038)
+Hello World (&x:0x7fffefde3038)
+$ mpiexec -n 2 ./hello-var-omp
+sh: mpiexec: command not found
+$

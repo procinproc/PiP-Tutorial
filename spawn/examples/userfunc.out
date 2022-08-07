@@ -1,0 +1,6 @@
+$ ./userfunc 4 "Calling user_func"
+USER-FUNC: "Calling user_func" from PIPID:0/4
+USER-FUNC: "Calling user_func" from PIPID:1/4
+USER-FUNC: "Calling user_func" from PIPID:2/4
+USER-FUNC: "Calling user_func" from PIPID:3/4
+$
