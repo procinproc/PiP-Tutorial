@@ -1,12 +1,12 @@
 $ ./hello
-[R] PID:37214 Hello
-[R] PID:37214 MAIN 
-[R] PID:37214 Bye
+[R] PID:37019 Hello
+[R] PID:37019 MAIN 
+[R] PID:37019 Bye
 $ pip-exec -n 2 ./hello
-[R] PID:37215 Hello
-[0] PID:37216 MAIN 
-[0] PID:37216 Bye
-[R] PID:37215 Hello
-[1] PID:37217 MAIN 
-[1] PID:37217 Bye
+[R] PID:37020 Hello
+[0] PID:37021 MAIN 
+[0] PID:37021 Bye
+[R] PID:37020 Hello
+[1] PID:37022 MAIN 
+[1] PID:37022 Bye
 $

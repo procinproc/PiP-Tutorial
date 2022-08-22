@@ -1,9 +1,9 @@
 $ ./hook 2
-PID:37426 MAIN
-PID:37427 Before Hook: fd=10
+PID:37231 MAIN
+PID:37232 Before Hook: fd=10
 Hello from PIPID:0
-PID:37427 After Hook:  fd=10
-PID:37428 Before Hook: fd=10
+PID:37232 After Hook:  fd=10
+PID:37233 Before Hook: fd=10
 Hello from PIPID:1
-PID:37428 After Hook:  fd=10
+PID:37233 After Hook:  fd=10
 $

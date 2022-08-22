@@ -5,19 +5,21 @@ new execution model to have the best of two world; multi-process and
 multi-thread execution models. 
 
 It becomes quite common to have multiple CPU cores in a CPU
-socket or die, parallel execution environment also becomes very
-crucial for efficiency. In the multi-process model, where multiple
-processes run on a socket, a process cannot directly access data owned
+die or socket, parallel execution environment also becomes very
+crucial to exploit the power of the many-core architecture.
+In the multi-process model, where multiple 
+processes run in parallel on a node, a process cannot directly access
+data owned 
 by the other processes, in spite of the fact accessing the same physical
 memory device. In most cases, processes exchange information via some
 form of communication. In my personal understanding, communication is
 accompanied with some form of data copying, regardless done by software or
 hardware. Data copying consumes memory, time and power and it must be
-avoided as much as possible. What if processes can access data owned
-by the others? In multi-thread model, threads share the static
-variables and they must be protected from race conditions if threads
-try to update their contents. What if each thread has its own static
-variable set? 
+avoided as much as possible. What if processes can directly access, not by
+communication, data owned by the others? In the multi-thread model,
+threads share the static variables and they must be protected from
+race conditions if threads try to update their contents. What if each
+thread has privatized static variable set? 
 
 This is my motivation to develop PiP. The name of {\it
   Process-in-Process} may suggests, a process can create another
