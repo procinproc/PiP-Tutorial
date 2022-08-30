@@ -93,7 +93,7 @@ programs sharing the same address must be linked with the same Glibc.
 
 \subsubsection{PiP-gdb}
 
-The {\tt ld-linux.so} embeds a tiny information for debugging into the
+The {\tt ld-linux.so} embeds some information for debugging into the
 loaded program. Unfortunately, I found that this code fragment
 resides on the pass calling the {\tt ld-linux.so} from the
 top (by the kernel), not on the pass called from \linuxfunc{dlopen()}

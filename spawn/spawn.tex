@@ -40,8 +40,8 @@ taken. Th fourth argument is to specify the CPU core number to bind
 the spawned PiP task and which CPU core. In this example, the value of
 \pipdef{PIP_CPUCORE_ASIS} means that the (CPU) core-bind should be
 the same with the one when calling \pipfunc{pip_spawn()}. The fifth
-is an input and output argument and you can specify \PIPID\ or
-set to \pipdef{PIP_PIPID_ANY} so that PiP library can choose
+is an input and output argument, and you can specify a \PIPID\ or
+set to the value of \pipdef{PIP_PIPID_ANY} so that PiP library can choose
 any. After calling \pipfunc{pip_spawn()}, the argument returns the
 actual \PIPID. 
 

@@ -18,10 +18,11 @@ called function accesses the variable owned by task $B$, not $A$
   caption={Function Call of Another Task},
   label=prg:context] {context/examples/context.c}
 
-In this example program, sorry, this goes off the side road,
+In this example program, sorry, this may go off the side road,
 \pipfunc{pip_named_export()} and 
 \pipfunc{pip_named_import()} are called differently than
-before. The final argument of these functions is actually a format
+before. The second argument of \pipfunc{pip_named_export()} and the
+third argument of \pipfunc{pip_named_import()} are actually a format
 string, just like {\tt printf()}, followed by argument(s) needed by
 the format. 
 
@@ -32,12 +33,12 @@ the format.
 Thus, the execution context in PiP environment might be different from
 the one in common sense and some times its behavior becomes very
 subtle. In the PiP library, this happens quite often and makes
-debugging difficult. 
+debugging quite difficult. 
 
 Further, the association of static variables and function addresses
-heavily depends on the CPU architecture and tool chain. The above
-description is true on \AMD and \ARM,
-however, not true on \INTEL. Thus, it is not recommended
+heavily depends on the CPU architecture and how PIE is
+implemented. The above description is true on \AMD\ and \ARM,
+however, not true on \INTEL. Thus, it is not recommended to
 do this. 
 
 \subsubsection*{Rationale}
@@ -79,7 +80,7 @@ objects compiled with the \PIC\ option can be loaded at any locations.
 
 Unfortunately, this addressing mode is not supported by all CPU
 architectures\footnote{Listing~\ref{out:context} is obtained by
-running the program on an \AMD CPU.}. For example, \INTEL 
+running the program on an \AMD\ CPU.}. For example, \INTEL\  
 does not. On this architecture, one general purpose
 register is sacrificed to point the variable segment, resulting
 performance degradation by loosing one general purpose register. And
