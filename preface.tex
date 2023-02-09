@@ -1,31 +1,32 @@
 
 \section*{Motivation}
 
-I retired from my work from April 2022. Since then, I wrote this PiP
-tutorial while I am maintaining PiP library
-(\url{https://github.com/procinproc} including this document).
+I stopped working in April 2022. Since then, I've written this PiP
+tutorial while also maintaining the PiP library (which includes this
+document; see \url{https://github.com/procinproc}).
 
-PiP provides a unique and new execution model. While I am maintaining
-the PiP library, I have been facing many issues caused by the current
-Glibc and Linux that are not aware of this new execution model. 
-I hope the new execution model which PiP provides would play an
-important role in computer science in the future, and I will continue
-maintaining the PiP library until then.
+PiP offers a distinctive and novel execution model. I've been having a
+lot of problems developing the PiP library because Linux and the
+current Glibc don't support the new execution mechanism. I intend for
+the novel execution model that PiP offers to be significant in
+computer science in the future, and I will do my best to keep the PiP
+library up to date.
 
-Thinking the fact of that Glibc and Linux changing much more
-frequently than PiP because of man-power, I am not confident with
-adapting PiP with the upcoming Glibc and Linux. So, I decided to write
-this document to leave my ideas.
+I am not confident in my ability to adapt PiP to the impending Glibc
+and Linux because of the fact that Glibc and Linux change much more
+frequently than PiP does due to manpower constraints. So I made the
+decision to compose this document to share my thoughts.
 
-This is the reason why this can not only be a tutorial for
-using PiP, but also a internal document. 
+This is the reason why this can serve as both an internal document and
+a tutorial for utilizing PiP.
 
 \section*{Expected Readers}
 
-I tried to have example programs in this document as much as
-possible. Most of them are written in C. The current PiP library are
-tested to run on Linux (CentOS and Redhat, version 7 and 8). So
-readers must be familiar with C programming and Linux.
+In this document, I made every effort to include as many sample
+programs as I could. They are primarily written in C. A Linux version
+of the latest PiP library has been tested (CentOS and Redhat, version
+7 and 8). Therefore, readers must be conversant with Linux and C
+programming. 
 
 \section*{PiP Versions}
 
@@ -35,33 +36,22 @@ readers must be familiar with C programming and Linux.
 \item[PiP Version 2]
   This is the stable version of PiP.
 \item[PiP Version 3]
-  This is an experimental version of PiP implementing Bi-Level Thread
-  (BLT) and User-Level Process (ULP). Since this is not stable at the
-  time of this writing, there will be no explanation on BLT and ULP in
-  this document.
+  This is a beta version of PiP that uses User-Level Process (ULP) and
+  Bi-Level Thread (BLT). There will be no description of BLT and
+  ULP in this paper because they are not stable at the time of writing.
 \end{description}
 
 \section*{Other Documents}
 
-This document will not explain all functions provided by the PiP
-library. For this purpose, consult PiP reference manual
-(PDF file:
-\url{https://github.com/procinproc/PiP/blob/pip-2/doc/latex-inuse/libpip-manpages.pdf}, HTML document and/or man pages (HTML document and man pages will be
-installed with PiP library).
+Not all of the PiP library's features are covered in this
+document. Consult the PiP reference manual (PDF file at
+\url{https://github.com/procinproc/PiP/blob/pip-2/doc/latex-inuse/libpip-manpages.pdf}), 
+an HTML document, or man pages (man pages and HTML documents will be
+installed with PiP library) for this purpose.
 
 \section*{Sample Programs}
 
-All sample programs were tested to run and all the output examples are
-obtained by running the sample programs on a Docker environment
-running on Mac OSX.
-
-\section*{English}
-
-To my shame, supposedly many readers noticed already by this point, my
-English is quite poor. I would appreciate it if some of you would help
-me to improve the readability of this document (and other documents
-such as man page). If this is the case, send me an e-mail ({\tt
-  procinproc-info@googlegroups.com} or {\tt ahori@me.com}) and I will 
-give you the access right of the Github
-(\url{https://github.com/procinproc}). 
+Running the sample programs on a Docker environment running on Mac OSX
+allowed for thorough testing of each program's functionality and the
+production of all output examples. 
 

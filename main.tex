@@ -89,11 +89,28 @@
 	{\Large \today\par}
 \end{titlepage}
 
-\newpage % Make sure the following content is on a new page
+\newpage% Make sure the following contents start from a new page
+\pagenumbering{roman}
+{
+  \noindent
+  {
+    \Large%
+    \\
+    Scattered wits take a long time in picking up.
+    \\
+    \\
+    Take nothing on its looks; take everything on evidence. There’s no better rule.
+    \\
+    \\
+    I must be taken as I have been made. The success is not
+    mine, the failure is not mine, but the two together make me.
+    \\
+    }
+  \flushright Charles Dickens, {\it Great Expectations}\\
+}
 
-%----------------------------------------------------------------------------------------
-%	TABLE OF CONTENTS
-%----------------------------------------------------------------------------------------
+\chapter*{Acknowledgment}
+\input{ack}
 
 \chapter*{Preface}
 \input{preface}
@@ -103,10 +120,9 @@
 \listoftables
 \lstlistoflistings
 
-\chapter*{Acknowledgment}
-\input{ack}
-
 \chapter*{Introduction}
+\setcounter{page}{1}
+\pagenumbering{arabic}
 \input{intro}\label{sec:intro}
 
 \chapter{PiP Basics}\label{chap:basics}

@@ -1,47 +1,46 @@
 
-This is a book explaining Process-in-Process (PiP in short)
-library. This somewhat strange name library is to provide a relatively
-new execution model to have the best of two world; multi-process and
-multi-thread execution models. 
+This document explains the PiP (short for Process-in-Process)
+library. This library with a little odd name offers a relatively new
+execution paradigm that combines the finest aspects of multi-process
+and multi-threaded execution models.  
 
-It becomes quite common to have multiple CPU cores in a CPU
-die or socket, parallel execution environment also becomes very
-crucial to exploit the power of the many-core architecture.
-In the multi-process model, where multiple 
-processes run in parallel on a node, a process cannot directly access
-data owned 
-by the other processes, in spite of the fact accessing the same physical
-memory device. In most cases, processes exchange information via some
-form of communication. In my personal understanding, communication is
-accompanied with some form of data copying, regardless done by software or
-hardware. Data copying consumes memory, time and power and it must be
-avoided as much as possible. What if processes can directly access, not by
-communication, data owned by the others? In the multi-thread model,
-threads share the static variables and they must be protected from
-race conditions if threads try to update their contents. What if each
-thread has privatized static variable set? 
+Multiple CPU cores in a CPU die or socket are becoming very common,
+and a parallel execution environment is essential for maximizing the
+capability of the many-core architecture.  
+Despite accessing the same physical memory device, a process in the
+multi-process model, where numerous processes run concurrently on a
+node, cannot directly access data held by the other
+processes. Processes typically communicate in order to exchange
+information. In my opinion, all forms of data copying, whether carried
+out by hardware or software, are a part of communication. Data copying
+is energy-, memory-, and time-intensive and should be avoided if
+possible. What if processes could access other people's data without
+communicating with them first? In the multi-thread paradigm, static
+variables are shared across threads, and if threads attempt to update
+their values, race problems must be prevented. What if static
+variables were private for each thread?
 
-This is my motivation to develop PiP. The name of {\it
-  Process-in-Process} may suggests, a process can create another
-processes inside of the address space of the creating process. This
-sounds like the multi-thread execution model, however, the name of
-{\it process} in PiP means that each created processes have its own
-static variable set unlike the multi-thread model. Thus, the created
-processes share the same address space can access data owned by the
-others while maintaining the privatized static variables. This way can
-avoid the data copying accompanied by communication.
+This is what drives me to develop PiP. As the name {\it
+Process-in-Process} might imply, a process can spawn additional
+processes inside of its own address space. This sounds like the
+multi-thread execution model, but the name of the {\it process} in PiP
+indicates that, unlike the multi-thread approach, each new process has
+its own static variable set. As a result, while keeping the privatized
+static variables, the created processes that share the same address
+space can access data that belongs to the others. On this basis, data
+copying and communication can be prevented.  
 
-Basically, multi-process model shares nothing, multi-thread model
-shares everything, and everything is sharable in the execution model
-PiP provides. 
+In essence, a multi-process model shares nothing, a multi-thread model
+shares everything, and PiP's execution paradigm allows for everything
+to be shareable.  
 
-With my regards to some predecessors, there are some other
-implementations providing this kind of execution model. However, PiP
-is quite unique since it is implemented purely at the user-level, no
-need of new or patched OS kernel, nor having new language processing
+Regarding some of my forebears, different implementations exist that
+offer this particular execution approach. PiP, however, stands out
+since it is implemented entirely at the user-level and doesn't require
+a new OS kernel, a patched OS kernel, or new language processing
 systems.  
 
-I have been working on high performance computing (HPC) and very little
-knowledge on the other fields. I can only imagine HPC
-applications. However, I believe that the easy-to-use nature of PiP
-can be applied to other fields. 
+High performance computing (HPC) has been my area of focus, and I know
+very little about the other disciplines. HPC applications are all I
+can think of. But I think that PiP's usability can be extended to
+other industries.
