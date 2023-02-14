@@ -14,6 +14,9 @@
 
 %%% AH Macros
 \long\def\comment#1{}%
+
+\def\dash2{-{}-}
+
 \def\pipkw{\tt\bf\color{blue}}%
 \def\PIPKW#1{{\tt #1}}%
 \def\pipterm#1{{\pipkw #1}\index{PiP Term!#1}}%
@@ -21,7 +24,11 @@
 \def\pipfunc#1{{\pipkw #1}\index{PiP Function!#1}}%
 \def\pipstruct#1{{\pipkw #1}\index{PiP Type!#1}}%
 \def\pipcmd#1{{\pipkw #1}\index{PiP Command!#1}}%
+\def\pipcmdopt#1#2{{\pipkw -{}-#2}\index{PiP Command!#1!-{}-#2}}%
+\def\pipcmdopt2#1#2#3{{\pipkw -{}-#3}\index{PiP
+    Command!#1!-{}-#3}\index{PiP Command!#2!-{}-#3}}%
 \def\pipenv#1{{\pipkw #1}\index{PiP Environment Variable!#1}}%
+\def\pipenvC#1#2{{\pipkw #2}\index{PiP Environment Variable!#1!#2}}%
 \def\pipdef#1{{\pipkw #1}\index{PiP Define Symbol!#1}}%
 
 \def\linuxfunc#1{{\tt #1}\index{Linux Function!#1}}%

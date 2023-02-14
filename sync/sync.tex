@@ -1,42 +1,40 @@
 
 \section{Timing Synchronization among PiP Tasks}
 
-This section will explain about the timing synchronization among PiP
-tasks.
+This section will go over how PiP tasks' timing synchronization works.
 
 \subsection{Barrier Synchronization}
 
-Currently, there is only one synchronization method is supported by
-the PiP library, it is barrier synchronization. The API of PiP's
-barrier synchronization is borrowed from the one found in the PThread
-library. There are three functions in PiP,
+The PiP library only supports barrier synchronization as a
+synchronization mechanism at this time. Barrier synchronization in PiP
+uses an API that was taken from the PThread library. PiP has three
+functions that are equivalent to \linuxfunc{pthread_barrier_init()},
+\linuxfunc{pthread_barrier_wait()}, and
+\linuxfunc{pthread_barrier_destroy()}, respectively:
 \pipfunc{pip_barrier_init()}, \pipfunc{pip_barrier_wait()}, and
-  \pipfunc{pip_barrier_fin()}, corresponding to
-  \linuxfunc{pthread_barreir_init()}, \linuxfunc{pthread_barrier_wait()} and
-  \linuxfunc{pthread_barrier_destroy()}, respectively. 
+\pipfunc{pip_barrier_fin()}. 
 
 \lstinputlisting[style=program, caption={Barrier Synchronization
     ({\tt barrier})}, label=prg:barrier] {sync/examples/barrier.c}
 
-In Listing~\ref{prg:barrier}, the \pipfunc{pip_init()} function is
-given a new non-{\tt NULL} value to the third argument. This is
-another form of exporting a pointer from the root to spawnd PiP
-tasks. In this example, the address of the \pipstruct{pip_barrier_t}
-static variable is passed to children so that the children can
-synchronize by calling \pipfunc{pip_barrier_wait()}.
+Listing~\ref{prg:barrier} gives the third argument to the pip init()
+function a non-NULL value this time. This is an additional method of
+exporting a pointer to spawnd PiP jobs from the root. Children in this
+example are given the address of the \pipstruct{pip_barrier_t} static
+variable so they can synchronize by using \pipfunc{pip_barrier_wait()}.
 
-To clarify the effect of the barrier synchronization, the
-synchronization takes place only when the second parameter of the
-program execution is not given, and then the return values of
-\pipfunc{pip_gettime()} are shown by PiP tasks. The
-\pipfunc{pip_gettime()} returns the current value of
-\linuxfunc{gettimeofday()} in double format with the unit of seconds. 
+To make the impact of the barrier synchronization more clear, the
+synchronization only occurs when the second parameter of the program
+execution is left blank; in this case, PiP tasks display the
+\pipfunc{pip_gettime()} return values. The \pipfunc{pip_gettime()}
+function returns the current value of the \linuxfunc{gettimeofday()}
+function in double format with a second unit.
 
-The example of running of this program is shown in
-Listing~\ref{out:barrier}. In the first run, the barrier
-synchronization does not take place and large variance can be seen on
-the \linuxfunc{gettimeofday()} values. In the second run, where the
-barrier synchronization takes place, and smaller variance can be seen.
+Listing~\ref{out:barrier} displays an example of this application
+being run. The barrier synchronization is absent in the initial run,
+and the values returned by \linuxfunc{gettimeofday()} exhibit
+significant variation. A lesser difference can be detected in the
+second run, where the barrier synchronization occurs.
 
 \lstinputlisting[style=example,
   caption={Barrier Synchronization - Execution},
@@ -44,17 +42,16 @@ barrier synchronization takes place, and smaller variance can be seen.
 
 \subsection{Using PThread Synchronization}
 
-Users can utilize the synchronization functions on PiP tasks provided
-by the PThread library. This is simply because PiP tasks share the
-same address space, just like threads.
+The PThread library's synchronization features for PiP tasks are
+likewise available to users. This is due to the fact that PiP tasks
+and threads both use the same address space. 
 
 \subsection{\tt pthread_barrier}
 
-The same barrier synchronization can also be implemented by using the
-\linuxfunc{pthread_barrier} functions. 
-Listing~\ref{prg:pthread-barrier} is the program simply replacing
-\pipfunc{pip_barrier} functions with the \linuxfunc{pthread_barrier}
-functions. 
+The PThread's barrier functions can also be used to provide the same
+barrier synchronization. Listing~\ref{prg:pthread-barrier} shows the
+program's simple substitution of the PThread's barrier functions for the
+PiP's barrier functions.
 
 \lstinputlisting[style=program,
   caption={Pthread Barrier ({\tt

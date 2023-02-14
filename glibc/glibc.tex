@@ -233,7 +233,7 @@ exception. A problem arises when to install the PiP-glibc by using
 Spack. When the PiP-glibc is built by using Spack, Spack adds the {\tt
   RPATH} setting to the compiled Glibc, but it is not allowed in
 CentOS/Redhat 8 to load Glibc with the {\tt RPATH} setting. To avoid
-this, PiP-gilbc has a program (\pipcmd{annul_rpatha}) to unset
+this, PiP-gilbc has a program (\pipcmd{annul_rpath}) to unset
 the {\tt RPATH} setting of the compiled Glibc.
 
 \subsection{Linux}

@@ -1,104 +1,105 @@
 
 \section{Myths on PiP}
 
-\subsection*{I cannot see the difference between shared memory and
-  what PiP does}\label{sec:shared-memory-myth}
+\subsection*{I fail to distinguish what PiP performs from shared
+  memory.}\label{sec:shared-memory-myth} 
 
-The shared memory model enables to access the data owned by the other
-process. While the POSIX share memory model allows to share only newly
-allocated memory region, while another shared memory mode provided by 
-XPMEM\footnote{\url{https://github.com/hpc/xpmem}} allows for the
-other process to access any memory region. Thus both look
-the same in terms of accessing the data owned by the other.
+The shared memory model enables access to the data of the other
+process. The XPMEM\footnote{\url{https://github.com/hpc/xpmem}} shared
+memory mode facilitates the sharing of any 
+existing memory region with the other process, in contrast to the
+POSIX shared memory paradigm, which only permits the sharing of newly
+allocated memory regions. I use the term "shared address space model"
+instead of "shared memory model" to describe PiP's technique for
+mapping memory areas. The shared address space and shared memory
+appear to be the same in order to access the data owned by the other.
 
-However, the mechanisms of both memory models are quite different. To
-have a shared memory, one must call a system call to ask OS kernel to
-have the shared memory. This kind of system calls, modifying the
-memory mapping, are quite expensive. On the other hand, PiP tasks are 
-mapped in one memory address, and a PiP task can access any data owned
-by the others once the addresses of the data are known, without calling
-any expensive system calls. In terms of how memory regions are mapped,
-I name the way what PiP does \pipterm{shared address space model}, as
-oppose to the \term{shared memory model}. It should be noted that the
-shared address space model includes the shared memory model.
+However, the mechanisms behind the two memory theories differ
+greatly. To request shared memory, one must issue a system call to the
+OS kernel. The system calls that alter the memory mapping are rather
+expensive. When the addresses of the data are known, a PiP job can
+access any data owned by the others without making an expensive system
+call because PiP tasks, on the other hand, are mapped to a single
+memory address.
 
-If the data to be shared are scattered in an address space and hard to
-pack in a memory region, or the shared data are being dynamically
-allocated, then the \term{shared address space model} has the
-advantage.  
+If the shared data are allocated dynamically or are distributed over
+the address space and difficult to pack into a memory area, the shared
+address space solution is advantageous.
 
-\subsubsection*{Sharing an address with multiple programs can be a
-  severe security issue}\label{sec:security-issue}
+\subsubsection*{A serious security risk might arise when many programs
+  share the same address}\label{sec:security-issue} 
 
-PiP allows to run programs sharing the same address space. The
-most important point here is to make information exchange among
-programs easy and efficient. If there is no information exchange among
-them, there is no reason to run them with the PiP environment.
+A serious security risk might arise when many programs share the same address. 
+Programs that share an address space can run thanks to
+PiP. Facilitating efficient information sharing between programs is
+the main goal here. If there is no interaction between them, running
+them in the PiP environment is useless.  
 
-Basically, communicating programs share the same fate. Even a most
-simple case where two programs are connected by using the Linux/Unix
-pipe, one of the programs dies, the other programs also dies by
-receiving the \linuxdef{SIGPIPE} signal. Communicating programs agree with
-others when to communicate and how to communicate. The PiP case is no
-exception.
+Programs for communication fundamentally have the same outcome. Even
+in the most straightforward case, if two programs are connected by a
+Linux/Unix pipe and one of the programs crashes, the other programs
+also crash after receiving the \linuxdef{SIGPIPE}
+signal. Communicating processes agree on when and how to communicate with
+others. The PiP scenario is not exceptional.
 
 \subsubsection*{Sharing address space makes debugging difficult}
 
-It is true if one of the processes in a PiP environment destroy the
-data owned by the other(s) may lead to a catastrophic result. If this
-is done maliciously, then this cannot be avoided (see also
-above). If the destruction is triggered by a
-software bug, then this might be harder-to-debug than that of
-multi-process model.  There are two points here; 1) the higher 
-possibility of destructing of actual data, not accessing invalid memory
-region (\linuxdef{SIGSEGV}), and 2) there are multiple execution entities.
+It is true that if one operation in a PiP environment destroys data
+that belongs to another, the consequences could be disastrous. If done
+maliciously, this cannot be prevented (see also above). It may be more
+difficult to debug the destruction if a software flaw caused it than
+the multi-process paradigm. There are two things to note in this
+situation: 1) the increased risk of actually destroying data rather
+than accessing an invalid memory location (\linuxdef{SIGSEGV}), and 2)
+the existence of numerous execution entities.
 
-The \term{ASLR} can be some help for the former point. If \term{ASLR}
-is enabled, then the phenomenons of the bug can vary time to time. The
-situation of the latter point is almost the same with the multi-thread case.
+For the earlier point, the \term{ASLR} can be helpful. The bug's phenomena
+can change over time if \term{ASLR} is enabled. With the multi-thread
+example, the last point's situation is essentially the same.  
 
-Anyway, I have no experiences for having bugs based on this situation
-up until now. 
+Anyway, I haven't had any problems with issues based on this scenario
+yet.
 
 \subsubsection*{My program does not have any static variables and I do
   not need PiP.}
 
-You may write programs without having any static variables. However,
-the functions implemented in Glibc have many static variables. Your
-runtime system may use some of the Glibc functions. So, in general, it
-is very hard to write programs not having any static variables.
+Programs can be written without using static variables. However,
+Glibc's routines use a lot of static variables. Some of the Glibc
+functions may be used by your runtime system. Therefore, it is
+generally quite difficult to write programs without using any static
+variables.
 
 \subsubsection*{PiP may consume more memory than the other execution
   models}
 
-The answer is yes, but not that much. Listing~\ref{out:maps} shows
-how memory segments of running PiP tasks are mapped in one address
-space. For example, Glibc ({\tt libc-2.28.so}),
-Listing~\ref{out:glibc-segs} shows only the memory segments related to
-Glibc, loaded three (3) times onto memory in this case, running one
-PiP root and two PiP tasks each of which requires Glibc. Each segment
-set is a memory map of {\tt libc-2.28.so}. All three segment sets are 
-mapped from the same file, and the amount of consumed memory is the
-same with having only one set. 
+A single address space is used to map the memory segments of active
+PiP activities, as shown in Listing 3.4. For instance,
+Listing~\ref{out:maps} only displays the memory segments connected to
+Glibc ({\tt libc-2.28.so}), 
+which is loaded three (3) times in this case to operate one PiP root
+and two PiP tasks, each of which depends on Glibc. A memory map of
+{\tt libc-2.28.so} is contained in each segment set. The same file is
+used to map all three segment sets, and only one set uses the same
+amount of RAM.
 
-In the multi-process model, Each address space of a process has only
-one {\tt libs-2.28.so} segment set, but another process has also the
-same memory mapping of Glibc. Thus, roughly speaking, the amount of
-memory required to run PiP tasks is almost the same with the one of
-running multiple processes. However, in the multi-thread model, there
-is only one variable segment shared among threads, regardless to the
-number of threads. And the amount of memory for running PiP tasks is
-larger than that of running multiple threads. 
+Each address space of a process in the multi-process paradigm only has
+one {\tt libc-2.28.so} segment set, although another process also uses the
+same memory mapping as Glibc. Therefore, practically speaking, the
+memory needed to run PiP tasks is comparable to the memory needed to
+operate multiple processes. However, regardless of the number of
+threads, the multi-thread model only has one variable segment that is
+shared by all of the threads. Additionally, performing PiP jobs
+requires more memory than running multiple threads does.
 
 \subsubsection*{There must be some hidden overhead for running PiP
   programs}
 
-So far, it is know that there is one overhead which is larger than
-the multi-process model. It is address space modification system
-calls, such as \linuxfunc{mmap()} and \linuxfunc{brk()}. This is
-because any modification of an address space must be locked inside of
-the OS kernel and this lock contention results in larger
-overhead. This situation is the same with the multi-thread model and
-the overhead of \linuxfunc{mmap()} is larger than the multi-process
-model but almost the same with the multi-thread model. There is no
-other known additional overhead in PiP so far. 
+As of now, one overhead that is greater than the multi-process model
+is known. System calls for address space change, such
+\linuxfunc{mmap()} and \linuxfunc{brk()}. This is because any change
+to an address space inside the OS 
+kernel must be locked, and lock contention causes more overhead. The
+scenario is the same when using the multi-thread model, and while
+\linuxfunc{mmap()} has a higher overhead than the multi-process model,
+it is nearly identical when using the multi-thread model. Up to now,
+no additional overhead in PiP has been identified.

@@ -1,61 +1,66 @@
 
 \section{PiP Commands}
 
-This section will describe on the PiP commands in the PiP
-package. Some of them are already shown but explained very briefly. In
-this section, details of PiP commands will be explained.
+The PiP package's PiP commands are covered in this section. Some of
+these have already been demonstrated but just briefly discussed. The
+specifics of the PiP commands will be described in this section. 
 
 \subsection{\PIPKW{pip-man}}\label{sec:pip-man}
 
-This command shows the PiP man pages. Although this is just a simple
-shell script to run Linux's {\tt man} command with the {\tt MAN_PATH}
-setting to the PiP man pages (if installed properly), users need not take 
-care about the man path by using this command.
+The PiP man pages are displayed by this command. Although using this
+command does not require users to be concerned with the {\tt MAN_PATH}, it
+does execute the Linux {\tt man} command with the {\tt MAN_PATH}
+option to the PiP man pages (if installed successfully).
 
 \subsection{\PIPKW{pipcc} and \PIPKW{pipfc}}
 
-As already described in Section~\ref{sec:pipcc-exec}, \pipcmd{pipcc}
-is the compiler script for compiling PiP programs for C and C++ and
-\pipcmd{pipfc} is for Fortran.
+\pipcmd{pipcc} is the compiler script for compiling PiP applications
+for C and C++, and \pipcmd{pipfc} is for Fortran, as was already
+mentioned in Section~\ref{sec:pipcc-exec}. 
+The \pipcmdopt2{pipcc}{pipfc}{which} option will display the real
+back-end computer's pass. For \pipcmd{pipcc} or \pipcmd{pipfc}, users
+can also choose the back-end compiler by changing the environment
+variable \pipenvC{pipcc}{CC} or \pipenvC{pipfc}{FC}.
 
-The {\tt --which} option will show you the pass of the actual back-end
-compiler. Or, users can specify the back-end compiler by setting the 
-environment variable {\tt CC} for \pipcmd{pipcc} or {\tt FC} for
-\pipcmd{pipfc}.
+By default, \pipcmd{pipcc} and \pipcmd{pipfc} compile programs to
+create code that can execute as either a PiP task or the root
+process. Users can specify the \pipcmdopt2{pipcc}{pipfc}{piproot} or
+\pipcmdopt2{pipcc}{pipfc}{piptask} 
+options to run an application that only 
+supports PiP tasks or the PiP root. Any PiP software that has been
+compiled as PiP tasks can, in fact, run as a PiP root. The
+\pipcmdopt2{pipcc}{pipfc}{piptask} 
+option is therefore the same as the \pipcmdopt2{pipcc}{pipfc}{pipboth}
+option (to be both root and task).
 
-By default, \pipcmd{pipcc} and \pipcmd{pipfc} compile program to
-produce the code which can run as a PiP root process and/or a PiP
-task. Users may specify {\tt --piproot} option for PiP root only
-program, or {\tt --piptask} option for PiP task only program. Indeed,
-any PiP program compiled as PiP tasks can run as a PiP root too. Thus,
-{\tt --piptask} option is equivalent to {\tt --pipboth} (to
-be both root and task) option.
-
-The actual compile options to be passed to the back-end compiler are
-shown by 
-specifying the {\tt --cflags} option and the link options are shown by
-the {\tt --lflags} option. The {\tt --cflags} or {\tt --lflags}
-disables the actual compiling and/or linking process.
-All options and parameters not for \pipcmd{pipcc} and those Linux
-commands cannot run as PiP 
-programs. Additionally, any shell script (shebang) cannot run as a PiP
-program. As shown in Listing~\ref{out:pip-check}, the {\tt ls} command
-is implemented a shell script indeed.
+The \pipcmdopt2{pipcc}{pipfc}{cflags} option displays the actual compilation
+options that 
+should be provided to the back-end compiler, and the
+\pipcmdopt2{pipcc}{pipfc}{lflags} 
+option displays the linker options. The actual compiling and/or
+linking processes are disabled by the
+\pipcmdopt2{pipcc}{pipfc}{cflags} or \pipcmdopt2{pipcc}{pipfc}{lflags} 
+options.
 
 \lstinputlisting[style=example, 
   caption={{\tt pip-check} - Execution Example}, label=out:pip-check]
                 {commands/examples/pip-check.out}
 
-The \pipcmd{pip-check} program does not guarantee a program to
-run as a PiP program, even if it tells so. 
+The \pipcmd{pip-check} application can be used to determine whether a
+file can be executed as a PiP program. A program may not actually run
+as a PiP program even if it explicitly states that it will. Linux commands
+cannot be run as PiP tasks, even if they are created as PIE programs. Any
+shell script ({\it shebang}, the file with the extension
+``{$\sharp$}!'') follows the same rules. Listing 1.30 shows an example
+of a shell script that uses the ls command. 
 
 \subsection{\PIPKW{pip-exec}}
 
-The \pipcmd{pip-exec} command is to invoke PiP tasks derived
-from one program in the examples so far. However, \pipcmd{pip-exec}
-can invoke multiple programs and all PiP tasks derived from those
-programs share the same address space. To do this, programs are
-separated by colon (:) (Listing~\ref{out:pip-exec}).
+The \pipcmd{pip-exec} command is used in the examples thus far to
+execute PiP tasks that are derivations of a single program. Though all
+PiP tasks created from those programs share the same address space,
+\pipcmd{pip-exec} has the ability to invoke several programs. Programs
+are divided in this way by colons (:) (Listing~\ref{out:pip-exec}).
 
 \lstinputlisting[style=example, 
   caption={{\tt pip-exec} - Execution Example}, label=out:pip-exec]
@@ -63,11 +68,10 @@ separated by colon (:) (Listing~\ref{out:pip-exec}).
 
 \subsection{\PIPKW{pips}}\label{sec:pips}
 
-\pipcmd{pips} is the command to output the list of currently running
-PiP roots and PiP tasks in the similar way of what the Linux's {\tt
-  ps} command does. Here is the example, running three (3)
-\pipcmd{pip-exec} each of which execute {\tt a}, {\tt b}, or {\tt c}
-PiP tasks. 
+Similar to how the Linux ps command works, the \pipcmd{pips} command
+outputs a list of all presently active PiP tasks and PiP roots. Here
+is an example where three (3) \pipcmd{pip-exec} are launched, with
+each one executing one of the PiP tasks (a, b, or c).
 
 \begin{lstlisting}[frame=tRBl]
 $ pips
@@ -86,21 +90,22 @@ PID   TID   TT       TIME     PIP COMMAND
 18741 18752 pts/0    00:00:00 3T  a
 \end{lstlisting}
 
-As you see, this output looks very similar to the on of the {\tt ps}
-command. The unfamiliar column titled {\tt PIP} represents
-if this is a PiP root or PiP task (first character. '{\tt R}' means
-root, the other numerical digit '{\tt 0-9}' means PiP task. The second
-character represents PiP \pipterm{execution mode}, explained in
-Section~\ref{sec:exec-mode}).
+As you can see, this output resembles the on of the {\tt ps} command
+quite a bit. If this is a PiP root or PiP task, it is shown in the
+unfamiliar {\tt PIP} column (first character). The other numerical
+digit, ``0-9,'' stands for the PiP task, while ``R'' stands for
+root. In Section~\ref{sec:exec-mode}, PiP execution 
+mode is represented by the second character.
 
-This \pipcmd{pips} command has many options. Refer PiP man page
-(\ref{sec:pip-man}) for more details. 
+The \pipcmd{pips} command has many options. Refer PiP man page
+(Section \ref{sec:pip-man}) for more details. 
 
 \subsection{\PIPKW{pip-gdb}}\label{sec:pip-gdb}
 
-\pipcmd{pip-gdb} is PiP-aware version of {\tt gdb} (GNU
-debugger). PiP tasks are implemented as GDB's inferiors. Here is the
-example of PiP-gdb debugging session.
+PiP-aware {\tt gdb} (GNU debugger) is known as \pipcmd{pip-gdb}. PiP
+tasks are introduced as inferiors of GDB. This is an illustration of a
+PiP-gdb debugging session. Note that the \pipcmd{pip-gdb} can only
+debug PiP tasks in the process mode.
 
 \begin{lstlisting}[frame=tRBl]
 (pip-gdb) info inferiors
