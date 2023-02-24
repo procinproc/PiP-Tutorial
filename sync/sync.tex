@@ -8,31 +8,31 @@ This section will go over how PiP tasks' timing synchronization works.
 The PiP library only supports barrier synchronization as a
 synchronization mechanism at this time. Barrier synchronization in PiP
 uses an API that was taken from the PThread library. PiP has three
-functions that are equivalent to \linuxfunc{pthread_barrier_init()},
-\linuxfunc{pthread_barrier_wait()}, and
-\linuxfunc{pthread_barrier_destroy()}, respectively:
-\pipfunc{pip_barrier_init()}, \pipfunc{pip_barrier_wait()}, and
-\pipfunc{pip_barrier_fin()}. 
+functions that are equivalent to \linuxfunc{pthread_barrier_init},
+\linuxfunc{pthread_barrier_wait}, and
+\linuxfunc{pthread_barrier_destroy}, respectively:
+\pipfunc{pip_barrier_init}, \pipfunc{pip_barrier_wait}, and
+\pipfunc{pip_barrier_fin}. 
 
 \lstinputlisting[style=program, caption={Barrier Synchronization
     ({\tt barrier})}, label=prg:barrier] {sync/examples/barrier.c}
 
-Listing~\ref{prg:barrier} gives the third argument to the pip init()
+Listing~\ref{prg:barrier} gives the third argument to the \pipfunc{pip_init}
 function a non-NULL value this time. This is an additional method of
 exporting a pointer to spawnd PiP jobs from the root. Children in this
 example are given the address of the \pipstruct{pip_barrier_t} static
-variable so they can synchronize by using \pipfunc{pip_barrier_wait()}.
+variable so they can synchronize by using \pipfunc{pip_barrier_wait}.
 
 To make the impact of the barrier synchronization more clear, the
 synchronization only occurs when the second parameter of the program
 execution is left blank; in this case, PiP tasks display the
-\pipfunc{pip_gettime()} return values. The \pipfunc{pip_gettime()}
-function returns the current value of the \linuxfunc{gettimeofday()}
+\pipfunc{pip_gettime} return values. The \pipfunc{pip_gettime}
+function returns the current value of the \linuxfunc{gettimeofday}
 function in double format with a second unit.
 
 Listing~\ref{out:barrier} displays an example of this application
 being run. The barrier synchronization is absent in the initial run,
-and the values returned by \linuxfunc{gettimeofday()} exhibit
+and the values returned by \linuxfunc{gettimeofday} exhibit
 significant variation. A lesser difference can be detected in the
 second run, where the barrier synchronization occurs.
 

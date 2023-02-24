@@ -96,10 +96,10 @@ requires more memory than running multiple threads does.
 
 As of now, one overhead that is greater than the multi-process model
 is known. System calls for address space change, such
-\linuxfunc{mmap()} and \linuxfunc{brk()}. This is because any change
+\linuxfunc{mmap} and \linuxfunc{brk}. This is because any change
 to an address space inside the OS 
 kernel must be locked, and lock contention causes more overhead. The
 scenario is the same when using the multi-thread model, and while
-\linuxfunc{mmap()} has a higher overhead than the multi-process model,
+\linuxfunc{mmap} has a higher overhead than the multi-process model,
 it is nearly identical when using the multi-thread model. Up to now,
 no additional overhead in PiP has been identified.

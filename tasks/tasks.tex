@@ -85,7 +85,7 @@ PiP execution, however, are different pairings.
 
 These variations are explained in
 Figure~\ref{fig:tasks:hello-var-omp}. The variable {\tt x} is shared 
-by all of the \term{OpenMP thread}s, and they all use the same address
+by all of the \term{OpenMP} threads, and they all use the same address
 space. Each \term{MPI} process in an MPI environment has its own address
 space, and two (2) threads can execute in each address space while
 sharing a variable in an MPI process. However, each PiP task has its
@@ -134,8 +134,8 @@ that share the same address space can import the exported address.
 
 In this program, after adjusting the value of {\tt argv[1]}, a PiP
 task with a PIPID of zero (zero) exports the address of the variable
-{\tt x} by using \pipfunc{pip_named_export()}. By using the
-\pipfunc{pip_named_import()} function, the 
+{\tt x} by using \pipfunc{pip_named_export}. By using the
+\pipfunc{pip_named_import} function, the 
 remaining PiP tasks import the address that PiP task 0 exported. An
 outcome of this program's execution is shown below. The other PiP
 tasks can view the value that PiP task 0 exported, as demonstrated.
@@ -145,8 +145,8 @@ tasks can view the value that PiP task 0 exported, as demonstrated.
   label=out:export-import] {tasks/examples/export-import.out}
 
 The address with the specified name is published by the
-\pipfunc{pip_named_export()} function. The
-\pipfunc{pip_named_import()} function blocking-waits for the specified
+\pipfunc{pip_named_export} function. The
+\pipfunc{pip_named_import} function blocking-waits for the specified
 PiP job by {\PIPID} to reach the defined address. To avoid a race condition,
 it is not permitted to export an address with the same name more than
 once for the purpose of updating the address.

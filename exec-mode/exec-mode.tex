@@ -1,27 +1,31 @@
 
 \section{Execution Mode}\label{sec:exec-mode}
 
-PiP library is designed to run on Linux. As described in
-Section~\ref{sec:rationale}, it heavily depends on the {\tt
-  dlmopen()} and {\tt clone()}. Especially, the {\tt clone()} is
-called with a rare combination of {\tt CLONE} flags. There are many
-Linux variants and some of them do not support such a {\tt CLONE} 
-flag combination (for example, McKernel). To run PiP on
-such environment, there are two PiP 
-execution modes, one for calling {\tt clone()} with the special flag
-combination and another for calling {\tt pthread_create()} (using the
-normal flag combination) to spawn a PiP task. The former is called
-\pipterm{process mode} and latter is called \pipterm{pthread mode}. In
-either mode, the PiP's basic nature, sharing address space and
-variable privatization are preserved. 
+PiP library is made to function on Linux. According to
+Section~\ref{sec:rationale}, it is very dependent on the
+\linuxfunc{dlmopen} and \linuxfunc{clone} functions. Particularly, the
+\linuxfunc{clone} function is called with a unique set of 
+{\tt CLONE} flags. Many Linux variants exist, and some of them do not
+support the specified {\tt CLONE} flag combination (for example,
+McKernel\footnote{\url{https://github.com/ihkmckernel/mckernel}}). There
+are two ways to execute PiP in such an environment: 
+one involves executing \linuxfunc{clone} with a particular flag
+combination, and the other involves calling \linuxfunc{pthread_create}
+to start a PiP task while 
+using the standard {\tt CLONE} flag combination. \pipterm{Process
+  mode} refers to the former and \pipterm{pthread mode} to the
+latter. Both modes keep the fundamental characteristics of the PiP,
+including address space sharing and 
+flexible privatization.
 
 \subsection{Differences Between Two Modes}
 
-The difference of the PiP \pipterm{execution mode} ends up with the
-difference of the {\tt clone()} flag combination. Unlike the
-\pipterm{pthread mode}, the {\tt CLONE} flags of {\tt CLONE_FS}, {\tt
-  CLONE_FILES}, {\tt CLONE_SIGHAND} and {\tt CLONE_THREAD} are reset,
-{\tt CLONE_VM} and {\tt CLONE_SYSVSEM} is set. 
+{\tt CLONE} flag combinations ultimately determine the difference in the
+PiP execution mode. The {\tt CLONE} flag values \linuxdef{CLONE_FS},
+\linuxdef{CLONE_FILES}, \linuxdef{CLONE_SIGHAND}, and
+\linuxdef{CLONE_THREAD} are reset, but \linuxdef{CLONE_VM} and
+\linuxdef{CLONE_SYSVSEM} are set, in contrast to the 
+pthread mode. 
 
 \begin{table}[ht]
   \centering
@@ -39,10 +43,10 @@ difference of the {\tt clone()} flag combination. Unlike the
   \end{tabular}
 \end{table}
 
-Table~\ref{tbl:mode-diff} shows the major differences between the two
-modes. There are many other differences, though, PiP library provides
-mode-agnostic functions so that users can write PiP programs without
-care of the mode differences. 
+The primary distinctions between the two modes are shown in
+Table~\ref{tbl:mode-diff}. There are a lot more variations, however
+the PiP library offers mode-agnostic functions so that users can
+develop PiP programs without worrying about the variations in mode.
 
 \begin{table}[ht]
   \centering
@@ -72,7 +76,7 @@ care of the mode differences.
 \end{table}
 
 There are also predicate functions for users to know the current
-mode listed below; 
+mode listed in Table~\ref{tbl:mode-predicates}.
 
 \begin{table}[ht]
   \centering
@@ -88,18 +92,18 @@ mode listed below;
   \end{tabular}
 \end{table}
 
-The meaning of \pipfunc{pip_is_threaded()} and
-\pipfunc{pip_is_shared_fd()} are the same in the current
-implementation. The reason to have those functions is that there might
-be the case where those two may have different meanings.
+In the current implementation, \pipfunc{pip_is_threaded} and
+\pipfunc{pip_is_shared_fd} have the same meaning. There may be
+situations in which those two terms have different meanings, so having
+those functions is necessary. 
 
 \subsection{How to Specify Execution Mode}
 
-The execution mode can be specified when to call \pipfunc{pip_init()}
-and/or setting the \pipenv{PIP_MODE} environment variable at
-run-time. Below is the function prototype of the
-\pipfunc{pip_init()}. The first three arguments are already described
-up until now.
+When calling \pipfunc{pip_init} or setting the \pipenv{PIP_MODE}
+environment variable at runtime, the execution mode can be
+selected. The function prototype 
+for the \pipfunc{pip_init} shown below. Up until this point, the first
+three arguments have been discussed.
 
 \begin{lstlisting}[frame=tRBl]
 int pip_init( int *pipidp,	[IN/OUT]
@@ -108,15 +112,14 @@ int pip_init( int *pipidp,	[IN/OUT]
               int opts );       [IN]
 \end{lstlisting}
 
-The possible values of the last {\tt opts} argument are one of 
-\pipdef{PIP_MODE_PROCESS}, \pipdef{PIP_MODE_THREAD}, {\tt or}ing
-the both, and zero. The value of zero is equal to {\tt
-  PIP_MODE_PROCESS|PIP_MODE_PTHREAD}. As for the \pipterm{PIP_MODE}
-environment, it can be a string of ``{\tt process}'' or
-``pthread.''
-When the {\tt opts} value is zero or the value of {\tt or}ing the
-both, then the value of \pipenv{PIP_MODE} environment variable is
-checked. If the environment is not set, then the PiP library chooses
-an appropriate one. The {\tt opts} value and the environment value
-cannot not contradict with each other.
+The final opts parameter can take one of the following values:
+\pipdef{PIP_MODE_PROCESS}, \pipdef{PIP_MODE_THREAD}, or both, or
+zero. Zero has the same value as {\tt
+  \pipdef{PIP_MODE_PROCESS}|\pipdef{PIP_MODE_PTHREAD}}. The
+\pipenv{PIP_MODE} environment can be a string that contains the words
+"{\tt process}" or "{\tt pthread}." The value of the \pipenv{PIP_MODE}
+environment variable is checked when the opts value is zero or the
+value of either oring the two. If no environment is specified, the PiP
+library picks a suitable one. The environmental value and the ethical
+worth cannot be at odds with one another. 
 

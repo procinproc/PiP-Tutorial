@@ -1,42 +1,48 @@
 
 \section{Rationale}\label{sec:rationale}
 
-The prosedure to spawn a PiP task is (more detailed procedure can be
-found at Section~\ref{sec:spawn-details});
+The steps to spawn a PiP task are as follows (a more complete
+technique is provided in Section 3.1.1);
+
+The steps to spawn a PiP task are: 1. construct a new name space by
+using the Linux dlmopen()() function, 2. create a PiP task process (or
+thread) by using the Linux clone() system call, and 3. enter the
+starting function of a user application.
+
 
 \begin{enumerate}
-\item create a new name space by calling the Linux's \linuxfunc{
-  dlmopen()} function,
-\item create a PiP task process (or thread) by calling the Linux's
-  \linuxfunc{clone()} system call, and 
-\item jump into the starting function of a user program.
+\item build a new name space by
+using the Linux \linuxfunc{dlmopen} function,
+\item create a PiP task process (or
+thread) by using the Linux \linuxfunc{clone} system call, and
+\item enter the starting function of a user application.
 \end{enumerate}
 
-The \linuxfunc{dlmopen()} function can create a new name space, unlike
-\linuxfunc{dlopen()}. Here, the {\it name space} is the global symbol
-names (functions and global variables) to be resolved at loading a
-program. By creating a new name space, functions and variables can be
-privatized from the other PiP tasks. 
+In contrast to \linuxfunc{dlopen}, the \linuxfunc{dlmopen} function
+can construct a new name space. Here, the global symbol names
+(functions and global variables) that must be resolved upon program
+loading make up the name space. Functions and variables may be
+privatized from the other PiP tasks by establishing a distinct name
+space. 
 
-The order of calling the \linuxfunc{dlmopen()} and \linuxfunc{clone()}
-is very important.  At first, I tried to call them in the order of
-calling \linuxfunc{clone()} followed by \linuxfunc{dlmopen()}, because
-this way seemed to be 
-quite natural, however, this does not work at all. This the reason of
-that only PiP root can spawn PiP tasks and wait for the terminations
-of PiP tasks. 
+It's crucial to call \linuxfunc{dlmopen} and \linuxfunc{clone} in the
+correct order. As it looked pretty reasonable, at first I tried to
+call them in the following order: clone(), followed by dlmopen(), but
+this did not work at all. This is the rationale behind why only PiP
+root can start PiP tasks and watch for their terminations. 
 
-In some cases (or, in most cases before CentOS/Redhat 8), the loaded
-address of a program is fixed by default. If this is the case, PiP
-cannot load multiple programs in the same address space. To enable
-this, the PiP executables must be compiled as \PIE\ (Position
-Independent Executable) so that the programs can be loaded at any
-arbitrary address. All programs to be PiP tasks must be compiled as
-\PIE, i.e., must be compiled with \pipcmd{pipcc} or \pipcmd{pipfc}
-with the {\tt --piptask} option (or nothing to use the default). Note
-that PiP root program may not be \PIE.  
+The loaded address of a program is fixed by default in some
+circumstances (or in the majority of circumstances prior to
+CentOS/Redhat 8). If so, PiP is unable to load more than one program
+in the same address space. The PiP executables must be built as \PIE
+(Position Independent Executable) files in order for the programs to
+be able to be loaded at any arbitrary address. All PiP tasks must be
+built as PIE, which means they must be built using the
+\pipcmdopt2{pipcc}{pipfc}{piptask} option using \pipcmd{pipcc} or
+\pipcmd{pipfc} (or nothing to use the default). Keep in mind 
+that the PiP root program could not be PIE.
 
-By running the loaded program having a new name space with another
-thread, PiP task can be created. Unfortunately, things are not that
-simple. There are many issues coming from Glibc. The next section will
-describe these issues. 
+PiP task can be formed by running the loaded program in a new name
+space with another thread. Unfortunately, nothing is ever that
+easy. Many problems are caused by Glibc. These problems are discussed
+in the following section.
