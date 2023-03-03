@@ -1,10 +1,10 @@
 
 \section{Spawning Tasks - Advanced}\label{sec:spawn-adv}
 
-In this section, other features, not described so far, of
-\pipfunc{pip_spawn()} and \pipfunc{pip_task_spawn()} will be
-explained. For convenience, the function prototypes of these functions
-are shown below;
+Further features of \pipfunc{pip_spawn} and \pipfunc{pip_task_spawn}
+that have not yet been explained will be covered in this section. The
+function prototypes for these functions are included below for your
+convenience;
 
 \begin{lstlisting}[frame=tb]
 int pip_task_spawn( pip_spawn_program_t *progp, [IN]
@@ -23,78 +23,80 @@ int pip_spawn( char *filename,                  [IN]
                void *hookarg );                 [IN]
 \end{lstlisting}
 
-The first argument of \pipfunc{pip_task_spawn()} function is already
-described in Section~\ref{sec:spawn-func}. This is structure is to
-pack the first three arguments of \pipfunc{pip_spawn()}. 
+In Section 1.2.1, the first argument of the \pipfunc{pip_task_spawn}
+function is already covered in Section~\ref{sec:spawn-func}. To
+compact the first three arguments of \pipfunc{pip_spawn}, use the
+\pipstruct{pip_spawn_program_t} structure. 
 
 \subsection{Start Function}
 
-As already shown in Listing~\ref{sec:spawn-func}, these PiP spawn
-functions eventually jumps into the start function ({\tt main()} or
-user specified one). To enable this, PiP needs to know the address of
-the start function. One of the following two conditions must be
-met here;
+These PiP spawn routines eventually jump into the start function
+({\main} or a user-specified one), as already demonstrated in
+Listing~\ref{sec:spawn-func}. PiP requires knowledge of the start
+function's address in order to enable this. Here, one of the two
+prerequisites must be satisfied: 
 
 \begin{itemize}
-\item the starting function is defined as a global symbol.
+\item the starting function is defined as a global symbol, or
 \item if the starting function is defined as a local symbol then the
   executable file must not be stripped.
 \end{itemize}
 
-As for the {\tt main()} function, the \pipcmd{pipcc} and
-\pipcmd{pipfc} compile programs with the {\tt -rdynamic} option to
-make the symbol global. As for the user-defined local symbol, PiP
-library read the executable file to spawn and tries to find the
-starting function by using the ELF information. Unfortunately, the
-local symbol information is lost if stripped, and PiP fails to find
-the starting function.
+The {\tt -rdynamic} option is used during program compilation with the
+\pipcmd{pipcc} and \pipcmd{pipfc} to make the symbol global for the
+{\main} function. When it comes to user-defined local symbols, the PiP
+library reads the executable file to spawn and attempts to locate the
+starting function using the ELF metadata. Unfortunately, if the local
+symbol information is stripped, it is lost, and PiP is unable to
+locate the starting function.
 
 \subsection{Stack Size}
 
-The stack size of spawned PiP tasks can be set by the
-\pipdef{PIP_STACKSIZE} environment variable. Like the
-\linuxenv{OMP_STACKSIZE} environment defined by OpenMP, its value may 
-be suffixed by ``{\tt T},'' ``{\tt G},'' ``{\tt M},'' ``{\tt K},'' or
-``{\tt B}'' representing the {\it TiB}, {\it GiB}, {\it MiB}, {\it
-  KiB}, or{\it Byte} unit, respectively. If no suffix is present,
-{\it KiB} is assumed. Unless \pipdef{PIP_STACKSIZE} is
-specified, the environment variable \linuxenv{KMP_STACKSIZE},
-  \linuxenv{GOMP_STACKSIZE}, or \linuxenv{OMP_STACKSIZE} is also effective
-  with the 
-priority in this order.  The \linuxenv{KMP_STACKSIZE},
-\linuxenv{GOMP_STACKSIZE}, and \linuxenv{OMP_STACKSIZE} also affects the
-size of OpenMP threads, however, \pipdef{PIP_STACKSIZE} only affects
-the stack size of PiP tasks. 
+The \pipdef{PIP_STACKSIZE} environment variable can be used to control the
+stack size of created PiP tasks. Its value can be prefixed with ``{\tt
+  T},'' ``{\tt G},'' ``{\tt M},'' ``{\tt K},'' or ``{\tt B}'' which,
+like the \linuxenv{OMP_STACKSIZE} environment 
+provided by OpenMP, stands for the {\it TiB}, {\it GiB}, {\it MiB}, {\it
+  KiB}, or {\it Byte} unit,
+respectively. {\it KiB} is presummated in the absence of a suffix. The
+environment variables \linuxenv{KMP_STACKSIZE},
+\linuxenv{GOMP_STACKSIZE}, or \linuxenv{OMP_STACKSIZE} 
+are similarly effective with the priority in this order unless
+\pipenv{PIP_STACKSIZE} is provided. While \pipenv{PIP_STACKSIZE} only
+impacts the stack size of PiP processes, \linuxenv{KMP_STACKSIZE},
+\linuxenv{GOMP_STACKSIZE}, and \linuxenv{OMP_STACKSIZE}  
+also affect the size of OpenMP threads.
 
 \subsection{CPU Core Binding}
 
-The {\tt coreno} argument is to bind the spawned PiP task to the
-specified CPU core. By default, this is the $N$th core number. If
-users want to specify the absolute core number, then the absolute core
-number should be {\tt OR}ed with the
-\pipdef{PIP_CPUCORE_ABS} flag. If the core numbers are consecutive,
-specifying this flag may not affect the core number
-specification. This difference is only seen on some CPU architectures
-with non-contiguous core numbers (e.g., Fujitsu A64FX).
-The {\tt coreno} argument can be \pipdef{PIP_CPUCORE_ASIS} to bind to
-the same CPU cores as of the root process calling the spawn function.
+The spawned PiP task is bound to the designated CPU core by the {\tt
+  coreno} argument. This is the $N$th core number by default. The
+absolute core number should be {\tt OR}ed with the
+\pipdef{PIP_CPUCORE_ABS} flag if users want to specify the absolute
+core number. Specifying this flag might not have 
+an impact on the core number specification if the core numbers are
+continuous. Only certain CPU architectures with non-contiguous core
+numbers exhibit this disparity (e.g., Fujitsu A64FX). To connect to
+the same CPU cores as the root process executing the spawn function,
+the {\tt coreno} argument might be \pipdef{PIP_CPUCORE_ASIS}.
 
 \subsection{File Descriptors and Spawn Hooks}\label{sec:hooks}
 
-In the \pipterm{process mode}, file descriptors of the root process
-are duplicated and passed to the spawned child in the same way of what
-\linuxfunc{fork()} does. In the \pipterm{pthread mode}, files descriptors
-are simply shared among PiP root and PiP tasks. 
+Similar to how \linuxfunc{fork} works, file descriptors from the root
+process are duplicated and provided to the newly spawned child in the
+\pipterm{process mode}. File descriptors are simply shared by PiP root
+and PiP tasks in the \pipterm{pthread mode}.
 
-If the \term{close-on-exec} flag of a file descriptor owned by the root
-process is set in \pipterm{process mode}, then the file descriptor is
-closed after calling the \pipterm{before hook} described above (if
-any), and then jump into the start function.  
+The file descriptor is closed after calling the \pipterm{before hook}
+mentioned below (if any), and then the start function is called if the 
+\term{close-on-exec} flag of a file descriptor owned by the root
+process is set in process mode.
 
-The last argument of \pipfunc{pip_task_spawn()} is the structure
-packing the last three arguments of \pipfunc{pip_spawn()}. The
-\pipstruct{pip_spawn_hook_t} structure can be set by calling
-\pipfunc{pip_spawn_hook()} function. Here is the prototype;
+The structure containing the final three arguments of
+\pipfunc{pip_spawn} is the final argument of
+\pipfunc{pip_task_spawn}. Calling the \pipfunc{pip_spawn_hook}
+function will set the \pipstruct{pip_spawn_hook_t} structure. Here is
+the prototype;  
 
 \begin{lstlisting}[frame=tb]
 void pip_spawn_hook( pip_spawn_hook_t *hook,  [OUT]
@@ -104,31 +106,32 @@ void pip_spawn_hook( pip_spawn_hook_t *hook,  [OUT]
 typedef int (*pip_spawnhook_t)( void* );
 \end{lstlisting}
 
-The {\tt before} function in this structure is called when a
-PiP task is created and before calling the start function (e.g.,
-{\tt main()}). And the {\tt after} function is called when the PiP
-task is about to terminate. Both functions are called with the argument
-specified by the {\tt hookarg} to pass any arbitrary data. 
+Before invoking the start method (such as \main), this structure's
+{\tt before} function is called when a PiP task is created. And when
+the PiP task is ready to finish, the {\tt after} function is
+invoked. Both functions are invoked with the {\tt hookarg}-specified
+argument, which can pass any kind of data.
 
-In general, a new process is created by calling \linuxfunc{fork()} and
-\linuxfunc{execve()} in Linux/Unix. Here, file descriptors owned by
-parent process are passed to the created child. In many cases, those
-file descriptors are closed or duplicated and some other settings take
-place between the calls of \linuxfunc{fork()} and
-\linuxfunc{execve()}. In PiP, however, the task is created by only one
-function and there is no chance to do the same settings with the ones
-of using {\tt fork\&exec}. These hook functions are provided for this
-purpose. Here is an example of these hook functions;  
+In Linux/Unix, calling \linuxfunc{fork} and \linuxfunc{execve}
+generally results in the creation of a new process. Here, the parent
+process's file descriptors are transferred to the newly created child
+process. In many instances, such file descriptors are closed or
+duplicated, and other settings are changed in between calls to
+\linuxfunc{fork} and \linuxfunc{execve}. The task is only 
+created by one function in PiP, hence it is not possible to use the
+same settings as when {\tt fork\&exec} is used. These hook functions are
+offered in order to accomplish this. Here is an illustration of one of
+these hook functions;
 
 \lstinputlisting[style=program,
   caption={Before and After Hooks},
   label=prg:hook] {spawn-adv/examples/hook.c}
 
-In this example, FD1 of the root process is duplicated to FD10 by the
-\pipterm{before hook}. Then the spawned task write a message via
-FD10. Finally, the FD10 is closed by the \pipterm{after hook}
-(Listing~\ref{out:const-dest}). 
-Note that the execution of those hook functions are called by the root. 
+In this illustration, the \pipterm{before hook} copies the root
+process' FD1 to FD10. Next, the job that was started uses FD10 to
+write a message. The \pipterm{after hook} closes the FD10 finally.
+You should be aware  that the root calls those hook functions to run
+them. 
 
 \lstinputlisting[style=example, 
   caption={Before and After Hooks - Execution}, label=out:hook]

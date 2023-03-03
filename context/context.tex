@@ -1,52 +1,57 @@
 
 \section{Execution Context}\label{sec:context}
 
-Before explaining the rest of the arguments, readers should know about
-the execution context under PiP. The execution context can be defined
-as the state of CPU, i.e., contents of hardware registers. On PiP,
-this definition may not be enough. Let us have an example. Suppose
-that the same program runs as two PiP tasks and this program has a
-function {\tt foo()}. By passing the function pointer, by using the
-\pipfunc{pip_named_export} and \pipfunc{pip_named_import}, one of
-the PiP task can call the function of the other PiP
-task. Additionally, this function accesses a static variable, say {\tt
-  var}. If task $A$ calls function {\tt foo} of task $B$, then the
-called function accesses the variable owned by task $B$, not $A$
-(Listing~\ref{prg:context} and \ref{out:context}).
+Readers should be familiar with the execution context under PiP before
+I discuss the remaining arguments. The state of the CPU, or the
+contents of hardware registers, can be thought of as the general
+definition of the execution context. This definition might not be
+sufficient on PiP. Let's look at an example. Assume the same
+application contains a function called {\tt foo} and is running as two PiP
+tasks. One PiP job can call the function of the other PiP task by
+supplying the function pointer and utilizing the
+\pipfunc{pip_named_export} and \pipfunc{pip_named_import}. The
+function {\tt foo} also makes use of a static variable, let's say 
+var. When task A calls task B's function foo, task B's variable, not
+task A's, is accessed by the called function
+(Listing~\ref{prg:context} and \ref{out:context}). 
 
 \lstinputlisting[style=program,
   caption={Calling a Function of Another Task},
   label=prg:context] {context/examples/context.c}
 
-In this example program, sorry, this may go off the side road,
-\pipfunc{pip_named_export} and 
-\pipfunc{pip_named_import} are called differently than
-before. The second argument of \pipfunc{pip_named_export} and the
-third argument of \pipfunc{pip_named_import} are actually a format
-string, just like Linux's \linuxfunc{printf}, followed by argument(s) 
-needed by the format. 
 
+Sorry, this may detour off the main road, but in this example program,
+\pipfunc{pip_named_export} and 
+\pipfunc{pip_named_import} are called in a different way than they were
+previously. Similar to Linux's \linuxfunc{printf}, the second and third
+arguments to the \pipfunc{pip_named_export} and 
+\pipfunc{pip_named_import} functions, respectively, are
+really format strings followed by the argument(s) required by the
+format.
+ 
 \lstinputlisting[style=example, 
   caption={Function Call of Another Task - Execution}, label=out:context]
                 {context/examples/context.out}
 
-Thus, the execution context in PiP environment might be different from
-the one in common sense and some times its behavior becomes very
-subtle. In the PiP library, this happens quite often and makes
-debugging quite difficult. 
+The execution context in a PiP environment may differ from that in a
+common sense environment, as shown in Listing~\ref{out:context}, and
+occasionally its behavior changes in a very subtle way. This occurs
+pretty frequently in the PiP library and makes debugging quite
+challenging. 
 
-Further, the association of static variables and function addresses
-heavily depends on the CPU architecture and how PIE is
-implemented. The above description is true on \AMD\ and \ARM,
-however, not true on \INTEL. Thus, it is not recommended to
-do this. 
+Furthermore, the CPU architecture and PIE implementation have a
+significant impact on the relationship between static variables and
+function addresses. For \AMD\ and \ARM, the aforementioned
+description is accurate, but not on \INTEL. As a result, it is not
+advised to do this.
 
 \subsubsection*{Rationale}
 
-Some readers may wonder why this happens. Let me explain this. This
-trick is hidden in the address map. Listing~\ref{out:glibc-segs} shows
-a part of address map running three tasks, focusing on the Glibc ({\tt
-  /lib64/libc-2.28.so}) segments. 
+Some readers may be curious as to why this occurs. Let me
+elaborate. The address map contains this
+ruse. Listing~\ref{out:glibc-segs} displays a section of the address
+map with three jobs executing, with a focus on the Glibc  ({\tt
+  /lib64/libc-2.28.so}) segments.  
 
 \begin{lstlisting}[basicstyle=\tiny\tt, frame=tRBl, label=out:glibc-segs]
   ...
@@ -67,21 +72,20 @@ a part of address map running three tasks, focusing on the Glibc ({\tt
   ...
 \end{lstlisting}
 
-There are three sets of Glibc segments. The static variables are
-located on the last (readable and writable) segment of each set. A
-static variable is accessed by an instruction using the offset from
-the instruction (program counter relative addressing mode) to the
-variable. Thus, the gap size between the code segment (top of the set)
-and variable segment (bottom of the set) is important to make all
-offsets constant and thus all gap sizes must be the same. In this way,
-variables and instructions are associated in \PIE\footnote{This is
-not the case if not compiled as \PIE.}, and \PIE\ programs and shared
-objects compiled with the \PIC\ option can be loaded at any locations.
+Glibc segments come in three sets. The final (readable and write)
+segment of each set is where the static variables are located. By
+using the offset from the instruction (program counter relative
+addressing mode) to the variable, an instruction can access a static
+variable. In order to keep all offsets equal, the gap size between the
+code segment (at the top of the set) and the variable segment (at the
+bottom of the set) is crucial, and all gap sizes must be the
+same. Variables and instructions are connected in \PIE\footnote{This is
+not the case if not compiled as \PIE.} in this 
+fashion, allowing \PIE\ applications and shared objects that were
+created with the \PIC\ option to be loaded in any place.
 
-Unfortunately, this addressing mode is not supported by all CPU
-architectures\footnote{Listing~\ref{out:context} is obtained by
-running the program on an \AMD\ CPU.}. For example, \INTEL\  
-does not. On this architecture, one general purpose
-register is sacrificed to point the variable segment, resulting
-performance degradation by loosing one general purpose register. And
-the program shown in Listing~\ref{prg:context} exhibits differently. 
+Unfortunately, not all CPU architectures implement this addressing
+mode3. For example, \INTEL\ doesn't. This architecture sacrifices one
+general purpose register in order to point the variable segment,
+causing performance to suffer as a result. Moreover,
+Listing~\ref{prg:context} program displays a distinct behavior.
