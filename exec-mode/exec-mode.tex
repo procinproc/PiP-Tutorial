@@ -11,12 +11,11 @@ McKernel\footnote{\url{https://github.com/ihkmckernel/mckernel}}). There
 are two ways to execute PiP in such an environment: 
 one involves executing \linuxfunc{clone} with a particular flag
 combination, and the other involves calling \linuxfunc{pthread_create}
-to start a PiP task while 
-using the standard {\tt CLONE} flag combination. \pipterm{Process
-  mode} refers to the former and \pipterm{pthread mode} to the
-latter. Both modes keep the fundamental characteristics of the PiP,
-including address space sharing and 
-flexible privatization.
+to start a PiP task while using the standard {\tt CLONE} flag
+combination. The former is referred to as \pipterm{process mode}, and
+the latter as \pipterm{pthread mode}. Both modes keep the fundamental
+characteristics of the PiP, including address space sharing and
+variable privatization. 
 
 \subsection{Differences Between Two Modes}
 

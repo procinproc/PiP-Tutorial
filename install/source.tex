@@ -4,18 +4,18 @@
 Usually, building full PiP package consists of the following steps;
 
 \begin{enumerate}
-\item Building PiP-glibc (optional)\label{item:glibc}
+\item Building \pipglibc\ (optional)\label{item:glibc}
 \item Building PiP library
-\item Building PiP-gdb (optional)\label{item:gdb}
+\item Building \pipgdb\ (optional)\label{item:gdb}
 \end{enumerate}
 
 The \ref{item:glibc} and \ref{item:gdb} steps are optional, but
-PiP-gdb requires PiP-glibc. So the possible combinations are;
+\pipgdb\ requires \pipglibc. So the possible combinations are;
 
 \begin{itemize}
 \item PiP library only
-\item PiP-glibc and PiP library, and
-\item PiP-glibc, PiP library and PiP-gdb.
+\item \pipglibc and PiP library, and
+\item \pipglibc, PiP library and \pipgdb.
 \end{itemize}
 
 Listing~\ref{out:build-source} shows a typical case of building full

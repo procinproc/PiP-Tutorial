@@ -1,19 +1,17 @@
 
 \section{{\tt XPMEM}}\label{sec:xpmem}
 
-As described in Section~\ref{sec:shared-memory-myth}, {\tt
-  XPMEM} is known to provide a shared memory model which is more
-convenient that the POSIX shared memory. Again, the shared address
-space which PiP provides includes the shared memory model which {\tt
-  XPMEM} and POSIX shared memory provide. Thus, the same
-functionalities of {\tt XPMEM} can also be implemented by using PiP.
+As stated in Section~\ref{sec:shared-memory-myth}, it is well known
+that XPMEM offers a shared memory model that is more practical than
+POSIX shared memory. Once more, the shared memory paradigm that XPMEM
+and POSIX shared memory offer is included in the shared address space
+that PiP offers. 
 
-The PiP library provides the same functions which are provides by {\tt
-  XPMEM}.  Those who have programs using {\tt XPMEM} can easily switch
-to using PiP.  By using PiP, there is no need of installing {\tt
-  XPMEM} kernel module. Most importantly, {\tt XPMEM} functions
-provided by PiP work much faster than those of {\tt XPMEM}. This is
-because no system call involved to map memory segment of the other
-process(es) in PiP. Indeed, most {\tt XPMEM} functions almost do
-nothing since the other processes are already mapped from the
-beginning in PiP. 
+The identical functions that XPMEM offers are also provided by the PiP
+library. Users of XPMEM-based programs can quickly convert to PiP. The
+XPMEM kernel module does not need to be installed while using
+PiP. Most notably, PiP's XPMEM operations operate far more quickly
+than those of XPMEM. This is due to the fact that no system call was
+necessary to map the memory segment of the other PiP task(s). In
+fact, since PiP has already had the other processes mapped from the
+start, the majority of XPMEM routines essentially do nothing.

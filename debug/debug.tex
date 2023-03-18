@@ -1,44 +1,47 @@
 
 \section{Debugging Support}
 
-Some environment variable settings may help debugging PiP programs.
+While debugging PiP programs, some environment variable settings may
+be helpful.  
 
 \subsection{\PIPKW{PIP_STOP_ON_START}}
 
-This environment variable is to stop (by sending {\tt SIGSTOP} to
-spawned PiP task just before calling the \pipterm{before hook}
-(Section~\ref{sec:hooks}), or jumping to the starting function if
-before hook is not given. The value of this environment must meet the
-following format;  
+When this environment variable is set, the spawning PiP job is
+suspended (by sending \linuxdef{SIGSTOP} shortly before the before
+hook (Section~\ref{sec:hooks}) is called, or if before hook is not
+specified, the starting function is called instead. The environment's
+worth must conform to the following specification;
 
 \begin{lstlisting}[frame=tb]
   PIP_STOP_START=[<script-file>]@<PIPID>
 \end{lstlisting}
 
-The optional {\tt\option{script}} is a shell
-script to be executed on the suspension, and {\tt\option{PIPID}} is the
-\PIPID\ to be suspended. If {\tt\option{PIPID}} is -1, then all spawned PiP
-tasks will be stopped. The {\tt\option{script}} is invoked with
-three parameters; PID and \PIPID\ of the stopped PiP task, followed by a
-path to the program of the task. Do not forget to set the {\it
-  executable} bit on this {\tt\option{script-file}} file.
+The {\option{PIPID} is the \PIPID\ of the suspending
+task, and the optional {\option{script-file} is an executable
+shell script to be run upon suspension. All PiP tasks that have been
+spawned will be stopped if "PIPID" is -1. The "script" is called with
+three parameters: the PID and PIPID of the suspended PiP task, then
+the path to the task's program. Don't forget to set the executable bit
+on this {\option{script-file}.
 
 \lstinputlisting[style=program,
   caption={Stop-on-start Script Example},
   label=prg:stop-on-start] {debug/examples/onstart.cmd}
 
-Listing~\ref{prg:stop-on-start} shows an example of the script for the
-\pipenv{PIP_STOP_ON_START}. Here, \pipcmd{pips} command is invoked
-instead of some debugging command\footnote{All examples are executed
-on a Docker environment but {\tt ptrace} (and other commands using
-{\tt ptrace}) was unable to run in this example even withthe {\tt
-  --cap-add=SYS_PTRACE} Docker option (I confirmed {\tt gdb} worked). So 
-\pipcmd{pips} was used instead in this example.}. Note that 
-the target task is already stopped by delivering the {\tt SIGSTOP}
-signal. Somehow you have to explicitly deliver the {\tt SIGCONT}
-signal to the task if you want to resume the
-task. Listing~\ref{out:stop-on-start} shows the result of 
-\pipenv{PIP_STOP_ON_START} execution with this script file. 
+A sample of the PIP STOP ON START script is shown in
+Listing~\ref{prg:stop-on-start}. In this case, the pips command is
+used in place of a debugging command\footnote{
+Although \linuxfunc{ptrace} (and other commands utilizing
+\linuxfunc{ptrace}) were unable to run even with the {\tt
+  —cap-add=SYS_PTRACE} Docker option, all examples in this paper were
+tested in a Docker environment (I confirmed \linuxcmd{gdb}
+worked). In this example, \pipcmd{pips} was used.}. It should be noted
+that sending the \linuxdef{SIGSTOP} signal has already stopped the
+target task. If you want to resume a task, you must somehow explicitly
+provide the \linuxdef{SIGCONT} signal to the
+task. Listing~\ref{out:stop-on-start} displays the outcome of running
+this script file with the \pipenv{PIP_STOP_ON_START} environment
+setting.  
 
 \lstinputlisting[style=example, basicstyle=\tiny\tt, 
   caption={Stop-on-start Script Example - Execution},
@@ -46,16 +49,24 @@ task. Listing~\ref{out:stop-on-start} shows the result of
 
 \subsection{\PIPKW{PIP_GDB_SIGNALS}}
 
-This environment variable \pipenv{PIP_GDB_SIGNALS} is to set the
-signals to trigger some actions by specifying the
-\pipenv{PIP_SHOW_MAPS} and \pipenv{PIP_SHOW_PIPS}, followed by
-the PiP-gdb invocation. The value of this environment is as follows;
+When a signal provided in this environment variable is delivered to a
+PiP task, PiP-gdb is called. The path to PiP-gdb must be specified by
+the \pipenv{PIP_GDB_PATH} environment. Prior to calling PiP-gdb,
+  actions related to \pipenv{PIP_SHOW_MAPS} and \pipenv{PIP_SHOW_PIPS}
+  (both will be discussed below) will be taken. This environment's
+  format is as follows: 
 
 \begin{lstlisting}[frame=tb]
   PIP_GDB_SIGNALS=[ <SIGNAME> ] { "+"|"-" <SIGNAME> }
 \end{lstlisting}
 
-The possible {\tt\option{SIGNAME}} vale are listed below;
+The following is a list of possible {\option{SIGNAME} values.
+Here, "{\tt ALL}" refers to every signal listed in this table. The
+plus ({\tt +}) and/or minus ({\tt -}) symbols can be used to
+concatenate each signal name in this table. For instance, "{\tt
+  ALL-SIGUSR1}" denotes all signals other than
+\linuxdef{SIGUSR1}. \linuxdef{SIGUSR1}, \linuxdef{SIGUSR2}, and
+linuxdef{SIGINT} are represented as "{\tt SIGUSR1+SIGUSR2+SIGINT}". 
 
 \begin{table}[ht]
   \centering
@@ -78,30 +89,21 @@ The possible {\tt\option{SIGNAME}} vale are listed below;
   \end{tabular}
 \end{table}
 
-Here, {\tt ``ALL''} means all signals list in this table. Each signal
-name in this table can be concatenated by using the plus (+) and/or
-minus (-) symbols.  For example, ``{\tt ALL-SIGUSR1}'' indicates the
-all signals excluding {\tt SIGUSR1}. ``{\tt SIGUSR1+SIGUSR2+SIGINT}''
-represents {\tt SIGUSR1}, {\tt SIGUSR2} and {\tt SIGINT}. 
-
 \subsection{\PIPKW{PIP_SHOW_MAPS}}
 
-If \pipenv{PIP_SHOW_MAPS} environment is set to ``{\tt on}'' and the
-a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
-the address map (Listing~\ref{out:maps}, for example) will be shown. 
+The address map (Listing~\ref{out:maps}, for example) will be
+displayed if \pipenv{PIP_SHOW_MAPS} environment is set to "{\tt on}"
+and the signal specified by the \pipenv{PIP_GDB_SIGNALS} is provided.  
 
 \subsection{\PIPKW{PIP_SHOW_PIPS}}
 
-If \pipenv{PIP_SHOW_PIPS} environment is set to ``{\tt on}'' and the
-a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
-\pipcmd{pips} command (Section~\ref{sec:pips}) is invoked to show the
-status of the other PiP tasks in the same address space.
+The \pipcmd{pips} command (Section~\ref{sec:pips}) is invoked to
+display the status of the PiP tasks running in the same address space if
+\pipenv{PIP_SHOW_PIPS} environment is set to "{\tt on}" and a signal 
+specified by the \pipenv{PIP_GDB_SIGNALS} is delivered.
 
-\subsection{\PIPKW{PIP_GDB_PATH} and \PIPKW{PIP_GDB_COMMAND}}
+\subsection{\PIPKW{PIP_GDB_COMMAND}}
 
-When \pipenv{PIP_GDB_PATH} is set to the path to \pipcmd{pip-gdb}
-a signal specified by the \pipenv{PIP_GDB_SIGNALS} is delivered, then
-PiP gdb (Section~\ref{sec:pip-gdb}) will be invoked. If the value of
+PiP-gdb will be invoked to work with this command file if the value of
 the \pipenv{PIP_GDB_COMMAND} environment is set to a valid filename
-and if the filename contains some GDB commands, then PiP-gdb will be
-invoked to work with this command file. 
+containing a series of gdb commands. 

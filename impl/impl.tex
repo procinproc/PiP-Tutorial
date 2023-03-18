@@ -1,51 +1,51 @@
 
-\section{PiP Implementation}
+\section{PiP Implementation and design choices}
 
 \subsection{Spawning Tasks}\label{sec:spawn-details}
 
-Before PiP version 2.4, PiP tasks were created with the procedure as
-follows;
+Prior to PiP version 2.4, the following steps were used to launch PiP
+tasks:
 
 \begin{enumerate}
-\item The spawned program is loaded by calling \linuxfunc{dlmopen()},
+\item The spawning program is loaded by calling \linuxfunc{dlmopen},
 \item Glibc is initialized in the execution context of the loaded
   program,
-\item Call \linuxfunc{clone()} or \linuxfunc{pthread_create()} (chosen
+\item Call \linuxfunc{clone} or \linuxfunc{pthread_create} (chosen
   by the \pipenv{PIP_MODE} environment setting) to spawn the PiP task,
 \item The before hook is called if any, and finally
 \item Jump into the starting function.
 \end{enumerate}
 
-From PiP version 2.4, the wrapper functions listed in
-Table~\ref{tbl:pip-wrapper} were introduced. When implementing the
-wrapper functions, I noticed that wrapping the \linuxfunc{dlsym()} is
-almost impossible.
-
+Wrapper functions for the Glibc functions listed in
+Table~\ref{tbl:pip-wrapper} were first introduced in PiP version
+2.4. When developing these wrapper functions, I discovered that it is
+nearly impossible to wrap the \linuxfunc{dlsym}.
 A function wrapper is usually implemented as; 1) obtain the wrapping
-function address by calling the \linuxfunc{dlsym()} with the
+function address by calling the \linuxfunc{dlsym} with the
 \linuxdef{RTLD_NEXT} 
 argument, 2) do the wrapping job before and/or after calling the
 original function. The most of the Glibc \linuxfunc{malloc} routines has
-the other weak symbols (\linuxfunc{malloc()} and
-\linuxfunc{__libc_malloc()}, for example) and users can call the Glibc
+the other weak symbols (\linuxfunc{malloc} and
+\linuxfunc{__libc_malloc}, for example) and users can call the Glibc
 \linuxfunc{malloc} routines without  
-calling \linuxfunc{dlsym()}. If there is no such weak symbol, we cannot
-create a wrapper function for \linuxfunc{dlsym()}. How can I
-wrap a Glibc function without calling \linuxfunc{dlsym()}?
+calling \linuxfunc{dlsym}. If there is no such weak symbol, we cannot
+create a wrapper function for \linuxfunc{dlsym}. How can I
+wrap a Glibc function without calling \linuxfunc{dlsym}?
 
-To solve this issue, I implemented another program, so called
-\pipterm{ldpip.so} to load the PiP library and user program. here is
-the details of new spawning process;
+I used another program, dubbed \pipterm{ldpip.so}, to resolve this
+problem. thus to load the PiP library and user application. the method
+for new spawning is described here;
 
 \begin{enumerate}
-\item Load \pipterm{ldpip.so} in the PiP library package by calling
-  \linuxfunc{dlmopen()} and jump into a function defined inside of it,
+\item Load \pipterm{ldpip.so} attached in the PiP library package by
+  calling \linuxfunc{dlmopen} and jump into a function defined inside
+  of it, 
 \item The starting function of \pipterm{ldpip.so} initializes Glibc,
-\item Obtain Glibc function addresses to wrap them later by
-  \pipterm{libpip.so},
-\item Load \pipterm{libpip.so} by calling \linuxfunc{dlopen()},
-\item Load a user program by calling \linuxfunc{dlopen()},
-\item Call \linuxfunc{clone()} or \linuxfunc{pthread_create()} (chosen
+\item Obtain Glibc function addresses to wrap them later by the PiP
+  library (\pipterm{libpip.so}),
+\item Load \pipterm{libpip.so} by calling \linuxfunc{dlopen},
+\item Load a user program by calling \linuxfunc{dlopen},
+\item Call \linuxfunc{clone} or \linuxfunc{pthread_create} (chosen
   by the \pipenv{PIP_MODE} environment setting) to spawn the PiP task, 
 \item Jump into a function inside of PiP library and initialize the
   PiP library, 
@@ -53,89 +53,80 @@ the details of new spawning process;
 \item Jump into the starting function in the user program.
 \end{enumerate}
 
-At the time of loading \pipterm{ldpip.so}, no wrapper functions are
-defined in this program and obtaining the Glibc function addresses is
-easy, just referencing them. After loading the \pipterm{libpip.so} and
-jumping into a function defined in \pipterm{libpip.so} where the
-wrapping functions are defined, the Glibc functions to be wrapped are
-now wrapped by using the function table created by
-\pipterm{ldpip.so}\footnote{If actual dynamic linking would be done in
-the order of \linuxfunc{dl[m]open()}, then the wrapping functions in {\tt 
-  libpip.so} would not work as described here. As long as I checked,
-the Glibc ({\tt libc.so}) is at the last of the search order of {\tt
-  ld-linux.so}, and this works.}.
+No wrapper functions are defined at the moment \pipterm{ldpip.so} is
+loaded, making it simple to access the Glibc function addresses by
+simply referencing them. The Glibc functions that need to be wrapped
+are now wrapped using the function address table built by
+\pipterm{ldpip.so} after loading \pipterm{libpip.so}.
 
-The Glibc initialization\footnote{Calling \linuxfunc{__ctype_init()}} must
-be done with the execution context (Section~\ref{sec:context}) of the
-  spawned PiP task. In the older version of PiP library, this was done
-  by; 1) calling \linuxfunc{dlsym()} to the loaded handle, returned by
-  \linuxfunc{dl[m]open()}, to obtain the initialization function 
-and then 2) call the function. In the new implementation, the
-initialization was done by simply calling the initialization function
-from the \pipterm{ldpip.so} where the execution context is the same
-with that of PiP task. 
-
-Thus, by introducing PiP loader program (\pipterm{ldpip.so}), things
-can go in a simpler way. 
-
+It is necessary to run \linuxfunc{__ctype_init} with the execution
+context (Section~\ref{sec:context}) of the launched PiP task in order
+to initialize Glibc. In an earlier version of the PiP library, this
+was accomplished by first obtaining the initialization function by
+calling \linuxfunc{dlsym} on the loaded handle returned by
+\linuxfunc{dlopen}, and then by executing the 
+initialization function itself. The initialization process in the new
+implementation consisted of calling the initialization method directly
+from the ldpip.so file, where the execution context was the same as
+that of the PiP task. So, things can go in an easier manner by
+introducing PiP loader program (\pipterm{ldpip.so}).
 
 \subsection{Calling {\tt clone()} System Call}\label{sec:clone}
 
-As described in Section~ref{sec:spawn-details}, PiP library calls the
-\linuxfunc{clone()} system call with a special flag combination. The
-\linuxfunc{clone()} system call has many arguments and some of them
-are hard to implement, I decided to wrap the \linuxfunc{clone()}
-system call to modify only the flag setting.
+PiP library uses a unique flag combination to call the
+\linuxfunc{clone} system call, as explained in
+Section~\ref{sec:spawn-details}. Since the \linuxfunc{clone} system
+call takes a lot of inputs, some of which are difficult to implement,
+I chose to wrap \linuxfunc{pthread_create} and \linuxfunc{clone} in
+order to change only the flag setting.   
 
-One issue to wrap the \linuxfunc{clone()} system call is that the
-\linuxfunc{clone()} is called not only the PiP library, but also some
-other libraries (e.g., PThread librray). A simple function wrapping
-cannot handle both situations where the flags needs to be changed when
-it is called by the PiP library but it should not change the flag when
-called by some other libraries.
+Wrapping the \linuxfunc{clone} system call is a challenge because it
+is used by many libraries in addition to the PiP library (e.g.,
+PThread library). When the PiP library calls the function, the flags
+must be modified; however, when some other libraries call the same
+method, the flags should not be changed. This is a circumstance that
+cannot be handled by a straightforward function wrapping.
 
-To solve this issue and protect the \linuxfunc{clone()} system call from
-being called from PiP library and from another simultaneously, a
-special locking mechanism was implemented by using the
-{\tt\term{test-and-set}} atomic instruction. When the PiP library is about
-to call \linuxfunc{pthread_create()} call, which eventually calls the
-\linuxfunc{clone()} system call, it locks by using the {\tt\term{test-and-set}}
-instruction with the value of current thread ID (TID). The wrapper
-function of the {\tt clone} firstly tries to lock, but it fails with
-value of the current TID, then it is the case of calling from the PiP
-library. If the lock succeeds, then it is called by some other
-library. In the former case, the original \linuxfunc{clone()} is called with
-the modified flags. In the latter case, the \linuxfunc{clone()} is called
-with the same argument with the wrapper function call. Needless to say,
-the lock is unlocked after returning from the original \linuxfunc{clone()}
-system call.
+The test-and-set atomic instruction was used to construct a specific
+locking mechanism in order to address this problem and prevent the
+\linuxfunc{clone} system call from being invoked simultaneously from
+the PiP library and from another source. The {\tt test-and-set}
+instruction is used by the PiP library to lock when it is going to run
+\linuxfunc{pthread_create} with the value of current thread ID (TID),
+which ultimately invokes the \linuxfunc{clone} system call. The wrapper 
+function of the \linuxfunc{clone} firstly tries to lock, but it fails
+with value of the current TID, then it is the case of calling from the
+PiP library. If the lock is successful, a different library will call
+it. The original \linuxfunc{clone} is called with the altered flags in
+the first scenario. In the latter scenario, the wrapper function call
+calls \linuxfunc{clone} with the same input. Naturally, the lock is
+released after the original \linuxfunc{clone} system call returns. 
 
 \subsection{Execution Mode in Details}
 
-There are two sub-modes in the PiP's \pipterm{process mode},
+The PiP's \pipterm{process mode} has two sub-modes:
 \pipterm{process:preload} and \pipterm{process:pipclone}\footnote{In
-PiP implementation earlier than version 2.4, there was another mode
+  PiP implementation earlier than version 2.4, there was another mode 
 \pipterm{process:got}. But this becomes obsolete in the newer
-versions.}. The \pipterm{process:preload} mode is implemented by
-wrapping the \linuxfunc{clone()} function described above and the
-\pipterm{process:pipclone} 
-is implemented to have another \linuxfunc{pthread_create()} like function
-implemented in the patched-glibc (Section~\ref{sec:name-space}). If
-  PiP library is configured to use the patched-glibc, then
-  \pipterm{process:pipclone} is taken, otherwise \pipterm{process:preload}
-  is taken. 
+versions.}. Wrapping the \linuxfunc{clone} function mentioned above 
+implements the \pipterm{process:preload} mode. The
+\pipterm{process:pipclone} mode implements another
+\linuxfunc{pthread_create}-like function in the \pipglibc\ (Section
+3.2.2). If the PiP library is configured to use the \pipglibc,
+\pipterm{process:pipclone} is taken; otherwise,
+\pipterm{process:preload} is taken.  
 
 \subsection{Name of PiP Tasks}\label{sec:proc-name}
 
-Some readers may wonder how the \pipcmd{pips} command
-(Section~\ref{sec:pips}) can distinguish the PiP tasks and the other
-normal processes and/or threads. In Linux, each process and thread can
-have a name, which can be seen by the \linuxcomm{top} command in the {\tt
-  COMMAND} column. The PiP library sets the command name by calling
-the \linuxfunc{prctl()} system call (in \pipterm{process mode} or
-\linuxfunc{pthread_setname_np()} call (in \pipterm{pthread mode}. The
-PiP library uses the first two characters of the name
-(Table~\ref{tbl:name-1} and \ref{tbl:name-2})).
+The ability of the \pipcmd{pips} command (Section~\ref{sec:pips}) to
+distinguish between PiP tasks and other customary processes and/or
+threads may be unclear to certain readers. Each process and thread in
+Linux has a name, which is visible in the COMMAND column of the top
+command. The \linuxfunc{prctl} system call (in \pipterm{process mode})
+or the \linuxfunc{pthread_ setname np} call (in \pipterm{pthread
+  mode}) are used by the PiP library to set the command name. The 
+first two characters of the name are used by the PiP library
+(Table~\ref{tbl:name-1} and \ref{tbl:name-2})). 
 
 \begin{table}[ht]
   \centering
@@ -167,12 +158,11 @@ PiP library uses the first two characters of the name
   \end{tabular}
 \end{table}
 
-The name may have up to 16 characters and PiP occupies the first two
-characters The remaining 14 characters are used for representing
-original command name. The abbreviation column in
-Table~\ref{tbl:name-2} shows the characters used by the
-\pipcmd{pip-mode} command (Section~\ref{sec:pip-mode}) to specify the
-PiP execution mode.
-The \pipcmd{pips} command can now distinguish the normal processes or
-threads from the PiP roots and PiP tasks by using those first 2
-characters of the command.
+PiP takes up the first two characters of the name, which can be up to
+16 characters. The original command name is represented by the final
+14 characters. The letters used by the pip-mode command
+(Section~\ref{sec:pip-mode}) to specify the PiP execution mode are
+shown in the abbreviation column of Table~\ref{tbl:name-2}. The
+\pipcmd{pips} command may now identify the normal processes or threads
+from the PiP roots and PiP tasks by using those first 2 characters of
+the command name. 

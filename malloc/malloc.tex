@@ -1,25 +1,24 @@
 
 \section{Malloc routines}\label{sec:malloc}
 
-Suppose that we are making a producer-consumer style program using PiP,
-a PiP task is a producer and another PiP task is a consumer. Unlike the
-conventional process model, there is no need of calling IPC (Inter
-Process Communication) system call in PiP. All we have to do is just
-passing pointers pointing data to be passed from the producer to the
-consumer.
+Consider creating a producer-consumer program using PiP, where one PiP
+task serves as the producer and another as the consumer. In contrast
+to the traditional process approach, PiP does not require an IPC
+(Inter Process Communication) system call. Passing pointers pointing
+at data to be transmitted from the producer to the consumer is all
+that is necessary.  
 
-Here, an issue arises. If the passing data is allocated by a
-\linuxfunc{malloc()} routine, then the passed data is
-\linuxfunc{free()}ed by the consumer. As described so far, each PiP
-task has its own \linuxfunc{malloc()} and \linuxfunc{free()} routines
-associated with static variables holding and maintaining a memory
-pool. The consumer receives 
-the data allocated from the memory pool of the producer and tries to
-\linuxfunc{free()} it when it becomes unnecessary. However, the
-\linuxfunc{free()} routine on the consumer has no knowledge about the
-producer-allocated memory region and fails
-(Figure~\ref{fig:cross-malloc-free-issue}). I 
-named this situation {\it cross-malloc-free}. 
+There is a problem here. If the given data was allocated by the
+\linuxfunc{malloc} function, the consumer will \linuxfunc{free} the
+passed data. As previously mentioned, each PiP task has a unique set
+of \linuxfunc{malloc} and \linuxfunc{free} procedures connected to
+static variables that hold and manage a memory pool. When it is no
+longer required, the consumer tries to \linuxfunc{free} the data it
+has obtained from the producer's memory pool. Unfortunately, 
+because the consumer's \linuxfunc{free} procedure is unaware of the
+memory space that the producer allocated, it fails
+(Figure~\ref{fig:cross-malloc-free-issue}). I gave this circumstance
+the moniker {\it cross-malloc-free}. 
 
 \begin{figure}[ht]
 \centering
@@ -28,10 +27,11 @@ named this situation {\it cross-malloc-free}.
 \label{fig:cross-malloc-free-issue}
 \end{figure}
 
-I tried this by using the \linuxfunc{malloc} routines provided Glibc and I
-found that this works in most cases, not always. I do not know why
-this works (again, {\bf in most cases}) with the Glibc \linuxfunc{malloc}
-routines, but I believe this situation must be avoided.
+I gave it a shot using the {\tt malloc} functions that Glibc provides
+and discovered that while it doesn't always work, it usually does. I'm
+not sure why this works (again, {\it in most circumstances}) with the 
+Glibc {\tt malloc} routines, but I believe it's important to avoid
+this circumstance.
 
 \begin{figure}[ht]
 \centering
@@ -40,11 +40,11 @@ routines, but I believe this situation must be avoided.
 \label{fig:cross-malloc-free}
 \end{figure}
 
-To deal with this, PiP library wraps \linuxfunc{malloc} routines as shown in
-Table~\ref{tbl:pip-wrapper}. When a memory region is allocated, the
-\linuxfunc{malloc} wrapper function embeds the information who
-allocates that region. When this region is to be \linuxfunc{free()}ed, the
-\linuxfunc{free()} wrapper function connects the region to the freeing
-list of the task allocating the region. The regions in the freeing
-list are eventually \linuxfunc{free()}ed when one of the \linuxfunc{malloc}
-wrapper functions (Figure~\ref{fig:cross-malloc-free}).  
+In order to address this, the PiP library wraps the {\tt malloc}
+functions, as seen in Table 3.3. The \linuxfunc{malloc} wrapper
+function embeds  the information about who allocated a memory
+space. When this region is to be \linuxfunc{free}ed, the
+\linuxfunc{free} wrapper function connects the region to the freeing 
+list of the task allocating the region. When one of the wrapper
+functions for {\tt malloc} is called, the regions in the freeing list
+are really \linuxfunc{free}ed (Figure~\ref{fig:cross-malloc-free}). 

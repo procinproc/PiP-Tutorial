@@ -1,24 +1,23 @@
 
 \section{Execution Context}\label{sec:context}
 
-Readers should be familiar with the execution context under PiP before
-I discuss the remaining arguments. The state of the CPU, or the
-contents of hardware registers, can be thought of as the general
-definition of the execution context. This definition might not be
-sufficient on PiP. Let's look at an example. Assume the same
-application contains a function called {\tt foo} and is running as two PiP
-tasks. One PiP job can call the function of the other PiP task by
-supplying the function pointer and utilizing the
-\pipfunc{pip_named_export} and \pipfunc{pip_named_import}. The
-function {\tt foo} also makes use of a static variable, let's say 
-var. When task A calls task B's function foo, task B's variable, not
-task A's, is accessed by the called function
+Before I cover the following points, readers should be familiar with
+the execution context under PiP. The general concept of the execution
+context can be thought of as the CPU's state or the information in
+hardware registers. On PiP, this definition might not be
+adequate. Let's examine a case in point. Imagine that the same
+program, which is operating as two PiP tasks, has a function called
+{\tt foo()}. By providing the function pointer and leveraging the 
+\pipfunc{pip_named_export} and \pipfunc{pip_named_import}, one PiP task
+can call the function of another PiP task. An additional static
+variable, let's call {\tt var}, is used by the function foo. When task
+$A$ calls function {\tt foo()} of task $B$, the called function
+accesses task B's variable rather than task A's
 (Listing~\ref{prg:context} and \ref{out:context}). 
 
 \lstinputlisting[style=program,
   caption={Calling a Function of Another Task},
   label=prg:context] {context/examples/context.c}
-
 
 Sorry, this may detour off the main road, but in this example program,
 \pipfunc{pip_named_export} and 
@@ -72,7 +71,7 @@ map with three jobs executing, with a focus on the Glibc  ({\tt
   ...
 \end{lstlisting}
 
-Glibc segments come in three sets. The final (readable and write)
+Glibc segments come in three sets. The final (readable and writable)
 segment of each set is where the static variables are located. By
 using the offset from the instruction (program counter relative
 addressing mode) to the variable, an instruction can access a static
@@ -85,7 +84,7 @@ fashion, allowing \PIE\ applications and shared objects that were
 created with the \PIC\ option to be loaded in any place.
 
 Unfortunately, not all CPU architectures implement this addressing
-mode3. For example, \INTEL\ doesn't. This architecture sacrifices one
+mode. For example, \INTEL\ doesn't. This architecture sacrifices one
 general purpose register in order to point the variable segment,
 causing performance to suffer as a result. Moreover,
-Listing~\ref{prg:context} program displays a distinct behavior.
+Listing~\ref{prg:context} program may display a distinct behavior.

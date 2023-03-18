@@ -23,20 +23,20 @@
 \begin{itemize}
 \item The majority of PiP functions return a Linux-defined error code.
 \item Per address space, each PiP task has an unique {\PIPID}.
-\item PiP root must call \pipfunc{pip_init()} to initialize PiP library (). The
+\item PiP root must call \pipfunc{pip_init} to initialize PiP library. The
   initialization function may or may not be called by child PiP tasks.
-\item By using the \pipfunc{pip\_spawn()} or
-  \pipfunc{pip_task_spawn()} functions, the PiP root can start new PiP
+\item By using the \pipfunc{pip\_spawn} or
+  \pipfunc{pip_task_spawn} functions, the PiP root can start new PiP
   tasks. 
-\item Use the \pipfunc{pip_named_export()} and
-  \pipfunc{pip_named_import()} methods to find the address for gaining
+\item Use the \pipfunc{pip_named_export} and
+  \pipfunc{pip_named_import} methods to find the address for gaining
   access to the data of the other PiP tasks.
-\item \pipterm{pip_barrier_wait()} is used for tasks to
+\item \pipfunc{pip_barrier_wait} is used for tasks to
   synchronize. Synchronization can also be accomplished using
-  PThreads' syn- chronization functions. 
+  PThreads' synchronization functions. 
 \item The invoking PiP process and PiP root are terminated by the
-  \pipfunc{pip_exit()} method. 
-\item By using a member of the {\tt pip_wait} function family, the PiP
+  \pipfunc{pip_exit} method. 
+\item By using a member of the \pipfunc{pip_wait} function family, the PiP
   root can wait for a created PiP task to finish.
 \end{itemize}
  
