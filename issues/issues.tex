@@ -3,16 +3,17 @@
 
 \subsection{Retrieving Memory}\label{sec:retrive}
 
-Let us suppose a case where PiP task $A$ pass a pointer to PiP task
-$B$ (Listing~\ref{out:export-import}, for example). After then, task
-$A$ terminates for some reason. What if task $B$ tries to dereference
-the pointer to access data which task $A$ had? This situation can also
-happen if the string obtained by calling {\tt getenv()} is passed to
-the other task. The consequence of this may introduce difficult
-situation hard to debug. This situation must be detected by compilers
-and/or tools which are aware of PiP-style execution model.
+Assume that PiP task $A$ passes a pointer to PiP task
+$B$. (Listing~\ref{out:export-import}, 
+for example). Then task $A$ exits for a reason. What if task $B$ tries to
+access data that task A has by dereferenceing the pointer? This
+scenario may also occur if the other job receives the string obtained
+by calling \linuxfunc{getenv}. The result could result in challenging
+circumstances that are challenging to troubleshoot. Compilers and/or
+tools that are familiar with the execution model used by PiP must be
+capable of identifying this situation.
 
-So, I decided not to reclaim any memory resources when a task
-terminates, not calling {\tt dlclose()} nor {\tt free()}. In the
-current PiP implementation, \PIPID\ can be allocated only once. And
-not releasing memory resource will not cause further problem.
+I therefore made the decision to not call \linuxfunc{dlclose} or free
+any memory resources when a task terminates. PIPID can only be allocated once
+in the PiP implementation as it stands right now. And there won't be
+any more issues if memory resources are not released.

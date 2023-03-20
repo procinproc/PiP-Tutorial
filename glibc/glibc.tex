@@ -239,95 +239,89 @@ program (\pipcmd{annul_rpath}) to unset the {\tt RPATH} setting of the
 
 \subsubsection{Heap Segment}\label{sec:heap}
 
-There is another issue which comes from Linux kernel, not from
-Glibc. Before explaining this issue, let us start from the how an
-address space is composed. 
+Another problem exists, although it originates with the Linux kernel
+rather than Glibc. Let's begin by discussing the structure of an
+address space before attempting to clarify this problem.
 
 \lstinputlisting[style=example, basicstyle=\tiny\tt, 
   caption={A Memory Map Example},
   label=out:maps] {glibc/examples/maps.out}
 
-Listing~\ref{out:maps} shows an example of the output of doing ``{\tt
-  cat /proc/\option{PID}/maps}.'' Here, ``{\tt pip-exec -n 2
-  ./a.out}'' was executed, resulting one \pipcmd{pip-exec} process
-and two {\tt ./a.out} tasks. The file, {\tt
-  /proc/\option{PID}/maps}, lists all memory
-segments in an address space of the process \option{PID}
-usually. A loaded shared object has consecutive three or four segments; 
-executable, gap (not accessible, if any), constants and data. 
-The rightmost column of a line indicates the {\tt
-  mmap()}ed filename, the second from the left column indicates the
-permission of the memory segment. '{\tt r}' is readable, '{\tt w}' is
-writable, '{\tt x}' is executable and '{\tt p}' is private
-(copy-on-write). There are also some special segments whose filename
-is in a pair of square brackets; {\tt [stack]}, {\tt [heap]}, and so
-on. These are created by the Linux kernel for special purposes as
-their names suggest. The segments having no filename are created by
-the \linuxfunc{mmap} system call. 
+Listing~\ref{out:maps} is an example of the output of the command
+"{\tt cat /proc/\option{PID}/maps}." Here, the command "{\tt pip-exec
+  -n 2./a.out}" was run, producing one pip-exec (PiP root) process and
+two ./a.out PiP tasks. The file, {\tt /proc/\option{PID}/maps},
+typically lists every memory segment in the process 
+PID's address space. A loaded shared object has three or four segments
+that are sequentially executable, gap (if any), constants, and
+data. The \linuxfunc{mmap}ed filename is shown in the rightmost column
+of a line, and the memory segment's permission is shown in the second
+column from the left. '{\tt r}' stands for readable, '{\tt w}' for
+writable, '{\tt X}' for executable, and '{\tt p}' for private
+(copy-on-write). The filenames of a few special segments, including
+{\tt [stack]}, {\tt [heap]}, and others, are enclosed in a pair of
+square brackets. As their names imply, these were developed by the
+Linux kernel for certain purposes. The \linuxfunc{mmap} system call
+may create a segment without a filename. 
 
-Remember, this is the address space of running one PiP root and two PiP
-tasks, resulting to have all the segments of the three tasks.
-Note that the all three tasks have
-exactly the same {\tt /proc/\option{PID}/maps} content, and
-there are three sets of a shared library and only one set of {\tt
-  ld-linux.so} ({\tt ld-2.28.so}) can be seen in
-Listing~\ref{out:maps}.
+Keep in mind that this is the address space for executing one PiP root
+and two PiP tasks, giving access to all of the three tasks'
+segments. Listing~\ref{out:maps} shows that there are three sets of a
+shared library and only one set of {\tt ld-linux.so} ({\tt
+  ld-2.28.so}), and that all three jobs have exactly the same content
+in {\tt /proc/\option{PID}/maps}. 
 
-Usually, the heap segment, mainly used by \linuxfunc{malloc}, exists only
-one per address space. As shown in this example, there is only one heap
-segment, meaning the heap segment is shared by three tasks (one for
-root and two for PiP tasks). 
+Typically, there is just one heap segment per address space, which is
+primarily used by \linuxfunc{malloc}. There is only one heap segment, as
+demonstrated in this example, and three tasks share it.
+By using the \linuxfunc{brk} system call, the size of the heap segment
+can be increased or decreased. To create or deallocate heap memory,
+\linuxfunc{brk} is often called twice, once to determine the current
+heap end address and once to set the new heap end address. The
+\linuxfunc{sbrk} function in Glibc does just this. Evidently, this API
+is not at all thread-safe, hence PiP jobs cannot use the shared heap
+memory in a secure manner.  
 
-The size of the heap segment can be increased or decreased by calling
-the \linuxfunc{brk} system call. Most cases, there are two calls of
-\linuxfunc{brk} to allocate or deallocate heap memory, one for
-obtaining the 
-current heap end address and another for setting the new heap end 
-address. This is exactly what the Glibc's \linuxfunc{sbrk}
-does. Apparently, this API is not thread-safe at all, and thus, 
-the shared heap memory cannot be used safely by PiP tasks.
-
-Fortunately, the \linuxfunc{malloc} routines in Glibc is designed to check if
-there are two or more name spaces and if so they do not use the
-\linuxfunc{brk} system call, use {\tt mmap()} instead. So, the Glibc
-\linuxfunc{malloc} routines can work with PiP without any
-problem. However, if some other routines use the \linuxfunc{brk}
-system call (or \linuxfunc{sbrk} Glibc function), for example,
-replacing the Glibc \linuxfunc{malloc} routines with some other
-\linuxfunc{malloc} implementation, then this shared heap may result in a 
-problem.
+Thankfully, the \linuxfunc{malloc} functions in Glibc are made to
+determine whether there are two or more name spaces and, if there are,
+to utilize \linuxfunc{mmap} rather than the \linuxfunc{brk} system
+call. As a result, PiP may use the Glibc \linuxfunc{malloc} functions
+without any issues. Nevertheless, this shared heap may cause issues if
+other routines use the \linuxfunc{brk} system call (or
+\linuxfunc{sbrk} Glibc function), such as when replacing the 
+Glibc \linuxfunc{malloc} routines with another \linuxfunc{malloc}
+implementation. 
 
 \subsubsection{Core File}
 
-Suppose that we have a catastrophic situation and all PiP tasks and
-their root process dump core files of their own. On the current Linux,
-a core file is associated with a process (including threads inside of
-it). Thus, each PiP task and the root may produce core, resulting to
-have many core files. Here, the address space of them are shared and
-the created core files and all of them are almost the same excepting
-the CPU state. 
+Imagine a catastrophe where all PiP tasks and their root processes
+dump their core files on their own. Nowadays, a core file on Linux is
+connected to a process (including threads inside of it). As a result,
+the root and each PiP task may produce core, leading to the existence
+of several core files. In this case, they all share the same address
+space and the generated core files may vary.
 
-Let me explain this with an example. Suppose that we have PiP task $A$
-and $B$ running on the same address space of the root $P$, and an
-error happens resulting all $P$, $A$, and $B$ produce core
-files. There can be a small time difference when to produce each core
-file. When the first core file, of $A$ for instance, is being created,
-the other $P$ and $B$ are still running and the memory of the shared 
-address space can be altered by those running tasks.
-\linuxcmd{gdb}, however, assumes that a core file is a consistent snapshot
-of memory and CPU state. The above PiP situation breaks this
-assumption. If $B$ produces another core file, may or may not be
-caused by the error on $A$, the same situation can happen.
-Thus, the \pipcmd{pip-gdb} command (Section~\ref{sec:pip-gdb}) does
-not support for debugging from a core file. To solve this issue,
-PiP-aware OS kernel to have the consistent core files is needed. 
+I'll use an example to further illustrate. Let's say that PiP tasks $A$
+and $B$ are operating in the same address space as the root $P$, and
+that an error occurs, causing all three to output core files. The time it
+takes to build each core file can vary slightly. When the first core
+file of A, for example, is being produced, the other P and B are still
+executing, and those ongoing processes may change the memory of the
+shared address space. However, \linuxcmd{gdb} makes the assumption
+that a core file is a reliable snapshot of the CPU and memory
+state. The PiP scenario mentioned above disproves this notion. The
+same thing may occur if $B$ produces another core file, which may or may
+not be related to the fault on $A$. Hence, debugging from a core file is
+not supported by the \pipcmd{pip-gdb} command
+(Section~\ref{sec:pip-gdb}). A PiP-aware OS kernel with consistent
+core files is required to address this problem.  
 
 \subsection{Tools}
 
-As described, PiP sets a special combination of the \linuxfunc{clone}
-flags. As a result of this, some tools do not work. Here is the list
-of tools which are known to work or not at the time of this
-writing\footnote{\linuxcmd{ltrace} depends on its version}. 
+According to the description, PiP sets a unique set of the
+\linuxfunc{clone} flags. This causes some tools to malfunction. Below
+is a list of tools that, as of this writing, are known to work or
+not\footnote{\linuxcmd{ltrace} depends on its version}.  
 
 \begin{table}[ht]
   \centering
