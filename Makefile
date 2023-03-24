@@ -4,6 +4,7 @@ include ./rules.mk
 TARGET = main
 LATEX  = pdflatex < /dev/null
 BIBTEX = bibtex
+STYLE  = 
 
 PDF    = $(TARGET).pdf
 
@@ -27,7 +28,7 @@ examples: pipkw.sh
 		done
 .PHONY: examples
 
-$(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS)
+$(PDF): $(SRCS) $(FIGS) $(OUTS) $(BIBS) $(STYLE)
 	$(RM) $(TARGET).idx
 	$(LATEX)  $(TARGET)
 	$(BIBTEX) $(TARGET)

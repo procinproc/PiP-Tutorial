@@ -54,22 +54,22 @@ develop PiP programs without worrying about the variations in mode.
   \small
   \begin{tabular}{c||c|c||l}
     \hline
-    Mode-Agnostic & Process Mode & Pthread Mode & \multicolumn{1}{c}{note} \\
+    Mode Agnostic & Process Mode & Pthread Mode & \multicolumn{1}{c}{note} \\
     \hline
-    \pipfunc{pip_exit()} & {\tt exit()} & {\tt pthread_exit()} &
+    \pipfunc{pip_exit} & \linuxfunc{exit} & \linuxfunc{pthread_exit} &
     termination \\
-    \pipfunc{pip_wait()} & {\tt wait()} & {\tt pthread_join()} &
+    \pipfunc{pip_wait} & \linuxfunc{wait} & \linuxfunc{pthread_join} &
     {\tiny wait termination} \\
-    \pipfunc{pip_kill()} & {\tt kill()} & {\tt pthread_kill()} & send
+    \pipfunc{pip_kill} & \linuxfunc{kill} & \linuxfunc{pthread_kill} & send
     signal \\
-    \pipfunc{pip_sigmask()} & {\tt sigprocmask()} & {\tt
-      pthread_sigmask()} & signal mask \\
-    \pipfunc{pip_signal_wait()} & sigwait() & sigwait() & wait signal
-    \\
-    \pipfunc{pip_yield()} & {\tt sched_yield()} & {\tt
-      pthread_yield()} & yield \\
-%%    \pipterm{pip_abort()} & {\tt abort()} & {\tt abort()} & kill all
-%%    tasks \\
+    \pipfunc{pip_sigmask} & \linuxfunc{sigprocmask} &
+    \linuxfunc{pthread_sigmask} & signal mask \\ 
+    \pipfunc{pip_signal_wait} & \linuxfunc{sigwait} &
+    \linuxfunc{sigwait} & wait signal \\
+    \pipfunc{pip_yield} & \linuxfunc{sched_yield} &
+    \linuxfunc{pthread_yield} & yield \\ 
+%%    \pipterm{pip_abort} & \linuxfunc{abort} & \linuxfunc{abort} &
+%%    kill all tasks \\
     \hline
   \end{tabular}
 \end{table}
@@ -85,8 +85,8 @@ mode listed in Table~\ref{tbl:mode-predicates}.
     \hline
     Function name & \multicolumn{1}{c}{note} \\
     \hline
-    \pipfunc{pip_is_threaded()} & if pthread mode \\
-    \pipfunc{pip_is_shared_fd()} & if FDs are shared \\
+    \pipfunc{pip_is_threaded} & if pthread mode \\
+    \pipfunc{pip_is_shared_fd} & if FDs are shared \\
     \hline
   \end{tabular}
 \end{table}
